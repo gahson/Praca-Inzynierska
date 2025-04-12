@@ -23,7 +23,7 @@ const App = () => {
   const generate = async (prompt) => {
     updateLoading(true);
     const result = await axios.get(`http://127.0.0.1:8000/?prompt=${prompt}`);
-    updateImage(result.data);
+    updateImage(result.data.image);
     updateLoading(false);
   };
 
