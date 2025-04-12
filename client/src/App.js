@@ -15,7 +15,6 @@ import {
   SliderTrack,
   SliderFilledTrack,
   SliderThumb,
-  SliderMark,
   Box,
 } from "@chakra-ui/react";
 import axios from "axios";
@@ -24,14 +23,15 @@ import { useState } from "react";
 const App = () => {
   const [image, updateImage] = useState();
   const [prompt, updatePrompt] = useState();
+  const [negativePrompt, updateNegativePrompt] = useState();  // Negative prompt state
   const [loading, updateLoading] = useState();
   const [width, setWidth] = useState(512); // Default width
   const [height, setHeight] = useState(512); // Default height
 
-  const generate = async (prompt) => {
+  const generate = async () => {
     updateLoading(true);
     const result = await axios.get(
-      `http://127.0.0.1:8000/?prompt=${prompt}&width=${width}&height=${height}`
+      `http://127.0.0.1:8000/?prompt=${prompt}&negative_prompt=${negativePrompt}&width=${width}&height=${height}`
     );
     updateImage(result.data.image);
     updateLoading(false);
@@ -55,10 +55,21 @@ const App = () => {
             value={prompt}
             onChange={(e) => updatePrompt(e.target.value)}
             width={"350px"}
-          ></Input>
-          <Button onClick={(e) => generate(prompt)} colorScheme={"yellow"}>
+            placeholder="Enter prompt"
+          />
+          <Button onClick={generate} colorScheme={"yellow"}>
             Generate
           </Button>
+        </Wrap>
+
+        {/* Negative Prompt */}
+        <Wrap marginBottom={"10px"}>
+          <Input
+            value={negativePrompt}
+            onChange={(e) => updateNegativePrompt(e.target.value)}
+            width={"350px"}
+            placeholder="Enter negative prompt (optional)"
+          />
         </Wrap>
 
         {/* Width Slider */}
