@@ -1,9 +1,5 @@
-"use client";
-
 import {
-  ChakraProvider,
-  Heading,
-  Container,
+  Flex,
   Text,
   Input,
   Button,
@@ -29,7 +25,7 @@ const App = () => {
   const [loading, updateLoading] = useState(false);
   const [width, setWidth] = useState(1024);
   const [height, setHeight] = useState(1024);
-  const [guidance, setGuidance] = useState(15.0);
+  const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
 
   const [models, setModels] = useState([]);
@@ -66,23 +62,30 @@ const App = () => {
   };
 
   return (
-    <ChakraProvider>
-      <Container>
-        <Heading>AInterior</Heading>
-        <Text marginBottom="10px">
-          Stable Difussion application designed for interior architects
-        </Text>
-      </Container>
-      <Box width="100%" height="100%" marginTop="100px">
-        <Box display="flex" justifyContent="center" gap="20%">
+    <Box bg="gray.100" minHeight="100vh" px={{ base: 4, md: 8 }} py={{ base: 6, md: 12 }}>
+      <Flex
+        marginTop={{ base: "1vh", md: "15vh" }}
+        marginBottom={{ base: "1vh", md: "15vh" }}
+        justifyContent="center"
+        alignItems="center"
+        gap={{ base: "5%", md: "20%" }}
+        direction={{ base: "column", md: "row" }}
+        align={{ base: "center", md: "flex-start" }}
+      >
+        {/* Parameters */}
+        <Box
+          width={{ base: "100%", md: "35%" }}
+          display="flex"
+          flexDirection="column"
+          justifyContent="center"
+          mb={{ base: 10, md: 0 }}
+        >
 
-
-          {/* Left Box with Input, Sliders and Button */}
-          <Box width="35%" display="flex" flexDirection="column" justifyContent="center">
-
+          {/* Model selection */}
+          <Wrap marginBottom="10px" width="100%">
             <Select
               marginBottom="10px"
-              placeholder="-- wybierz model --"
+              placeholder="-- Choose model --"
               value={selectedModel}
               onChange={(e) => setSelectedModels(e.target.value)}
             >
@@ -92,36 +95,38 @@ const App = () => {
                 </option>
               ))}
             </Select>
+          </Wrap>
 
-            {/* Positive Prompt Input */}
-            <Wrap marginBottom="10px">
-              <Input
-                value={prompt}
-                onChange={(e) => updatePrompt(e.target.value)}
-                width="100%"
-                placeholder="Enter prompt"
-              />
-            </Wrap>
+          {/* Prompt selection */}
+          <Wrap marginBottom="10px" width="100%">
+            <Input
+              value={prompt}
+              onChange={(e) => updatePrompt(e.target.value)}
+              width="100%"
+              placeholder="Enter prompt"
+            />
+          </Wrap>
 
-            {/* Negative Prompt Input */}
-            <Wrap marginBottom="10px">
-              <Input
-                value={negativePrompt}
-                onChange={(e) => updateNegativePrompt(e.target.value)}
-                width="100%"
-                placeholder="Enter negative prompt (optional)"
-              />
-            </Wrap>
+          {/* Negative prompt selection */}
+          <Wrap marginBottom="10px" width="100%">
+            <Input
+              value={negativePrompt}
+              onChange={(e) => updateNegativePrompt(e.target.value)}
+              width="100%"
+              placeholder="Enter negative prompt (optional)"
+            />
+          </Wrap>
 
-            {/* Width Slider */}
-            <Box marginBottom="10px">
+          {/* Width slider */}
+          <Wrap marginBottom="10px" width="100%">
+            <Box marginBottom="10px" width="100%">
               <Text mb={2}>Width: {width}</Text>
               <Slider
                 aria-label="Width"
                 defaultValue={width}
                 min={64}
                 max={1024}
-                step={8}
+                step={64}
                 onChange={(value) => setWidth(value)}
               >
                 <SliderTrack>
@@ -130,16 +135,18 @@ const App = () => {
                 <SliderThumb />
               </Slider>
             </Box>
+          </Wrap>
 
-            {/* Height Slider */}
-            <Box>
+          {/* Height slider */}
+          <Wrap marginBottom="10px" width="100%">
+            <Box marginBottom="10px" width="100%">
               <Text mb={2}>Height: {height}</Text>
               <Slider
                 aria-label="Height"
                 defaultValue={height}
                 min={64}
                 max={1024}
-                step={8}
+                step={64}
                 onChange={(value) => setHeight(value)}
               >
                 <SliderTrack>
@@ -148,9 +155,11 @@ const App = () => {
                 <SliderThumb />
               </Slider>
             </Box>
+          </Wrap>
 
-            {/* Guidance Slider */}
-            <Box>
+          {/* Guidance slider */}
+          <Wrap marginBottom="10px" width="100%">
+            <Box marginBottom="10px" width="100%">
               <Text mb={2}>Guidance scale: {guidance}</Text>
               <Slider
                 aria-label="Guidance"
@@ -166,10 +175,12 @@ const App = () => {
                 <SliderThumb />
               </Slider>
             </Box>
+          </Wrap>
 
-            {/* Seed Slider */}
-            <Box>
-              <Text mb={2}> Seed: {seed}</Text>
+          {/* Seed slider */}
+          <Wrap marginBottom="10px" width="100%">
+            <Box marginBottom="10px" width="100%">
+              <Text mb={2}>Seed: {seed}</Text>
               <Slider
                 aria-label="Seed"
                 defaultValue={seed}
@@ -184,31 +195,43 @@ const App = () => {
                 <SliderThumb />
               </Slider>
             </Box>
+          </Wrap>
 
-            <Button onClick={generate} colorScheme="yellow" width="100%">
-              Generate
-            </Button>
-          </Box>
-
-          {/* Right Box for displaying the image */}
-          <Box width="512px" height="512px" backgroundColor="gray.200" display="flex" alignItems="center" justifyContent="center">
-            {loading ? (
-              <Stack width="100%" height="100%">
-                <SkeletonCircle />
-                <SkeletonText />
-              </Stack>
-            ) : image ? (
-              <Image
-                src={`data:image/png;base64,${image}`}
-                alt="Generated Image"
-                boxShadow="lg"
-                borderRadius="md"
-              />
-            ) : null}
-          </Box>
+          <Button onClick={generate} colorScheme="yellow" width="100%">
+            Generate
+          </Button>
         </Box>
-      </Box>
-    </ChakraProvider>
+
+        {/* Image */}
+        <Flex
+          width={{ base: "100%", md: "512px" }}
+          height={{ base: "auto", md: "512px" }}
+          align="center"
+          justifyContent="center"
+          bg="gray.200"
+          borderRadius="md"
+        >
+          {loading ? (
+            <Stack width="100%" height="100%">
+              <SkeletonCircle />
+              <SkeletonText />
+            </Stack>
+          ) : image ? (
+            <Image
+              src={`data:image/png;base64,${image}`}
+              alt="Generated Image"
+              boxShadow="lg"
+              borderRadius="md"
+              width="100%"
+              height="100%"
+              objectFit="contain"
+            />
+          ) : null}
+        </Flex>
+
+
+      </Flex>
+    </Box>
   );
 };
 
