@@ -46,9 +46,7 @@ def generate(generateRequest : GenerateRequest):
     ).to(device)
     
     pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
-    #pipe.enable_xformers_memory_efficient_attention()
-    
-    # Negative prompt robi halucynacje nawet z pustym stringiem
+
     image = pipe(
         prompt=generateRequest.prompt,
         negative_prompt=generateRequest.negative_prompt,

@@ -1,4 +1,4 @@
-### `python -m uvicorn backend/main:app --reload --port 8080`
+### `python -m uvicorn main:app --reload --port 8080`
 
 Runs the backend
 Open [http://localhost:8080](http://localhost:8080) to view it in your browser.
