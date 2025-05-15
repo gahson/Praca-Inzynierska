@@ -67,6 +67,7 @@ const App = () => {
         marginTop={{ base: "1vh", md: "15vh" }}
         marginBottom={{ base: "1vh", md: "15vh" }}
         justifyContent="center"
+        alignItems="center"
         gap={{ base: "5%", md: "20%" }}
         direction={{ base: "column", md: "row" }}
         align={{ base: "center", md: "flex-start" }}
@@ -207,7 +208,7 @@ const App = () => {
           height={{ base: "auto", md: "512px" }}
           align="center"
           justifyContent="center"
-          border="2px solid gray"
+          bg="gray.200"
           borderRadius="md"
         >
           {loading ? (

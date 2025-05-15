@@ -12,6 +12,8 @@ import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
 import Privacy from "./views/privacy/Privacy";
 import Terms from "./views/terms/Terms";
+import Logout from "./views/account/logout/Logout"
+import Profile from "./views/account/profile/Profile"
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -30,6 +32,8 @@ root.render(
               <Route path="/views/gallery" element={<Gallery />} />
               <Route path="/views/privacy" element={<Privacy />} />
               <Route path="/views/terms" element={<Terms />} />
+              <Route path="/views/account/logout" element={<Logout />} />
+              <Route path="/views/account/profile" element={<Profile />} />
             </Routes>
           <Footer />
         </Flex>

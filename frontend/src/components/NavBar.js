@@ -42,24 +42,25 @@ export default function Navbar() {
       zIndex="10"
     >
       <Flex
-        align="center"
+        direction={{ base: "column", md: "row" }}
+        align={{ base: "stretch", md: "center" }}
         justify="space-between"
-        wrap="nowrap"
+        wrap="wrap"
+        gap={4}
       >
-        {/* Left - Logo */}
-        <Box flexShrink={0} mr={{ base: 2, md: "2vh" }}>
+        {/* Logo */}
+        <Box flexShrink={0}>
           <Heading size={{ base: "md", md: "lg" }} cursor="default">
             AInterior
           </Heading>
         </Box>
 
-        {/* Middle - Links (can wrap) */}
+        {/* Links */}
         <Flex
           wrap="wrap"
+          justify={{ base: "center", md: "center" }}
           gap={4}
-          flex="1"
-          mx={4}
-          minW={0}
+          flexGrow={1}
         >
           {navLinks.map(({ href, label, icon: Icon }) => (
             <Flex key={href} align="center" gap={2}>
@@ -76,14 +77,23 @@ export default function Navbar() {
           ))}
         </Flex>
 
-        {/* Right - User + Logout */}
-        <Flex align="center" gap={5} flexShrink={0}>
-          <Box cursor="pointer">
-            <FaUser size={27} />
-          </Box>
-          <Button colorScheme="yellow" color="black">
-            Logout
-          </Button>
+        {/* User + Logout */}
+        <Flex
+          align="center"
+          gap={4}
+          justify={{ base: "center", md: "flex-end" }}
+          flexShrink={0}
+        >
+          <Link href="/views/account/profile">
+            <Box cursor="pointer">
+              <FaUser size={27} />
+            </Box>
+          </Link>
+          <Link href="/views/account/logout">
+            <Button colorScheme="yellow" color="black">
+              Logout
+            </Button>
+          </Link>
         </Flex>
       </Flex>
     </Box>
