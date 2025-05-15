@@ -1,9 +1,5 @@
-"use client";
-
 import {
-  ChakraProvider,
-  Heading,
-  Container,
+  Flex,
   Text,
   Input,
   Button,
@@ -29,7 +25,7 @@ const App = () => {
   const [loading, updateLoading] = useState(false);
   const [width, setWidth] = useState(1024);
   const [height, setHeight] = useState(1024);
-  const [guidance, setGuidance] = useState(15.0);
+  const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
 
   const [models, setModels] = useState([]);
@@ -66,23 +62,16 @@ const App = () => {
   };
 
   return (
-    <ChakraProvider>
-      <Container>
-        <Heading>AInterior</Heading>
-        <Text marginBottom="10px">
-          Stable Difussion application designed for interior architects
-        </Text>
-      </Container>
-      <Box width="100%" height="100%" marginTop="100px">
-        <Box display="flex" justifyContent="center" gap="20%">
-
+      <Box bg="gray.100
+      " minHeight="100vh">
+        <Flex marginTop="15vh" justifyContent="center" gap="20%">
 
           {/* Left Box with Input, Sliders and Button */}
           <Box width="35%" display="flex" flexDirection="column" justifyContent="center">
 
             <Select
               marginBottom="10px"
-              placeholder="-- wybierz model --"
+              placeholder="-- Chose model --"
               value={selectedModel}
               onChange={(e) => setSelectedModels(e.target.value)}
             >
@@ -191,9 +180,9 @@ const App = () => {
           </Box>
 
           {/* Right Box for displaying the image */}
-          <Box width="512px" height="512px" backgroundColor="gray.200" display="flex" alignItems="center" justifyContent="center">
+          <Flex width="512px" height="512px" align="center" justifyContent="center">
             {loading ? (
-              <Stack width="100%" height="100%">
+              <Stack width="50%" height="50%">
                 <SkeletonCircle />
                 <SkeletonText />
               </Stack>
@@ -205,10 +194,9 @@ const App = () => {
                 borderRadius="md"
               />
             ) : null}
-          </Box>
-        </Box>
+          </Flex>
+        </Flex>
       </Box>
-    </ChakraProvider>
   );
 };
 
