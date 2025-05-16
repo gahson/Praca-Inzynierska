@@ -42,7 +42,7 @@ const App = () => {
   const generate = async () => {
     updateLoading(true);
     axios
-      .post("http://localhost:8080/model/generate", {
+      .post("http://localhost:8080/model/generate/text-to-image", {
         model: selectedModel,
         prompt: prompt,
         negative_prompt: negativePrompt,
