@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-const App = () => {
+const ImageToImage = () => {
   const [image, updateImage] = useState();
   const [loadedImage, setLoadedImage] = useState(null);
   const [loadedImageFilename, setLoadedImageFilename] = useState("");
@@ -231,4 +231,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default ImageToImage;

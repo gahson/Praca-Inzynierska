@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Flex, Link, Button, Heading } from "@chakra-ui/react";
+import { useSelector } from "react-redux";
+import { Link as RouterLink } from "react-router-dom";
 
 import {
   FaUser,
@@ -9,11 +11,10 @@ import {
   FaMagic,
   FaClipboardList,
   FaPhotoVideo
-} from 'react-icons/fa';
-
+} from "react-icons/fa";
 
 const navLinks = [
-  { href: "/views/Dashboard", label: "Dashboard", icon: FaTachometerAlt },
+  { href: "/views/dashboard", label: "Dashboard", icon: FaTachometerAlt },
   { href: "/views/generation/text-to-image", label: "Text to Image", icon: FaFileImage },
   { href: "/views/generation/image-to-image", label: "Image to Image", icon: FaImages },
   { href: "/views/generation/inpainting", label: "Inpainting", icon: FaMagic },
@@ -23,6 +24,7 @@ const navLinks = [
 
 export default function Navbar() {
   const [hasMounted, setHasMounted] = useState(false);
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
   useEffect(() => {
     setHasMounted(true);
@@ -66,7 +68,8 @@ export default function Navbar() {
             <Flex key={href} align="center" gap={2}>
               <Icon size={20} />
               <Link
-                href={href}
+                as={RouterLink}
+                to={href}
                 px={3}
                 py={2}
                 _hover={{ color: "yellow.300", textDecoration: "none" }}
@@ -77,26 +80,35 @@ export default function Navbar() {
           ))}
         </Flex>
 
-        {/* User + Logout */}
+        {/* Auth Controls */}
         <Flex
           align="center"
           gap={4}
           justify={{ base: "center", md: "flex-end" }}
           flexShrink={0}
         >
-          <Link href="/views/account/profile">
-            <Box cursor="pointer">
-              <FaUser size={27} />
-            </Box>
-          </Link>
-          <Link href="/views/account/logout">
+          {isAuthenticated && (
+            <Link as={RouterLink} to="/views/account/profile">
+              <Box cursor="pointer">
+                <FaUser size={27} />
+              </Box>
+            </Link>
+          )}
+
+          <Link
+            as={RouterLink}
+            to={
+              isAuthenticated
+                ? "/views/account/logout"
+                : "/views/account/login"
+            }
+          >
             <Button colorScheme="yellow" color="black">
-              Logout
+              {isAuthenticated ? "Logout" : "Login"}
             </Button>
           </Link>
         </Flex>
       </Flex>
     </Box>
   );
-};
-
+}

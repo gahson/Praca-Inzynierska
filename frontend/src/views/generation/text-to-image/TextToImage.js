@@ -18,7 +18,7 @@ import {
 import axios from "axios";
 import { useState, useEffect } from "react";
 
-const App = () => {
+const TextToImage = () => {
   const [image, updateImage] = useState();
   const [prompt, updatePrompt] = useState("");
   const [negativePrompt, updateNegativePrompt] = useState("");
@@ -235,4 +235,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default TextToImage;
