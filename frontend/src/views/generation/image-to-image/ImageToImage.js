@@ -16,7 +16,9 @@ import {
   SkeletonText,
 } from "@chakra-ui/react";
 import axios from "axios";
+import { FaTimes } from "react-icons/fa";
 import { useState, useEffect } from "react";
+
 
 const ImageToImage = () => {
   const [image, updateImage] = useState();
@@ -40,14 +42,19 @@ const ImageToImage = () => {
   }, []
   );
 
-  const loadImage = (e) => {
+  const loadImage = (e, filenameSetter, imgSetter) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    setLoadedImageFilename(file.name);
+    filenameSetter(file.name);
     const reader = new FileReader();
-    reader.onloadend = () => setLoadedImage(reader.result);
+    reader.onloadend = () => imgSetter(reader.result);
     reader.readAsDataURL(file);
+  };
+
+  const unloadImage = (e, filenameSetter, imgSetter) => {
+    filenameSetter(null);
+    imgSetter("");
   };
 
   const generate = async () => {
@@ -92,31 +99,6 @@ const ImageToImage = () => {
           mb={{ base: 10, md: 0 }}
         >
 
-          <Wrap marginBottom="10px" width="100%">
-            <Flex
-              width={{ base: "100%", md: "100%" }}
-              height={{ base: "auto", md: "100%" }}
-              align="center"
-              justifyContent="space-between"
-            >
-              <Input
-                type="file"
-                accept="image/*"
-                display="none"
-                id="upload-image"
-                onChange={loadImage}
-              />
-              <Button as="label" htmlFor="upload-image" cursor="pointer" colorScheme="yellow" width="50%">
-                Load Image
-              </Button>
-
-              {loadedImage && (
-                <Text>{loadedImageFilename}</Text>
-              )}
-            </Flex>
-
-          </Wrap>
-
           {/* Model selection */}
           <Wrap marginBottom="10px" width="100%">
             <Select
@@ -131,6 +113,43 @@ const ImageToImage = () => {
                 </option>
               ))}
             </Select>
+          </Wrap>
+
+          <Wrap marginBottom="10px" width="100%">
+            <Flex
+              width={{ base: "100%", md: "100%" }}
+              height={{ base: "auto", md: "100%" }}
+              align="center"
+              justifyContent="space-between"
+            >
+              <Input
+                type="file"
+                accept="image/*"
+                display="none"
+                id="upload-image"
+                onChange={(e) => loadImage(e, setLoadedImageFilename, setLoadedImage)}
+              />
+              <Button as="label" htmlFor="upload-image" cursor="pointer" colorScheme="yellow" width="50%">
+                Load Image
+              </Button>
+
+              {loadedImage ? (
+                <Flex align="center" justify="flex-end" width="100%" maxW="300px">
+                  <Text>{loadedImageFilename}</Text>
+                  <Button
+                    colorScheme="red"
+                    variant="ghost"
+                    aria-label="Delete"
+                    onClick={(e) => unloadImage(e, setLoadedImageFilename, setLoadedImage)}>
+                    <FaTimes size={20} />
+                  </Button>
+                </Flex>
+              ) : (
+                <Text color="gray.500">No image loaded</Text>
+              )}
+
+            </Flex>
+
           </Wrap>
 
           {/* Prompt selection */}
