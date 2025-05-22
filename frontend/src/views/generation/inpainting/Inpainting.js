@@ -1,6 +1,6 @@
 import { ChakraProvider, Center, Heading } from "@chakra-ui/react";
 
-export default function App() {
+export default function Inpainting() {
   return (
     <ChakraProvider>
       <Center height="100vh" bg="gray.100">
