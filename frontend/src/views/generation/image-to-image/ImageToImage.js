@@ -33,7 +33,7 @@ const ImageToImage = () => {
   const [selectedModel, setSelectedModels] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8080/model/list")
+    fetch("http://localhost:8000/model/list")
       .then((r) => r.json())
       .then(setModels)
       .catch(console.error);
@@ -53,7 +53,7 @@ const ImageToImage = () => {
   const generate = async () => {
     updateLoading(true);
     axios
-      .post("http://localhost:8080/model/generate/image-to-image", {
+      .post("http://localhost:8000/model/generate/image-to-image", {
         model: selectedModel,
         image: loadedImage.split(',')[1],
         prompt: prompt,

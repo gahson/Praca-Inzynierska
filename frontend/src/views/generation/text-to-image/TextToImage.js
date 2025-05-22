@@ -32,7 +32,7 @@ const TextToImage = () => {
   const [selectedModel, setSelectedModels] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:8080/model/list")
+    fetch("http://localhost:8000/model/list")
       .then((r) => r.json())
       .then(setModels)
       .catch(console.error);
@@ -42,7 +42,7 @@ const TextToImage = () => {
   const generate = async () => {
     updateLoading(true);
     axios
-      .post("http://localhost:8080/model/generate/text-to-image", {
+      .post("http://localhost:8000/model/generate/text-to-image", {
         model: selectedModel,
         prompt: prompt,
         negative_prompt: negativePrompt,

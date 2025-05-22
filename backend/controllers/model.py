@@ -13,6 +13,7 @@ models = [
     'stable-diffusion-v1-5/stable-diffusion-v1-5',
     'stabilityai/stable-diffusion-2-1',
     'stabilityai/stable-diffusion-3-medium-diffusers',
+    "stabilityai/stable-diffusion-xl-base-1.0"
 ]
 
 HF_TOKEN = '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' # To be deleted
