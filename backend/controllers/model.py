@@ -1,4 +1,13 @@
-from diffusers import AutoPipelineForText2Image, AutoPipelineForImage2Image, DPMSolverMultistepScheduler, DDIMScheduler, DiffusionPipeline
+
+from diffusers import (
+    StableDiffusionPipeline,
+    StableDiffusionImg2ImgPipeline,
+    AutoPipelineForImage2Image,
+    AutoPipelineForInpainting,
+    DDIMScheduler,
+    DPMSolverMultistepScheduler ,
+    UniPCMultistepScheduler ,
+)
 from huggingface_hub import hf_hub_download, login
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
@@ -8,6 +17,12 @@ from io import BytesIO
 import base64
 from PIL import Image
 
+HF_TOKEN = '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' # To be deleted
+DEFAULT_MODEL = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
+DEFAULT_TEXT2IMAGE_SCHEDULER = UniPCMultistepScheduler
+DEFAULT_IMG2IMG_SCHEDULER = DPMSolverMultistepScheduler 
+
+
 models = [
     'CompVis/stable-diffusion-v1-4',
     'stable-diffusion-v1-5/stable-diffusion-v1-5',
@@ -16,10 +31,36 @@ models = [
     "stabilityai/stable-diffusion-xl-base-1.0"
 ]
 
-HF_TOKEN = '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' # To be deleted
+
+def prepare_text_to_image_pipe():
+    pipe = StableDiffusionPipeline.from_pretrained(
+        DEFAULT_MODEL,
+        use_safetensors=True,
+        safety_checker=None,
+        torch_dtype=torch.float16,
+    ).to(device)
+    pipe.scheduler = DEFAULT_TEXT2IMAGE_SCHEDULER.from_config(pipe.scheduler.config)
+    
+    return pipe
+
+
+def prepare_img_to_img_pipe():
+    pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+        DEFAULT_MODEL,
+        use_safetensors=True,
+        safety_checker=None,
+        torch_dtype=torch.float16,
+    ).to(device)
+    pipe.scheduler = DEFAULT_IMG2IMG_SCHEDULER.from_config(pipe.scheduler.config, algorithm_type="sde-dpmsolver++")
+    
+    return pipe
+
+
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 models_router = APIRouter()
 login(HF_TOKEN)
+txt2img = prepare_text_to_image_pipe()
+img2img = prepare_img_to_img_pipe()
 
 
 class TextToImageRequest(BaseModel):
@@ -31,6 +72,7 @@ class TextToImageRequest(BaseModel):
     height : int
     seed : int
     
+    
 class Img2Img(BaseModel):
     model: str
     prompt: str
@@ -38,6 +80,17 @@ class Img2Img(BaseModel):
     guidance_scale : float
     seed : int
     image : str
+    
+    
+class Inpainting(BaseModel):
+    model: str
+    prompt: str
+    negative_prompt : str
+    guidance_scale : float
+    seed : int
+    image : str
+    mask_image : str
+
 
 def image_to_string(image):
     buffer = BytesIO()
@@ -55,30 +108,63 @@ def get_models():
     return models
 
 
+'''
+Documentation:
+    - https://huggingface.co/docs/diffusers/v0.13.0/en/api/pipelines/stable_diffusion/text2img
+    - https://huggingface.co/docs/diffusers/v0.13.0/en/api/pipelines/stable_diffusion/img2img
+'''
 @models_router.post('/generate/text-to-image')
 def text_to_image(textToImageRequest : TextToImageRequest):
-    
-    pipe = AutoPipelineForText2Image.from_pretrained(
-        textToImageRequest.model,
-        use_safetensors=True,
-        safety_checker=None,
-        torch_dtype=torch.float16,
-    ).to(device)
-    
-    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
 
-    image = pipe(
+    # generating initial image
+    image = txt2img(
         prompt=textToImageRequest.prompt,
+        height=512,
+        width=512,
+        num_inference_steps=30,
+        guidance_scale=textToImageRequest.guidance_scale,
         negative_prompt=textToImageRequest.negative_prompt,
-        guidance_scale=textToImageRequest.guidance_scale, 
+        num_images_per_prompt=1,
+        #eta
         generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
-        width=textToImageRequest.width, 
-        height=textToImageRequest.height,
+        #latents
+        #prompt_embeds
+        #negative_prompt_embeds
+        #output_type
+        #return_dict
+        callback=text_to_image_callback,
+        callback_steps=1,
+        #cross_attention_kwargs
     ).images[0]
         
-    return JSONResponse(content={"image": image_to_string(image)})
+    # refining generated image
+    image = img2img(
+        prompt=textToImageRequest.prompt+',high quality',
+        image=image,
+        strength=0.6,
+        num_inference_steps=50,
+        guidance_scale=10,
+        negative_prompt=textToImageRequest.negative_prompt,
+        num_images_per_prompt=1,
+        #eta
+        #generator
+        #prompt_embeds
+        #negative_prompt_embeds
+        #output_type
+        #return_dict
+        callback=text_to_image_callback,
+        callback_steps=1,
+    ).images[0]
+        
+    # Upscaling
+    image = image.resize((textToImageRequest.width, textToImageRequest.height), Image.BILINEAR)
 
+    return JSONResponse(content={"image": image_to_string(image)})
    
+def text_to_image_callback(step, timepstamp, latents):
+    #print(step, timepstamp)
+    ...
+
 
 @models_router.post('/generate/image-to-image')
 def edit_image(img2img: Img2Img):
@@ -89,7 +175,7 @@ def edit_image(img2img: Img2Img):
         torch_dtype=torch.float16,
     ).to(device)
     
-    pipe.scheduler = DPMSolverMultistepScheduler.from_config(pipe.scheduler.config)
+    pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
 
     image = pipe(
         prompt=img2img.prompt,
@@ -97,6 +183,29 @@ def edit_image(img2img: Img2Img):
         image=string_to_image(img2img.image),
         guidance_scale=img2img.guidance_scale, 
         generator=torch.Generator(device=device).manual_seed(img2img.seed),
+    ).images[0]
+
+    return JSONResponse(content={"image": image_to_string(image)})
+
+
+@models_router.post('/generate/inpainting')
+def image_inpainting(inpainting: Inpainting):
+    pipe = AutoPipelineForInpainting.from_pretrained(
+        inpainting.model,
+        use_safetensors=True,
+        safety_checker=None,
+        torch_dtype=torch.float16,
+    ).to(device)
+    
+    pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
+    
+    image = pipe(
+        prompt=inpainting.prompt,
+        negative_prompt=inpainting.negative_prompt,
+        image=string_to_image(inpainting.image),
+        init_image=string_to_image(inpainting.mask_image),
+        guidance_scale=inpainting.guidance_scale, 
+        generator=torch.Generator(device=device).manual_seed(inpainting.seed),
     ).images[0]
 
     return JSONResponse(content={"image": image_to_string(image)})
