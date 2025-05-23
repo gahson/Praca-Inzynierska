@@ -17,6 +17,7 @@ import {
 } from "@chakra-ui/react";
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const TextToImage = () => {
   const [image, updateImage] = useState();
@@ -31,6 +32,9 @@ const TextToImage = () => {
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModels] = useState("");
 
+  const [searchParams] = useSearchParams();
+  const urlPrompt = searchParams.get("prompt");
+
   useEffect(() => {
     fetch("http://localhost:8000/model/list")
       .then((r) => r.json())
@@ -38,6 +42,12 @@ const TextToImage = () => {
       .catch(console.error);
   }, []
   );
+
+  useEffect(() => {
+    if (urlPrompt) {
+      updatePrompt(urlPrompt);
+    }
+  }, [urlPrompt]);
 
   const generate = async () => {
     updateLoading(true);
