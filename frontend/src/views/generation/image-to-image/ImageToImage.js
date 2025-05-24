@@ -31,17 +31,6 @@ const ImageToImage = () => {
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
 
-  const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModels] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/model/list")
-      .then((r) => r.json())
-      .then(setModels)
-      .catch(console.error);
-  }, []
-  );
-
   const loadImage = (e, filenameSetter, imgSetter) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -57,11 +46,20 @@ const ImageToImage = () => {
     imgSetter("");
   };
 
+  const handleDownload = () => {
+    if (!image) return;
+    const link = document.createElement("a");
+    link.href = `data:image/png;base64,${image}`;
+    link.download = "generated_image.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const generate = async () => {
     updateLoading(true);
     axios
       .post("http://localhost:8000/model/generate/image-to-image", {
-        model: selectedModel,
         image: loadedImage.split(',')[1],
         prompt: prompt,
         negative_prompt: negativePrompt,
@@ -98,22 +96,6 @@ const ImageToImage = () => {
           justifyContent="center"
           mb={{ base: 10, md: 0 }}
         >
-
-          {/* Model selection */}
-          <Wrap marginBottom="10px" width="100%">
-            <Select
-              marginBottom="10px"
-              placeholder="-- Choose model --"
-              value={selectedModel}
-              onChange={(e) => setSelectedModels(e.target.value)}
-            >
-              {models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </Select>
-          </Wrap>
 
           <Wrap marginBottom="10px" width="100%">
             <Flex
@@ -223,8 +205,9 @@ const ImageToImage = () => {
           height={{ base: "auto", md: "512px" }}
           align="center"
           justifyContent="center"
-          bg="gray.200"
           borderRadius="md"
+          bg={!image ? "gray.200" : "transparent"}
+          flexDirection="column"
         >
           {loading ? (
             <Stack width="100%" height="100%">
@@ -232,15 +215,22 @@ const ImageToImage = () => {
               <SkeletonText />
             </Stack>
           ) : image ? (
-            <Image
-              src={`data:image/png;base64,${image}`}
-              alt="Generated Image"
-              boxShadow="lg"
-              borderRadius="md"
-              width="100%"
-              height="100%"
-              objectFit="contain"
-            />
+            <>
+              <Image
+                src={`data:image/png;base64,${image}`}
+                alt="Generated Image"
+                boxShadow="lg"
+                borderRadius="md"
+                width="100%"
+                height="100%"
+                objectFit="contain"
+              />
+              <Flex mt={3} justifyContent="space-between" width="100%" gap={3}>
+                <Button size="sm" colorScheme="blue" flex="1" onClick={handleDownload}>
+                  Save Image
+                </Button>
+              </Flex>
+            </>
           ) : null}
         </Flex>
 

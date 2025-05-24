@@ -2,13 +2,14 @@
 from diffusers import (
     StableDiffusionPipeline,
     StableDiffusionImg2ImgPipeline,
+    StableDiffusionInpaintPipeline,
     AutoPipelineForImage2Image,
     AutoPipelineForInpainting,
     DDIMScheduler,
     DPMSolverMultistepScheduler ,
     UniPCMultistepScheduler ,
 )
-from huggingface_hub import hf_hub_download, login
+from huggingface_hub import login
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
@@ -21,16 +22,10 @@ HF_TOKEN = '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' # To be deleted
 DEFAULT_MODEL = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
 DEFAULT_TEXT2IMAGE_SCHEDULER = UniPCMultistepScheduler
 DEFAULT_IMG2IMG_SCHEDULER = DPMSolverMultistepScheduler 
-
-
-models = [
-    'CompVis/stable-diffusion-v1-4',
-    'stable-diffusion-v1-5/stable-diffusion-v1-5',
-    'stabilityai/stable-diffusion-2-1',
-    'stabilityai/stable-diffusion-3-medium-diffusers',
-    "stabilityai/stable-diffusion-xl-base-1.0"
-]
-
+DEFAULT_INPAINTING_SCHEDULER = DPMSolverMultistepScheduler
+RESIZING_ALGORITHM = Image.BICUBIC
+REFINER_POSITIVE_PROMPT = 'masterpiece, best quality, ultra detailed, 8k, photorealistic, sharp focus, intricate details, award winning, cinematic lighting, professional photo, realistic shadows, high dynamic range'
+REFINER_NEGATIVE_PROMPT = 'low quality, blurry, pixelated, deformed, bad anatomy, oversaturated, underexposed, artifacts, watermark, jpeg artifacts, text, cartoon, out of focus, noisy, grainy, overcompressed'
 
 def prepare_text_to_image_pipe():
     pipe = StableDiffusionPipeline.from_pretrained(
@@ -51,20 +46,31 @@ def prepare_img_to_img_pipe():
         safety_checker=None,
         torch_dtype=torch.float16,
     ).to(device)
-    pipe.scheduler = DEFAULT_IMG2IMG_SCHEDULER.from_config(pipe.scheduler.config, algorithm_type="sde-dpmsolver++")
+    pipe.scheduler = DEFAULT_INPAINTING_SCHEDULER.from_config(pipe.scheduler.config, algorithm_type="sde-dpmsolver++")
     
     return pipe
 
+
+def prepare_inpainting_pipe():
+    pipe = StableDiffusionInpaintPipeline.from_pretrained(
+        DEFAULT_MODEL,
+        use_safetensors=True,
+        safety_checker=None,
+        torch_dtype=torch.float16,
+    ).to(device)
+    pipe.scheduler = DEFAULT_IMG2IMG_SCHEDULER.from_config(pipe.scheduler.config, algorithm_type="sde-dpmsolver++")
+    
+    return pipe
 
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 models_router = APIRouter()
 login(HF_TOKEN)
 txt2img = prepare_text_to_image_pipe()
 img2img = prepare_img_to_img_pipe()
+inpainting = prepare_inpainting_pipe()
 
 
 class TextToImageRequest(BaseModel):
-    model: str
     prompt: str
     negative_prompt : str
     guidance_scale : float
@@ -73,8 +79,7 @@ class TextToImageRequest(BaseModel):
     seed : int
     
     
-class Img2Img(BaseModel):
-    model: str
+class Img2ImgRequest(BaseModel):
     prompt: str
     negative_prompt : str
     guidance_scale : float
@@ -83,7 +88,6 @@ class Img2Img(BaseModel):
     
     
 class Inpainting(BaseModel):
-    model: str
     prompt: str
     negative_prompt : str
     guidance_scale : float
@@ -101,11 +105,6 @@ def image_to_string(image):
 def string_to_image(base64_str):
     image_data = base64.b64decode(base64_str)
     return Image.open(BytesIO(image_data))
-
-
-@models_router.get('/list')
-def get_models():
-    return models
 
 
 '''
@@ -139,15 +138,15 @@ def text_to_image(textToImageRequest : TextToImageRequest):
         
     # refining generated image
     image = img2img(
-        prompt=textToImageRequest.prompt+',high quality',
+        prompt=textToImageRequest.prompt + REFINER_POSITIVE_PROMPT,
         image=image,
-        strength=0.6,
-        num_inference_steps=50,
+        strength=1.0,
+        num_inference_steps=30,
         guidance_scale=10,
-        negative_prompt=textToImageRequest.negative_prompt,
+        negative_prompt=textToImageRequest.negative_prompt + REFINER_NEGATIVE_PROMPT,
         num_images_per_prompt=1,
         #eta
-        #generator
+        generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
         #prompt_embeds
         #negative_prompt_embeds
         #output_type
@@ -157,55 +156,95 @@ def text_to_image(textToImageRequest : TextToImageRequest):
     ).images[0]
         
     # Upscaling
-    image = image.resize((textToImageRequest.width, textToImageRequest.height), Image.BILINEAR)
+    image = image.resize((textToImageRequest.width, textToImageRequest.height), RESIZING_ALGORITHM)
 
     return JSONResponse(content={"image": image_to_string(image)})
    
+   
 def text_to_image_callback(step, timepstamp, latents):
-    #print(step, timepstamp)
     ...
 
 
-@models_router.post('/generate/image-to-image')
-def edit_image(img2img: Img2Img):
-    pipe = AutoPipelineForImage2Image.from_pretrained(
-        img2img.model,
-        use_safetensors=True,
-        safety_checker=None,
-        torch_dtype=torch.float16,
-    ).to(device)
-    
-    pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
 
-    image = pipe(
-        prompt=img2img.prompt,
-        negative_prompt=img2img.negative_prompt,
-        image=string_to_image(img2img.image),
-        guidance_scale=img2img.guidance_scale, 
-        generator=torch.Generator(device=device).manual_seed(img2img.seed),
+@models_router.post('/generate/image-to-image')
+def edit_image(img2imgRequest: Img2ImgRequest):
+    
+    image = string_to_image(img2imgRequest.image)
+    img_width, img_height = image.size
+    
+    # Resizing to model's native 512x512
+    image = image.resize((512, 512), RESIZING_ALGORITHM)
+    
+    # Generating new image
+    image = img2img(
+        
+        prompt=img2imgRequest.prompt,
+        image=image,
+        strength=1.0,
+        num_inference_steps=30,
+        guidance_scale=img2imgRequest.guidance_scale,
+        negative_prompt=img2imgRequest.negative_prompt,
+        num_images_per_prompt=1,
+        #eta
+        generator=torch.Generator(device=device).manual_seed(img2imgRequest.seed),
+        #prompt_embeds
+        #negative_prompt_embeds
+        #output_type
+        #return_dict
+        callback=text_to_image_callback,
+        callback_steps=1,
     ).images[0]
+    
+    # Resizing back to the original size
+    image = image.resize((img_width, img_height), RESIZING_ALGORITHM)
 
     return JSONResponse(content={"image": image_to_string(image)})
 
 
 @models_router.post('/generate/inpainting')
 def image_inpainting(inpainting: Inpainting):
-    pipe = AutoPipelineForInpainting.from_pretrained(
-        inpainting.model,
-        use_safetensors=True,
-        safety_checker=None,
-        torch_dtype=torch.float16,
-    ).to(device)
     
-    pipe.scheduler = DDIMScheduler.from_config(pipe.scheduler.config)
+    image = string_to_image(inpainting.image)
+    img_width, img_height = image.size
     
-    image = pipe(
+    mask = string_to_image(inpainting.mask_image)
+    
+    # Resizing to model's native 512x512
+    image = image.resize((512, 512), RESIZING_ALGORITHM)
+    mask = mask.resize((512, 512), RESIZING_ALGORITHM)
+    
+    # Generating image
+    image = inpainting(
+        
         prompt=inpainting.prompt,
-        negative_prompt=inpainting.negative_prompt,
-        image=string_to_image(inpainting.image),
-        init_image=string_to_image(inpainting.mask_image),
+        image=string_to_image(image) ,
+        mask_image=string_to_image(mask),
+        height=512,
+        width=512,
+        #padding_mask_crop 
+        strength=1.0,
+        #timesteps
+        #sigmas
         guidance_scale=inpainting.guidance_scale, 
+        negative_prompt=inpainting.negative_prompt,
+        num_images_per_promp=1,
+        #eta
         generator=torch.Generator(device=device).manual_seed(inpainting.seed),
+        #latents
+        #prompt_embeds
+        #negative_prompt_embeds
+        #ip_adapter_image
+        #ip_adapter_image_embeds
+        #output_type
+        #return_dict
+        #cross_attention_kwargs
+        #clip_skip
+        #callback_on_step_end
+        #callback_on_step_end_tensor_inputs 
+
     ).images[0]
+    
+    # Resizing back to the original size
+    image = image.resize((img_width, img_height), RESIZING_ALGORITHM)
 
     return JSONResponse(content={"image": image_to_string(image)})

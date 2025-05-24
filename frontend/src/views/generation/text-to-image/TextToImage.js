@@ -29,19 +29,8 @@ const TextToImage = () => {
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
 
-  const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModels] = useState("");
-
   const [searchParams] = useSearchParams();
   const urlPrompt = searchParams.get("prompt");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/model/list")
-      .then((r) => r.json())
-      .then(setModels)
-      .catch(console.error);
-  }, []
-  );
 
   useEffect(() => {
     if (urlPrompt) {
@@ -53,7 +42,6 @@ const TextToImage = () => {
     updateLoading(true);
     axios
       .post("http://localhost:8000/model/generate/text-to-image", {
-        model: selectedModel,
         prompt: prompt,
         negative_prompt: negativePrompt,
         guidance_scale: guidance,
@@ -71,6 +59,16 @@ const TextToImage = () => {
       });
   };
 
+  const handleDownload = () => {
+    if (!image) return;
+    const link = document.createElement("a");
+    link.href = `data:image/png;base64,${image}`;
+    link.download = "generated_image.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Box bg="gray.100" minHeight="100vh" px={{ base: 4, md: 8 }} py={{ base: 6, md: 12 }}>
       <Flex
@@ -82,6 +80,7 @@ const TextToImage = () => {
         direction={{ base: "column", md: "row" }}
         align={{ base: "center", md: "flex-start" }}
       >
+
         {/* Parameters */}
         <Box
           width={{ base: "100%", md: "35%" }}
@@ -90,22 +89,6 @@ const TextToImage = () => {
           justifyContent="center"
           mb={{ base: 10, md: 0 }}
         >
-
-          {/* Model selection */}
-          <Wrap marginBottom="10px" width="100%">
-            <Select
-              marginBottom="10px"
-              placeholder="-- Choose model --"
-              value={selectedModel}
-              onChange={(e) => setSelectedModels(e.target.value)}
-            >
-              {models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </Select>
-          </Wrap>
 
           {/* Prompt selection */}
           <Wrap marginBottom="10px" width="100%">
@@ -218,8 +201,9 @@ const TextToImage = () => {
           height={{ base: "auto", md: "512px" }}
           align="center"
           justifyContent="center"
-          bg="gray.200"
           borderRadius="md"
+          bg={!image ? "gray.200" : "transparent"}
+          flexDirection="column"
         >
           {loading ? (
             <Stack width="100%" height="100%">
@@ -227,15 +211,22 @@ const TextToImage = () => {
               <SkeletonText />
             </Stack>
           ) : image ? (
-            <Image
-              src={`data:image/png;base64,${image}`}
-              alt="Generated Image"
-              boxShadow="lg"
-              borderRadius="md"
-              width="100%"
-              height="100%"
-              objectFit="contain"
-            />
+            <>
+              <Image
+                src={`data:image/png;base64,${image}`}
+                alt="Generated Image"
+                boxShadow="lg"
+                borderRadius="md"
+                width="100%"
+                height="100%"
+                objectFit="contain"
+              />
+              <Flex mt={3} justifyContent="space-between" width="100%" gap={3}>
+                <Button size="sm" colorScheme="blue" flex="1" onClick={handleDownload}>
+                  Save Image
+                </Button>
+              </Flex>
+            </>
           ) : null}
         </Flex>
 

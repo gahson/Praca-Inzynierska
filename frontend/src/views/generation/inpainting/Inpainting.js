@@ -24,7 +24,7 @@ const Inpainting = () => {
 
   const [loadedImage, setLoadedImage] = useState(null);
   const [loadedImageFilename, setLoadedImageFilename] = useState("");
-  
+
   const [loadedMask, setLoadedMask] = useState(null);
   const [loadedMaskFilename, setLoadedMaskFilename] = useState("");
 
@@ -33,17 +33,6 @@ const Inpainting = () => {
   const [loading, updateLoading] = useState(false);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
-
-  const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModels] = useState("");
-
-  useEffect(() => {
-    fetch("http://localhost:8000/model/list")
-      .then((r) => r.json())
-      .then(setModels)
-      .catch(console.error);
-  }, []
-  );
 
   const loadImage = (e, filenameSetter, imgSetter) => {
     const file = e.target.files[0];
@@ -60,11 +49,20 @@ const Inpainting = () => {
     imgSetter("");
   };
 
+  const handleDownload = () => {
+    if (!image) return;
+    const link = document.createElement("a");
+    link.href = `data:image/png;base64,${image}`;
+    link.download = "generated_image.png";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   const generate = async () => {
     updateLoading(true);
     axios
       .post("http://localhost:8000/model/generate/image-to-image", {
-        model: selectedModel,
         image: loadedImage.split(',')[1],
         prompt: prompt,
         negative_prompt: negativePrompt,
@@ -102,22 +100,6 @@ const Inpainting = () => {
           mb={{ base: 10, md: 0 }}
         >
 
-        {/* Model selection */}
-          <Wrap marginBottom="10px" width="100%">
-            <Select
-              marginBottom="10px"
-              placeholder="-- Choose model --"
-              value={selectedModel}
-              onChange={(e) => setSelectedModels(e.target.value)}
-            >
-              {models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </Select>
-          </Wrap>
-
           <Wrap marginBottom="10px" width="100%">
             <Flex
               width={{ base: "100%", md: "100%" }}
@@ -139,9 +121,9 @@ const Inpainting = () => {
               {loadedImage ? (
                 <Flex align="center" justify="flex-end" width="100%" maxW="300px">
                   <Text>{loadedImageFilename}</Text>
-                  <Button 
-                    colorScheme="red" 
-                    variant="ghost" 
+                  <Button
+                    colorScheme="red"
+                    variant="ghost"
                     aria-label="Delete"
                     onClick={(e) => unloadImage(e, setLoadedImageFilename, setLoadedImage)}>
                     <FaTimes size={20} />
@@ -176,10 +158,10 @@ const Inpainting = () => {
               {loadedMask ? (
                 <Flex align="center" justify="flex-end" width="100%" maxW="300px">
                   <Text>{loadedMaskFilename}</Text>
-                  <Button 
+                  <Button
                     colorScheme="red"
-                    variant="ghost" 
-                    aria-label="Delete" 
+                    variant="ghost"
+                    aria-label="Delete"
                     onClick={(e) => unloadImage(e, setLoadedMaskFilename, setLoadedMask)}>
                     <FaTimes size={20} />
                   </Button>
@@ -262,8 +244,9 @@ const Inpainting = () => {
           height={{ base: "auto", md: "512px" }}
           align="center"
           justifyContent="center"
-          bg="gray.200"
           borderRadius="md"
+          bg={!image ? "gray.200" : "transparent"}
+          flexDirection="column"
         >
           {loading ? (
             <Stack width="100%" height="100%">
@@ -271,15 +254,22 @@ const Inpainting = () => {
               <SkeletonText />
             </Stack>
           ) : image ? (
-            <Image
-              src={`data:image/png;base64,${image}`}
-              alt="Generated Image"
-              boxShadow="lg"
-              borderRadius="md"
-              width="100%"
-              height="100%"
-              objectFit="contain"
-            />
+            <>
+              <Image
+                src={`data:image/png;base64,${image}`}
+                alt="Generated Image"
+                boxShadow="lg"
+                borderRadius="md"
+                width="100%"
+                height="100%"
+                objectFit="contain"
+              />
+              <Flex mt={3} justifyContent="space-between" width="100%" gap={3}>
+                <Button size="sm" colorScheme="blue" flex="1" onClick={handleDownload}>
+                  Save Image
+                </Button>
+              </Flex>
+            </>
           ) : null}
         </Flex>
 
