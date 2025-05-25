@@ -8,17 +8,15 @@ import {
   Select,
   Image,
   Box,
-  Slider,
-  SliderTrack,
-  SliderFilledTrack,
-  SliderThumb,
   SkeletonCircle,
   SkeletonText,
+  useToast,
 } from "@chakra-ui/react";
-import axios from "axios";
 import { FaTimes } from "react-icons/fa";
+import axios from "axios";
 import { useState, useEffect } from "react";
-
+import SliderControl from "../../../components/SliderControl";
+import FileInput from "../../../components/FileInput";
 
 const ImageToImage = () => {
   const [image, updateImage] = useState();
@@ -34,13 +32,36 @@ const ImageToImage = () => {
   const [models, setModels] = useState([]);
   const [selectedModel, setSelectedModels] = useState("");
 
+  const toast = useToast();
+
   useEffect(() => {
     fetch("http://localhost:8000/model/list")
       .then((r) => r.json())
       .then(setModels)
       .catch(console.error);
-  }, []
-  );
+  }, []);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("selectedImage");
+    if (stored) {
+      try {
+        const data = JSON.parse(stored);
+        if (data.image_base64) {
+          setLoadedImage(`data:image/png;base64,${data.image_base64}`);
+          setLoadedImageFilename("from-gallery.png");
+          updatePrompt(data.prompt || "");
+          updateNegativePrompt(data.negative_prompt || "");
+          setGuidance(data.guidance_scale || 7);
+          setSeed(data.seed || 0);
+          setSelectedModels(data.model || "");
+        }
+      } catch (e) {
+        console.error("Invalid stored image data", e);
+      } finally {
+        localStorage.removeItem("selectedImage");
+      }
+    }
+  }, []);
 
   const loadImage = (e, filenameSetter, imgSetter) => {
     const file = e.target.files[0];
@@ -58,51 +79,79 @@ const ImageToImage = () => {
   };
 
   const generate = async () => {
-    updateLoading(true);
-    axios
-      .post("http://localhost:8000/model/generate/image-to-image", {
-        model: selectedModel,
-        image: loadedImage.split(',')[1],
-        prompt: prompt,
-        negative_prompt: negativePrompt,
-        guidance_scale: guidance,
-        seed: seed,
-      })
-      .then((response) => {
-        updateImage(response.data.image);
-        updateLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        updateLoading(false);
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      toast({
+        title: "Not logged in",
+        description: "You must be logged in to generate images.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
       });
+      return;
+    }
+
+    if (!loadedImage) {
+      toast({
+        title: "No image loaded",
+        description: "You must upload an image to transform.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    updateLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/model/generate/image-to-image",
+        {
+          model: selectedModel,
+          image: loadedImage.split(",")[1],
+          prompt,
+          negative_prompt: negativePrompt,
+          guidance_scale: guidance,
+          seed,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      updateImage(response.data.image);
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Generation failed",
+        description: "Could not generate image.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+    } finally {
+      updateLoading(false);
+    }
   };
 
   return (
     <Box bg="gray.100" minHeight="100vh" px={{ base: 4, md: 8 }} py={{ base: 6, md: 12 }}>
       <Flex
-        marginTop={{ base: "1vh", md: "15vh" }}
-        marginBottom={{ base: "1vh", md: "15vh" }}
-        justifyContent="center"
-        alignItems="center"
+        mt={{ base: "1vh", md: "15vh" }}
+        mb={{ base: "1vh", md: "15vh" }}
+        justify="center"
+        align="center"
         gap={{ base: "5%", md: "20%" }}
         direction={{ base: "column", md: "row" }}
         align={{ base: "center", md: "flex-start" }}
       >
-
-        {/* Parameters */}
-        <Box
-          width={{ base: "100%", md: "35%" }}
-          display="flex"
-          flexDirection="column"
-          justifyContent="center"
-          mb={{ base: 10, md: 0 }}
-        >
-
-          {/* Model selection */}
-          <Wrap marginBottom="10px" width="100%">
+        <Box width={{ base: "100%", md: "35%" }} display="flex" flexDirection="column" mb={{ base: 10, md: 0 }}>
+          <Wrap mb="10px" width="100%">
             <Select
-              marginBottom="10px"
               placeholder="-- Choose model --"
               value={selectedModel}
               onChange={(e) => setSelectedModels(e.target.value)}
@@ -115,114 +164,40 @@ const ImageToImage = () => {
             </Select>
           </Wrap>
 
-          <Wrap marginBottom="10px" width="100%">
-            <Flex
-              width={{ base: "100%", md: "100%" }}
-              height={{ base: "auto", md: "100%" }}
-              align="center"
-              justifyContent="space-between"
-            >
-              <Input
-                type="file"
-                accept="image/*"
-                display="none"
-                id="upload-image"
-                onChange={(e) => loadImage(e, setLoadedImageFilename, setLoadedImage)}
-              />
-              <Button as="label" htmlFor="upload-image" cursor="pointer" colorScheme="yellow" width="50%">
-                Load Image
-              </Button>
+          <FileInput
+            id="upload-image"
+            label="Load Image"
+            filename={loadedImageFilename}
+            hasFile={!!loadedImage}
+            onLoad={(e) => loadImage(e, setLoadedImageFilename, setLoadedImage)}
+            onRemove={(e) => unloadImage(e, setLoadedImageFilename, setLoadedImage)}
+          />
 
-              {loadedImage ? (
-                <Flex align="center" justify="flex-end" width="100%" maxW="300px">
-                  <Text>{loadedImageFilename}</Text>
-                  <Button
-                    colorScheme="red"
-                    variant="ghost"
-                    aria-label="Delete"
-                    onClick={(e) => unloadImage(e, setLoadedImageFilename, setLoadedImage)}>
-                    <FaTimes size={20} />
-                  </Button>
-                </Flex>
-              ) : (
-                <Text color="gray.500">No image loaded</Text>
-              )}
-
-            </Flex>
-
+          <Wrap mb="10px" width="100%">
+            <Input value={prompt} onChange={(e) => updatePrompt(e.target.value)} placeholder="Enter prompt" />
           </Wrap>
 
-          {/* Prompt selection */}
-          <Wrap marginBottom="10px" width="100%">
-            <Input
-              value={prompt}
-              onChange={(e) => updatePrompt(e.target.value)}
-              width="100%"
-              placeholder="Enter prompt"
-            />
-          </Wrap>
-
-          {/* Negative prompt selection */}
-          <Wrap marginBottom="10px" width="100%">
+          <Wrap mb="10px" width="100%">
             <Input
               value={negativePrompt}
               onChange={(e) => updateNegativePrompt(e.target.value)}
-              width="100%"
               placeholder="Enter negative prompt (optional)"
             />
           </Wrap>
 
-          {/* Guidance slider */}
-          <Wrap marginBottom="10px" width="100%">
-            <Box marginBottom="10px" width="100%">
-              <Text mb={2}>Guidance scale: {guidance}</Text>
-              <Slider
-                aria-label="Guidance"
-                defaultValue={guidance}
-                min={0.0}
-                max={25.0}
-                step={0.1}
-                onChange={(value) => setGuidance(value)}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </Box>
-          </Wrap>
-
-          {/* Seed slider */}
-          <Wrap marginBottom="10px" width="100%">
-            <Box marginBottom="10px" width="100%">
-              <Text mb={2}>Seed: {seed}</Text>
-              <Slider
-                aria-label="Seed"
-                defaultValue={seed}
-                min={0}
-                max={10000}
-                step={1}
-                onChange={(value) => setSeed(value)}
-              >
-                <SliderTrack>
-                  <SliderFilledTrack />
-                </SliderTrack>
-                <SliderThumb />
-              </Slider>
-            </Box>
-          </Wrap>
+          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={setGuidance} />
+          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={setSeed} />
 
           <Button onClick={generate} colorScheme="yellow" width="100%">
             Generate
           </Button>
         </Box>
 
-        {/* Image */}
         <Flex
           width={{ base: "100%", md: "512px" }}
           height={{ base: "auto", md: "512px" }}
           align="center"
-          justifyContent="center"
+          justify="center"
           bg="gray.200"
           borderRadius="md"
         >
@@ -243,8 +218,6 @@ const ImageToImage = () => {
             />
           ) : null}
         </Flex>
-
-
       </Flex>
     </Box>
   );

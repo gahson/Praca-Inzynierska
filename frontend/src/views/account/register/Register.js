@@ -13,6 +13,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { loginSuccess } from "../../../features/auth/authSlice";
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 const Register = () => {
   const [form, setForm] = useState({
     first_name: "",
@@ -20,6 +22,7 @@ const Register = () => {
     email: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const toast = useToast();
   const dispatch = useDispatch();
@@ -30,25 +33,48 @@ const Register = () => {
   };
 
   const handleRegister = async () => {
+    const { first_name, last_name, email, password } = form;
+
+    if (!first_name || !last_name || !email || !password) {
+      toast({
+        title: "Missing fields",
+        description: "Please fill in all the fields.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setLoading(true);
+
     try {
-      // 1. Register
       await axios.post("http://localhost:8000/auth/register", form);
 
-      // 2. Then login
       const loginRes = await axios.post("http://localhost:8000/auth/login", {
-        email: form.email,
-        password: form.password,
+        email,
+        password,
       });
 
-      dispatch(loginSuccess({
-        user: {
-        first_name: form.first_name,
-        last_name: form.last_name,
-        email: form.email
-        },
-        token: loginRes.data.access_token
-      }));
+      localStorage.setItem("token", loginRes.data.access_token)
 
+      dispatch(
+        loginSuccess({
+          user: { first_name, last_name, email },
+          token: loginRes.data.access_token,
+        })
+      );
 
       toast({
         title: "Account created!",
@@ -59,18 +85,27 @@ const Register = () => {
 
       navigate("/views/dashboard");
     } catch (error) {
+      console.error("Registration error:", error);
+
+      const message =
+        error?.response?.data?.detail === "Email already registered"
+          ? "An account with this email already exists."
+          : error?.response?.data?.detail || "Something went wrong. Try again.";
+
       toast({
         title: "Registration failed",
-        description: error.response?.data?.detail || "Something went wrong",
+        description: message,
         status: "error",
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Flex justify="center" align="center" minHeight="80vh">
+    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50">
       <Box
         bg="white"
         p={8}
@@ -108,7 +143,12 @@ const Register = () => {
             value={form.password}
             onChange={handleChange}
           />
-          <Button colorScheme="yellow" onClick={handleRegister}>
+          <Button
+            colorScheme="yellow"
+            onClick={handleRegister}
+            isLoading={loading}
+            loadingText="Registering"
+          >
             Register
           </Button>
         </Stack>

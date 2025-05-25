@@ -14,14 +14,42 @@ import { loginSuccess } from "../../../features/auth/authSlice";
 import axios from "axios";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 
+const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const toast = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
+    if (!email || !password) {
+      toast({
+        title: "Missing fields",
+        description: "Please enter both email and password.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!isValidEmail(email)) {
+      toast({
+        title: "Invalid email",
+        description: "Please enter a valid email address.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    setLoading(true);
+
     try {
       const res = await axios.post("http://localhost:8000/auth/login", {
         email,
@@ -30,10 +58,14 @@ const Login = () => {
 
       const { access_token, first_name, last_name, email: userEmail } = res.data;
 
-      dispatch(loginSuccess({
-        user: { first_name, last_name, email: userEmail },
-        token: access_token
-      }));
+      localStorage.setItem("token", access_token);
+
+      dispatch(
+        loginSuccess({
+          user: { first_name, last_name, email: userEmail },
+          token: access_token,
+        })
+      );
 
       toast({
         title: "Logged in successfully",
@@ -44,28 +76,37 @@ const Login = () => {
 
       navigate("/views/dashboard");
     } catch (error) {
+      console.error("Login error:", error);
+
+      const message =
+        error?.response?.data?.detail ||
+        "Login failed. Please check your credentials and try again.";
+
       toast({
         title: "Login failed",
-        description: error?.response?.data?.detail || "Check your credentials and try again.",
+        description: message,
         status: "error",
         duration: 4000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <Flex justify="center" align="center" minHeight="80vh">
+    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50">
       <Box
         bg="white"
         p={8}
         borderRadius="md"
         boxShadow="lg"
-        width={{ base: "90%", md: "400px" }}
+        width={{ base: "90%", sm: "400px" }}
       >
         <Heading mb={6} size="lg" textAlign="center">
-          Login
+          Log In
         </Heading>
+
         <Stack spacing={4}>
           <Input
             type="email"
@@ -79,15 +120,19 @@ const Login = () => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button colorScheme="yellow" onClick={handleLogin}>
+          <Button
+            colorScheme="yellow"
+            onClick={handleLogin}
+            isLoading={loading}
+            loadingText="Logging in"
+          >
             Log in
           </Button>
         </Stack>
 
-        {/* Register link */}
         <Text mt={4} fontSize="sm" textAlign="center">
           Don&apos;t have an account?{" "}
-          <RouterLink to="/views/account/register" style={{ color: "#ECC94B" }}>
+          <RouterLink to="/views/account/register" style={{ color: "#D69E2E" }}>
             Register
           </RouterLink>
         </Text>
