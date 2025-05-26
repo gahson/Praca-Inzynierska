@@ -5,7 +5,7 @@ import {
   Image,
   Stack,
   Button,
-  VStack,
+  Wrap,
   useToast,
 } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
@@ -82,7 +82,7 @@ const Gallery = () => {
   return (
     <Box p={10} bg="gray.100" minHeight="100vh">
       <Heading mb={8}>Your Gallery</Heading>
-      <VStack spacing={5} align="center">
+      <Wrap spacing="20px" justify="center">
         {gallery.map((img) => (
           <Box
             key={img.id}
@@ -140,7 +140,7 @@ const Gallery = () => {
             </Stack>
           </Box>
         ))}
-      </VStack>
+      </Wrap>
     </Box>
   );
 };

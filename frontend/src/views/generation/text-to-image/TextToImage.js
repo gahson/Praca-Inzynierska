@@ -5,7 +5,6 @@ import {
   Button,
   Wrap,
   Stack,
-  Select,
   Image,
   Box,
   SkeletonCircle,
@@ -26,21 +25,12 @@ const TextToImage = () => {
   const [height, setHeight] = useState(1024);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
-
-  const [models, setModels] = useState([]);
-  const [selectedModel, setSelectedModels] = useState("");
+  const [model, setModel] = useState("v1.5");
 
   const [searchParams] = useSearchParams();
   const urlPrompt = searchParams.get("prompt");
 
   const toast = useToast();
-
-  useEffect(() => {
-    fetch("http://localhost:8000/model/list")
-      .then((r) => r.json())
-      .then(setModels)
-      .catch(console.error);
-  }, []);
 
   useEffect(() => {
     if (urlPrompt) {
@@ -60,7 +50,6 @@ const TextToImage = () => {
           setSeed(data.seed || 0);
           setWidth(data.width || 512);
           setHeight(data.height || 512);
-          setSelectedModels(data.model || "");
           localStorage.removeItem("selectedImage");
         }
       } catch (e) {
@@ -89,7 +78,7 @@ const TextToImage = () => {
       const response = await axios.post(
         "http://localhost:8000/model/generate/text-to-image",
         {
-          model: selectedModel,
+          model_version: model,
           prompt,
           negative_prompt: negativePrompt,
           guidance_scale: guidance,
@@ -131,19 +120,6 @@ const TextToImage = () => {
         align={{ base: "center", md: "flex-start" }}
       >
         <Box width={{ base: "100%", md: "35%" }} display="flex" flexDirection="column" mb={{ base: 10, md: 0 }}>
-          <Wrap mb="10px" width="100%">
-            <Select
-              placeholder="-- Choose model --"
-              value={selectedModel}
-              onChange={(e) => setSelectedModels(e.target.value)}
-            >
-              {models.map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
-              ))}
-            </Select>
-          </Wrap>
 
           <Wrap mb="10px" width="100%">
             <Input value={prompt} onChange={(e) => updatePrompt(e.target.value)} placeholder="Enter prompt" />
@@ -161,6 +137,47 @@ const TextToImage = () => {
           <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={setHeight} />
           <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={setGuidance} />
           <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={setSeed} />
+
+          <Flex direction="column" align="left" gap={1} pb={4}>
+            <Text>
+              Choose model
+            </Text>
+            <Flex direction="row" gap={4}>
+              <Button
+                onClick={() => setModel("v1.4")}
+                borderRadius="2xl"
+                border="2px solid"
+                borderColor="green.400"
+                bg={model === "v1.4" ? "green.400" : "transparent"}
+                color={model === "v1.4" ? "white" : "green.400"}
+                _hover={{ bg: model === "v1.4" ? "green.500" : "green.100" }}
+              >
+                v1.4
+              </Button>
+              <Button
+                onClick={() => setModel("v1.5")}
+                borderRadius="2xl"
+                border="2px solid"
+                borderColor="blue.400"
+                bg={model === "v1.5" ? "blue.400" : "transparent"}
+                color={model === "v1.5" ? "white" : "blue.400"}
+                _hover={{ bg: model === "v1.5" ? "blue.500" : "blue.100" }}
+              >
+                v1.5
+              </Button>
+              <Button
+                onClick={() => setModel("v2.0")}
+                borderRadius="2xl"
+                border="2px solid"
+                borderColor="purple.400"
+                bg={model === "v2.0" ? "purple.400" : "transparent"}
+                color={model === "v2.0" ? "white" : "purple.400"}
+                _hover={{ bg: model === "v2.0" ? "purple.500" : "purple.100" }}
+              >
+                v2.0
+              </Button>
+            </Flex>
+          </Flex>
 
           <Button onClick={generate} colorScheme="yellow" width="100%">
             Generate
