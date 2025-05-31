@@ -9,6 +9,7 @@ import PrivateRoute from "./components/PrivateRoute";
 
 import Dashboard from "./views/dashboard/Dashboard";
 import TextToImage from "./views/generation/text-to-image/TextToImage";
+import TextToDepth from "./views/generation/text-to-depth/TextToDepth";
 import ImageToImage from "./views/generation/image-to-image/ImageToImage";
 import Inpainting from "./views/generation/inpainting/Inpainting";
 import Prompts from "./views/prompts/Prompts";
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/views/account/register" element={<Register />} />
             <Route path="/views/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/views/generation/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
+            <Route path="/views/generation/text-to-depth" element={<PrivateRoute><TextToDepth /></PrivateRoute>} />
             <Route path="/views/generation/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
             <Route path="/views/generation/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
             <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />

@@ -10,12 +10,14 @@ import {
   FaImages,
   FaMagic,
   FaClipboardList,
-  FaPhotoVideo
+  FaPhotoVideo,
+  FaBolt,
 } from "react-icons/fa";
 
 const navLinks = [
   { href: "/views/dashboard", label: "Dashboard", icon: FaTachometerAlt },
   { href: "/views/generation/text-to-image", label: "Text to Image", icon: FaFileImage },
+  { href: "/views/generation/text-to-depth", label: "Text to Depth", icon: FaBolt },
   { href: "/views/generation/image-to-image", label: "Image to Image", icon: FaImages },
   { href: "/views/generation/inpainting", label: "Inpainting", icon: FaMagic },
   { href: "/views/prompts", label: "Prompts", icon: FaClipboardList },

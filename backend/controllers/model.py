@@ -9,6 +9,7 @@ from backend.utils.saving_images_helpers import image_to_string, string_to_image
 from backend.pipelines.pipeline_v1_4 import Pipeline_v1_4
 from backend.pipelines.pipeline_v1_5 import Pipeline_v1_5
 from backend.pipelines.pipeline_v2_0 import Pipeline_v2_0
+from backend.pipelines.txt2depth import Txt2Depth
 import torch
 from PIL import Image
 
@@ -85,6 +86,52 @@ async def text_to_image(textToImageRequest: TextToImageRequest, current_user: di
     )
 
     return JSONResponse(content={"image": image_base64})
+
+@models_router.post('/generate/text-to-depth')
+async def depth(textToImageRequest: TextToImageRequest, current_user: dict = Depends(get_current_user)):
+    
+    model_data = Txt2Depth().get_model_data()
+    
+    txt2depth, resolution, model = model_data
+    
+    output = txt2depth(
+        prompt=textToImageRequest.prompt,
+        height=resolution[0],
+        width=resolution[1],
+        num_inference_steps=50,
+        guidance_scale=textToImageRequest.guidance_scale,
+        negative_prompt=textToImageRequest.negative_prompt,
+        num_images_per_prompt=1,
+        generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
+        #callback=text_to_image_callback,
+    )
+    
+    rgb_img, depth_img = output.rgb[0], output.depth[0]
+
+    #image = image.resize((textToImageRequest.width, textToImageRequest.height), RESIZING_ALGORITHM)
+    
+    
+    rgb_img_base64 = image_to_string(rgb_img)
+    depth_img_base64 = image_to_string(depth_img)
+
+    '''
+    await save_image_record(
+        user_id=str(current_user["_id"]),
+        image_base64=image_base64,
+        metadata={
+            "model": model,
+            "mode": "text2img",
+            "prompt": textToImageRequest.prompt,
+            "negative_prompt": textToImageRequest.negative_prompt,
+            "guidance_scale": textToImageRequest.guidance_scale,
+            "width": textToImageRequest.width,
+            "height": textToImageRequest.height,
+            "seed": textToImageRequest.seed
+        }
+    )
+    '''
+
+    return JSONResponse(content={"rgb_image": rgb_img_base64, "depth_image": depth_img_base64})
 
 @models_router.post('/generate/image-to-image')
 async def edit_image(img2imgRequest: Img2ImgRequest, current_user: dict = Depends(get_current_user)):
