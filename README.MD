@@ -14,3 +14,11 @@ interior architects to use artificial intelligence models in their work.
 - Frontend: React + ChakraUI
 - Database: PostgreSQL
 - Containerization: Docker
+
+### TODO
+- Panel administratora
+- Wyświetlanie obrazków w img2img, inpainting
+- Rysowanie maski w inpainting
+- Dodanie https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/gligen
+- Dodanie https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/latent_upscale zamiast upscalingu z PIL
+- Customowe workflowy, tylko pytanie jak
