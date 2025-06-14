@@ -4,7 +4,7 @@ export default function Footer() {
     return (
         <Box
             as="footer"
-            bg="blue.600"
+            bg="blue.500"
             color="white"
             py={4}
             px={{ base: 4, md: 8 }}
@@ -20,14 +20,16 @@ export default function Footer() {
                 <Text>© 2025 AInterior</Text>
                 <Link
                     href="/views/privacy"
-                    _hover={{ textDecoration: "underline", color: "yellow.300" }}
+                    color="white"
+                    _hover={{ textDecoration: "none", color: "gray.300" }}
                     whiteSpace="nowrap" // żeby linki się nie łamały w połowie
                 >
                     Privacy Policy
                 </Link>
                 <Link
                     href="/views/terms"
-                    _hover={{ textDecoration: "underline", color: "yellow.300" }}
+                    color="white"
+                    _hover={{ textDecoration: "none", color: "gray.300" }}
                     whiteSpace="nowrap"
                 >
                     Terms of Service

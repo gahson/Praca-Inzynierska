@@ -5,8 +5,8 @@ import {
   Heading,
   Input,
   Stack,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "../../../components/ui/toaster"
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import axios from "axios";
@@ -24,7 +24,6 @@ const Register = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const toast = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -36,7 +35,7 @@ const Register = () => {
     const { first_name, last_name, email, password } = form;
 
     if (!first_name || !last_name || !email || !password) {
-      toast({
+      toaster.create({
         title: "Missing fields",
         description: "Please fill in all the fields.",
         status: "warning",
@@ -47,7 +46,7 @@ const Register = () => {
     }
 
     if (!isValidEmail(email)) {
-      toast({
+      toaster.create({
         title: "Invalid email",
         description: "Please enter a valid email address.",
         status: "error",
@@ -76,7 +75,7 @@ const Register = () => {
         })
       );
 
-      toast({
+      toaster.create({
         title: "Account created!",
         status: "success",
         duration: 3000,
@@ -92,7 +91,7 @@ const Register = () => {
           ? "An account with this email already exists."
           : error?.response?.data?.detail || "Something went wrong. Try again.";
 
-      toast({
+      toaster.create({
         title: "Registration failed",
         description: message,
         status: "error",

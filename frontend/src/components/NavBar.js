@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Box, Flex, Link, Button, Heading } from "@chakra-ui/react";
+import { Box, Flex, Link, Button, Heading, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 
@@ -34,7 +34,7 @@ export default function Navbar() {
 
   return (
     <Box
-      bg="blue.600"
+      bg="blue.500"
       color="white"
       px={{ base: 4, md: 8 }}
       py={{ base: 3, md: 4 }}
@@ -72,9 +72,8 @@ export default function Navbar() {
                 to={href}
                 px={3}
                 py={2}
-                _hover={{ color: "yellow.300", textDecoration: "none" }}
               >
-                {label}
+                {<Text color='white' _hover={{ color: "gray.300", textDecoration: "none" }}>{label}</Text>}
               </Link>
             </Flex>
           ))}
@@ -90,7 +89,7 @@ export default function Navbar() {
           {isAuthenticated && (
             <Link as={RouterLink} to="/views/account/profile">
               <Box cursor="pointer">
-                <FaUser size={27} />
+                <FaUser color="white" size={27} />
               </Box>
             </Link>
           )}
@@ -103,7 +102,7 @@ export default function Navbar() {
                 : "/views/account/login"
             }
           >
-            <Button colorScheme="yellow" color="black">
+            <Button backgroundColor="yellow.400" color="black">
               {isAuthenticated ? "Logout" : "Login"}
             </Button>
           </Link>

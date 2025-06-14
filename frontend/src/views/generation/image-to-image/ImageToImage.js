@@ -9,9 +9,8 @@ import {
   Box,
   SkeletonCircle,
   SkeletonText,
-  useToast,
 } from "@chakra-ui/react";
-import { FaTimes } from "react-icons/fa";
+import { toaster } from "../../../components/ui/toaster"
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SliderControl from "../../../components/SliderControl";
@@ -28,9 +27,6 @@ const ImageToImage = () => {
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
   const [model, setModel] = useState("v1.5");
-
-
-  const toast = useToast();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -72,7 +68,7 @@ const ImageToImage = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast({
+      toaster.create({
         title: "Not logged in",
         description: "You must be logged in to generate images.",
         status: "warning",
@@ -83,7 +79,7 @@ const ImageToImage = () => {
     }
 
     if (!loadedImage) {
-      toast({
+      toaster.create({
         title: "No image loaded",
         description: "You must upload an image to transform.",
         status: "error",
@@ -116,7 +112,7 @@ const ImageToImage = () => {
       updateImage(response.data.image);
     } catch (error) {
       console.error("Error:", error);
-      toast({
+      toaster.create({
         title: "Generation failed",
         description: "Could not generate image.",
         status: "error",
@@ -134,7 +130,6 @@ const ImageToImage = () => {
         mt={{ base: "1vh", md: "15vh" }}
         mb={{ base: "1vh", md: "15vh" }}
         justify="center"
-        align="center"
         gap={{ base: "5%", md: "20%" }}
         direction={{ base: "column", md: "row" }}
         align={{ base: "center", md: "flex-start" }}
@@ -206,7 +201,7 @@ const ImageToImage = () => {
             </Flex>
           </Flex>
 
-          <Button onClick={generate} colorScheme="yellow" width="100%">
+          <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
             Generate
           </Button>
         </Box>

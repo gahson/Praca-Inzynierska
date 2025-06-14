@@ -11,7 +11,7 @@ const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
         id={id}
         onChange={onLoad}
       />
-      <Button as="label" htmlFor={id} cursor="pointer" colorScheme="yellow" width="50%">
+      <Button as="label" htmlFor={id} cursor="pointer" color='black' backgroundColor='yellow.400' width="50%">
         {label}
       </Button>
 
