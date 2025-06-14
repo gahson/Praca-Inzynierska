@@ -9,8 +9,8 @@ import {
   Box,
   SkeletonCircle,
   SkeletonText,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "../../../components/ui/toaster"
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -29,8 +29,6 @@ const TextToImage = () => {
 
   const [searchParams] = useSearchParams();
   const urlPrompt = searchParams.get("prompt");
-
-  const toast = useToast();
 
   useEffect(() => {
     if (urlPrompt) {
@@ -62,7 +60,7 @@ const TextToImage = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast({
+      toaster.create({
         title: "Not logged in",
         description: "You must be logged in to generate images.",
         status: "warning",
@@ -96,7 +94,7 @@ const TextToImage = () => {
       updateImage(response.data.image);
     } catch (error) {
       console.error("Error:", error);
-      toast({
+      toaster.create({
         title: "Generation failed",
         description: error.response?.data?.detail || "Something went wrong.",
         status: "error",
@@ -114,7 +112,6 @@ const TextToImage = () => {
         mt={{ base: "1vh", md: "15vh" }}
         mb={{ base: "1vh", md: "15vh" }}
         justify="center"
-        align="center"
         gap={{ base: "5%", md: "20%" }}
         direction={{ base: "column", md: "row" }}
         align={{ base: "center", md: "flex-start" }}
@@ -179,7 +176,7 @@ const TextToImage = () => {
             </Flex>
           </Flex>
 
-          <Button onClick={generate} colorScheme="yellow" width="100%">
+          <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
             Generate
           </Button>
         </Box>

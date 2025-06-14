@@ -48,7 +48,7 @@ export default function Dashboard() {
             onChange={(e) => setPrompt(e.target.value)}
             value={prompt}
           />
-          <Button colorScheme="blue" minWidth="120px" onClick={handleGenerate}>
+          <Button backgroundColor="blue.500" minWidth="120px" onClick={handleGenerate}>
             Start generating
           </Button>
         </Flex>

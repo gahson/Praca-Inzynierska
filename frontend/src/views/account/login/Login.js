@@ -6,8 +6,8 @@ import {
   Input,
   Stack,
   Text,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "../../../components/ui/toaster"
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { loginSuccess } from "../../../features/auth/authSlice";
@@ -21,13 +21,12 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const toast = useToast();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (!email || !password) {
-      toast({
+      toaster.create({
         title: "Missing fields",
         description: "Please enter both email and password.",
         status: "warning",
@@ -38,7 +37,7 @@ const Login = () => {
     }
 
     if (!isValidEmail(email)) {
-      toast({
+      toaster.create({
         title: "Invalid email",
         description: "Please enter a valid email address.",
         status: "error",
@@ -67,7 +66,7 @@ const Login = () => {
         })
       );
 
-      toast({
+      toaster.create({
         title: "Logged in successfully",
         status: "success",
         duration: 3000,
@@ -82,7 +81,7 @@ const Login = () => {
         error?.response?.data?.detail ||
         "Login failed. Please check your credentials and try again.";
 
-      toast({
+      toaster.create({
         title: "Login failed",
         description: message,
         status: "error",

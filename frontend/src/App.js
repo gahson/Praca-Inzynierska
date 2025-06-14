@@ -1,11 +1,13 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider, Flex } from "@chakra-ui/react";
+import { defaultSystem } from "@chakra-ui/react"
 import { Provider } from "react-redux";
 import { store } from "./store";
 import Navbar from "./components/NavBar";
 import Footer from "./components/Footer";
 import PrivateRoute from "./components/PrivateRoute";
+import { ColorModeProvider } from "./components/ui/color-mode"
 
 import Dashboard from "./views/dashboard/Dashboard";
 import TextToImage from "./views/generation/text-to-image/TextToImage";
@@ -22,7 +24,8 @@ import Register from "./views/account/register/Register";
 
 const App = () => (
   <Provider store={store}>
-    <ChakraProvider>
+    <ChakraProvider value={defaultSystem}>
+      <ColorModeProvider />
       <BrowserRouter>
         <Flex direction="column">
           <Navbar />

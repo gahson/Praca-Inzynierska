@@ -9,8 +9,8 @@ import {
   Box,
   SkeletonCircle,
   SkeletonText,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "../../../components/ui/toaster"
 import { FaTimes } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect } from "react";
@@ -29,8 +29,6 @@ const Inpainting = () => {
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
   const [model, setModel] = useState("v1.5");
-
-  const toast = useToast();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -72,7 +70,7 @@ const Inpainting = () => {
     const token = localStorage.getItem("token");
 
     if (!token) {
-      toast({
+      toaster.create({
         title: "Not logged in",
         description: "You must be logged in to generate images.",
         status: "warning",
@@ -83,7 +81,7 @@ const Inpainting = () => {
     }
 
     if (!loadedImage || !loadedMask) {
-      toast({
+      toaster.create({
         title: "Missing image or mask",
         description: "You must load both an image and a mask.",
         status: "error",
@@ -117,7 +115,7 @@ const Inpainting = () => {
       updateImage(response.data.image);
     } catch (error) {
       console.error("Error:", error);
-      toast({
+      toaster.create({
         title: "Generation failed",
         description: "Could not generate image.",
         status: "error",
@@ -135,7 +133,6 @@ const Inpainting = () => {
         mt={{ base: "1vh", md: "15vh" }}
         mb={{ base: "1vh", md: "15vh" }}
         justify="center"
-        align="center"
         gap={{ base: "5%", md: "20%" }}
         direction={{ base: "column", md: "row" }}
         align={{ base: "center", md: "flex-start" }}
@@ -218,7 +215,7 @@ const Inpainting = () => {
             </Flex>
           </Flex>
 
-          <Button onClick={generate} colorScheme="yellow" width="100%">
+          <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
             Generate
           </Button>
         </Box>
@@ -258,14 +255,14 @@ const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
   <Wrap mb="10px" width="100%">
     <Flex width="100%" align="center" justify="space-between">
       <Input type="file" accept="image/*" display="none" id={id} onChange={onLoad} />
-      <Button as="label" htmlFor={id} cursor="pointer" colorScheme="yellow" width="50%">
+      <Button as="label" htmlFor={id} cursor="pointer" color='black' backgroundColor="yellow.400" width="50%">
         {label}
       </Button>
 
       {hasFile ? (
         <Flex align="center" justify="flex-end" width="100%" maxW="300px">
           <Text>{filename}</Text>
-          <Button colorScheme="red" variant="ghost" aria-label="Delete" onClick={onRemove}>
+          <Button backgroundColor="red.500" variant="ghost" aria-label="Delete" onClick={onRemove}>
             <FaTimes size={20} />
           </Button>
         </Flex>

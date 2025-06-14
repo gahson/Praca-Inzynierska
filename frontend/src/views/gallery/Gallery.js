@@ -6,15 +6,14 @@ import {
   Stack,
   Button,
   Wrap,
-  useToast,
 } from "@chakra-ui/react";
+import { toaster } from "../../components/ui/toaster"
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Gallery = () => {
   const [gallery, setGallery] = useState([]);
-  const toast = useToast();
   const navigate = useNavigate();
 
   const fetchGallery = async () => {
@@ -32,7 +31,7 @@ const Gallery = () => {
         res.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
       );
     } catch {
-      toast({
+      toaster.create({
         title: "Error",
         description: "Unable to load gallery.",
         status: "error",
@@ -55,7 +54,7 @@ const Gallery = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-      toast({
+      toaster.create({
         title: "Deleted",
         description: "Image deleted successfully.",
         status: "success",
@@ -64,7 +63,7 @@ const Gallery = () => {
       });
       setGallery(gallery.filter((img) => img.id !== imageId));
     } catch {
-      toast({
+      toaster.create({
         title: "Error",
         description: "Failed to delete image.",
         status: "error",
