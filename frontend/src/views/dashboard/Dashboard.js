@@ -13,26 +13,8 @@ export default function Dashboard() {
   };
 
   return (
-    <Box
-      bg="gray.100"
-      minHeight="100vh"
-      display="flex"
-      justifyContent="center"
-      alignItems="center"
-      px="4"
-    >
-      <Box
-        height="70vh"
-        width="100%"
-        maxW="800px"
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-        pt="15vh"
-        pb="auto"
-        flexGrow={1}
-        gap="24px"
-      >
+    <Flex height="100%" width='100%' justify="center" align="center" direction='column' gap='10' bg='gray.100'>
+
         <Heading fontSize="6xl" color="gray.700" textAlign="center" m={0}>
           Welcome to AInterior
         </Heading>
@@ -41,7 +23,7 @@ export default function Dashboard() {
           AInterior is a Stable Diffusion based tool for generating stunning interiors effortlessly.
         </Box>
 
-        <Flex align="center" justify="center" gap="4" width="100%">
+        <Flex align="center" justify="center" gap="4" width="60%">
           <Input
             flex="1"
             placeholder="Type your prompt..."
@@ -52,11 +34,7 @@ export default function Dashboard() {
             Start generating
           </Button>
         </Flex>
-      </Box>
-    </Box>
-
-
-
+      </Flex>
 
   );
 }
