@@ -13,6 +13,7 @@ import Dashboard from "./views/dashboard/Dashboard";
 import TextToImage from "./views/generation/text-to-image/TextToImage";
 import ImageToImage from "./views/generation/image-to-image/ImageToImage";
 import Inpainting from "./views/generation/inpainting/Inpainting";
+import BoundingBoxes from "./views/generation/bounding-boxes/BoundingBoxes";
 import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
 import Privacy from "./views/privacy/Privacy";
@@ -21,13 +22,14 @@ import Login from "./views/account/login/Login";
 import Logout from "./views/account/logout/Logout";
 import Profile from "./views/account/profile/Profile";
 import Register from "./views/account/register/Register";
+import Workflows from "./views/workflows/Workflows";
 
 const App = () => (
   <Provider store={store}>
     <ChakraProvider value={defaultSystem}>
       <ColorModeProvider />
       <BrowserRouter>
-        <Flex direction="column">
+        <Flex direction="column" width='100vw' height='100vh'>
           <Navbar />
           <Routes>
             <Route path="/" element={<Navigate to="/views/dashboard" replace />} />
@@ -39,10 +41,12 @@ const App = () => (
             <Route path="/views/generation/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
             <Route path="/views/generation/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
             <Route path="/views/generation/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
+            <Route path="/views/generation/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} />
             <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />
             <Route path="/views/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
             <Route path="/views/account/logout" element={<PrivateRoute><Logout /></PrivateRoute>} />
             <Route path="/views/account/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+            <Route path="/views/workflows" element={<PrivateRoute><Workflows /></PrivateRoute>} />
           </Routes>
           <Footer />
         </Flex>

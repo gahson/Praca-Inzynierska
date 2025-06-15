@@ -79,7 +79,8 @@ const Gallery = () => {
   };
 
   return (
-    <Box p={10} bg="gray.100" minHeight="100vh">
+    
+    <Box p={10} bg="gray.100" minHeight='100vh' height="auto" overflowY="auto">
       <Heading mb={8}>Your Gallery</Heading>
       <Wrap spacing="20px" justify="center">
         {gallery.map((img) => (
@@ -110,28 +111,28 @@ const Gallery = () => {
             <Stack direction="column" spacing={2} mt={3}>
               <Button
                 size="xs"
-                colorScheme="blue"
+                bg="blue.500"
                 onClick={() => handleRedirect(img, "text-to-image")}
               >
                 Use in Text2Image
               </Button>
               <Button
                 size="xs"
-                colorScheme="green"
+                bg="green.500"
                 onClick={() => handleRedirect(img, "image-to-image")}
               >
                 Use in Img2Img
               </Button>
               <Button
                 size="xs"
-                colorScheme="purple"
+                bg="purple.500"
                 onClick={() => handleRedirect(img, "inpainting")}
               >
                 Use in Inpainting
               </Button>
               <Button
                 size="xs"
-                colorScheme="red"
+                bg="red.500"
                 onClick={() => handleDelete(img.id)}
               >
                 Delete

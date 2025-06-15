@@ -104,7 +104,7 @@ const Register = () => {
   };
 
   return (
-    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50">
+    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50" height='100%'>
       <Box
         bg="white"
         p={8}

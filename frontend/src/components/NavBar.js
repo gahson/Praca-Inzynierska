@@ -3,24 +3,19 @@ import { Box, Flex, Link, Button, Heading, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
 
-import {
-  FaUser,
-  FaTachometerAlt,
-  FaFileImage,
-  FaImages,
-  FaMagic,
-  FaClipboardList,
-  FaPhotoVideo
-} from "react-icons/fa";
+import {FaUser} from "react-icons/fa";
+import { FiGrid } from "react-icons/fi";
+import { LuHouse } from "react-icons/lu";
+import { MdOutlineTextSnippet, MdOutlineDashboard, MdOutlineLan } from "react-icons/md";
 
 const navLinks = [
-  { href: "/views/dashboard", label: "Dashboard", icon: FaTachometerAlt },
-  { href: "/views/generation/text-to-image", label: "Text to Image", icon: FaFileImage },
-  { href: "/views/generation/image-to-image", label: "Image to Image", icon: FaImages },
-  { href: "/views/generation/inpainting", label: "Inpainting", icon: FaMagic },
-  { href: "/views/prompts", label: "Prompts", icon: FaClipboardList },
-  { href: "/views/gallery", label: "Gallery", icon: FaPhotoVideo },
+  { href: "/views/dashboard", label: "Dashboard", icon: LuHouse },
+  { href: "/views/workflows", label: "Workflows", icon: MdOutlineLan  },
+  { href: "/views/prompts", label: "Prompts", icon: MdOutlineTextSnippet },
+  { href: "/views/gallery", label: "Gallery", icon: FiGrid },
 ];
+
+
 
 export default function Navbar() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -42,6 +37,7 @@ export default function Navbar() {
       position="sticky"
       top="0"
       zIndex="10"
+      width='100vw'
     >
       <Flex
         direction={{ base: "column", md: "row" }}
@@ -53,7 +49,7 @@ export default function Navbar() {
         {/* Logo */}
         <Box flexShrink={0}>
           <Heading size={{ base: "md", md: "lg" }} cursor="default">
-            AInterior
+            <Text>AInterior</Text>
           </Heading>
         </Box>
 
