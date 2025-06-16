@@ -2,7 +2,7 @@ import { Wrap, Flex, Input, Button, Text } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 
 const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
-  <Wrap mb="10px" width="100%">
+  <Wrap width="100%">
     <Flex width="100%" align="center" justify="space-between">
       <Input
         type="file"

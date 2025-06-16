@@ -14,12 +14,13 @@ import { toaster } from "../../../components/ui/toaster"
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SliderControl from "../../../components/SliderControl";
-import FileInput from "../../../components/FileInput";
+import { FileUpload, Icon, Float, useFileUploadContext } from "@chakra-ui/react"
+import { LuX } from "react-icons/lu"
+import { FiUpload } from 'react-icons/fi'; // Feather icons
 
 const ImageToImage = () => {
   const [image, updateImage] = useState();
   const [loadedImage, setLoadedImage] = useState(null);
-  const [loadedImageFilename, setLoadedImageFilename] = useState("");
 
   const [prompt, updatePrompt] = useState("");
   const [negativePrompt, updateNegativePrompt] = useState("");
@@ -28,6 +29,7 @@ const ImageToImage = () => {
   const [seed, setSeed] = useState(0);
   const [model, setModel] = useState("v1.5");
 
+
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
     if (stored) {
@@ -35,7 +37,6 @@ const ImageToImage = () => {
         const data = JSON.parse(stored);
         if (data.image_base64) {
           setLoadedImage(`data:image/png;base64,${data.image_base64}`);
-          setLoadedImageFilename("from-gallery.png");
           updatePrompt(data.prompt || "");
           updateNegativePrompt(data.negative_prompt || "");
           setGuidance(data.guidance_scale || 7);
@@ -48,21 +49,6 @@ const ImageToImage = () => {
       }
     }
   }, []);
-
-  const loadImage = (e, filenameSetter, imgSetter) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    filenameSetter(file.name);
-    const reader = new FileReader();
-    reader.onloadend = () => imgSetter(reader.result);
-    reader.readAsDataURL(file);
-  };
-
-  const unloadImage = (e, filenameSetter, imgSetter) => {
-    filenameSetter(null);
-    imgSetter("");
-  };
 
   const generate = async () => {
     const token = localStorage.getItem("token");
@@ -124,96 +110,147 @@ const ImageToImage = () => {
     }
   };
 
+
+  const handleFileChange = (fileChangeDetails) => {
+
+    const files = fileChangeDetails.acceptedFiles;
+
+    if (files.length === 0) {
+      setLoadedImage(null);
+
+    } else {
+      const file = files[0];
+      const reader = new FileReader();
+      reader.onloadend = () => setLoadedImage(reader.result);
+      reader.readAsDataURL(file);
+
+    }
+  }
+
   return (
-    <Box bg="gray.100" minHeight="100vh" px={{ base: 4, md: 8 }} py={{ base: 6, md: 12 }}>
-      <Flex
-        mt={{ base: "1vh", md: "15vh" }}
-        mb={{ base: "1vh", md: "15vh" }}
-        justify="center"
-        gap={{ base: "5%", md: "20%" }}
-        direction={{ base: "column", md: "row" }}
-        align={{ base: "center", md: "flex-start" }}
-      >
-        <Box width={{ base: "100%", md: "35%" }} display="flex" flexDirection="column" mb={{ base: 10, md: 0 }}>
 
-          <FileInput
-            id="upload-image"
-            label="Load Image"
-            filename={loadedImageFilename}
-            hasFile={!!loadedImage}
-            onLoad={(e) => loadImage(e, setLoadedImageFilename, setLoadedImage)}
-            onRemove={(e) => unloadImage(e, setLoadedImageFilename, setLoadedImage)}
+    <Flex
+      width='100%'
+      height='100%'
+      direction="row"
+      wrap="wrap"
+      bg="gray.100"
+      justify="center"
+      align='center'
+    >
+
+      <Flex w={{ base: "80%", md: "40%" }} direction='column' justify='center' align='center' gap='1'>
+
+        <FileUpload.Root width='100%' alignItems="stretch" maxFiles={1} onFileChange={handleFileChange}>
+          <FileUpload.HiddenInput />
+          <FileUpload.Dropzone width='100%' height="256px" bg='gray.100'>
+            <FileUpload.DropzoneContent width='100%' height='100%'>
+              <Flex width='100%' height='100%' align='center' justify='center' direction='column'>
+
+                {loadedImage === null ? (
+                  <>
+                    <FiUpload size='23'></FiUpload>
+                    <Box>Drag and drop files here</Box>
+                    <Box color="fg.muted">.png, .jpg up to 5MB</Box>
+                  </>
+                ) : (
+
+                  <Box position="relative" width="100%" height="100%">
+                    <Image
+                      src={loadedImage}
+                      alt="Preview"
+                      width="100%"
+                      height="100%"
+                      objectFit="contain"
+                      borderRadius="md"
+                    />
+                    <Float placement='top-end'>
+                      <Button
+                        position="absolute"
+                        bg="gray.700"
+                        color="white"
+                        borderRadius="full"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          e.preventDefault();
+                          setLoadedImage(null);
+                        }}
+                      >
+                        <LuX />
+                      </Button>
+                    </Float>
+                  </Box>
+                )}
+
+              </Flex>
+            </FileUpload.DropzoneContent>
+
+          </FileUpload.Dropzone>
+        </FileUpload.Root>
+
+        <Wrap width="100%">
+          <Input value={prompt} onChange={(e) => updatePrompt(e.target.value)} placeholder="Enter prompt" />
+        </Wrap>
+
+        <Wrap width="100%">
+          <Input
+            value={negativePrompt}
+            onChange={(e) => updateNegativePrompt(e.target.value)}
+            placeholder="Enter negative prompt (optional)"
           />
+        </Wrap>
 
-          <Wrap mb="10px" width="100%">
-            <Input value={prompt} onChange={(e) => updatePrompt(e.target.value)} placeholder="Enter prompt" />
-          </Wrap>
+        <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={setGuidance} />
+        <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={setSeed} />
 
-          <Wrap mb="10px" width="100%">
-            <Input
-              value={negativePrompt}
-              onChange={(e) => updateNegativePrompt(e.target.value)}
-              placeholder="Enter negative prompt (optional)"
-            />
-          </Wrap>
-
-          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={setGuidance} />
-          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={setSeed} />
-
-          <Flex direction="column" align="left" gap={1} pb={4}>
-            <Text>
-              Choose model
-            </Text>
-            <Flex direction="row" gap={4}>
-              <Button
-                onClick={() => setModel("v1.4")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="green.400"
-                bg={model === "v1.4" ? "green.400" : "transparent"}
-                color={model === "v1.4" ? "white" : "green.400"}
-                _hover={{ bg: model === "v1.4" ? "green.500" : "green.100" }}
-              >
-                v1.4
-              </Button>
-              <Button
-                onClick={() => setModel("v1.5")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="blue.400"
-                bg={model === "v1.5" ? "blue.400" : "transparent"}
-                color={model === "v1.5" ? "white" : "blue.400"}
-                _hover={{ bg: model === "v1.5" ? "blue.500" : "blue.100" }}
-              >
-                v1.5
-              </Button>
-              <Button
-                onClick={() => setModel("v2.0")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="purple.400"
-                bg={model === "v2.0" ? "purple.400" : "transparent"}
-                color={model === "v2.0" ? "white" : "purple.400"}
-                _hover={{ bg: model === "v2.0" ? "purple.500" : "purple.100" }}
-              >
-                v2.0
-              </Button>
-            </Flex>
+        <Flex width='100%' direction="column" align="left" gap={1} pb={4}>
+          <Text>
+            Choose model
+          </Text>
+          <Flex direction="row" gap={4}>
+            <Button
+              onClick={() => setModel("v1.4")}
+              borderRadius="2xl"
+              border="2px solid"
+              borderColor="green.400"
+              bg={model === "v1.4" ? "green.400" : "transparent"}
+              color={model === "v1.4" ? "white" : "green.400"}
+              _hover={{ bg: model === "v1.4" ? "green.500" : "green.100" }}
+            >
+              v1.4
+            </Button>
+            <Button
+              onClick={() => setModel("v1.5")}
+              borderRadius="2xl"
+              border="2px solid"
+              borderColor="blue.400"
+              bg={model === "v1.5" ? "blue.400" : "transparent"}
+              color={model === "v1.5" ? "white" : "blue.400"}
+              _hover={{ bg: model === "v1.5" ? "blue.500" : "blue.100" }}
+            >
+              v1.5
+            </Button>
+            <Button
+              onClick={() => setModel("v2.0")}
+              borderRadius="2xl"
+              border="2px solid"
+              borderColor="purple.400"
+              bg={model === "v2.0" ? "purple.400" : "transparent"}
+              color={model === "v2.0" ? "white" : "purple.400"}
+              _hover={{ bg: model === "v2.0" ? "purple.500" : "purple.100" }}
+            >
+              v2.0
+            </Button>
           </Flex>
+        </Flex>
 
-          <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
-            Generate
-          </Button>
-        </Box>
+        <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
+          Generate
+        </Button>
+      </Flex>
 
-        <Flex
-          width={{ base: "100%", md: "512px" }}
-          height={{ base: "auto", md: "512px" }}
-          align="center"
-          justify="center"
-          bg="gray.200"
-          borderRadius="md"
-        >
+      <Flex width={{ base: "80%", md: "45%" }} align='center' justify='center'>
+        <Box width='512px' height='512px' bg="gray.200" borderRadius="md">
           {loading ? (
             <Stack width="100%" height="100%">
               <SkeletonCircle />
@@ -229,10 +266,11 @@ const ImageToImage = () => {
               height="100%"
               objectFit="contain"
             />
-          ) : null}
-        </Flex>
-      </Flex >
-    </Box >
+          ) : null
+          }
+        </Box>
+      </Flex>
+    </Flex >
   );
 };
 
