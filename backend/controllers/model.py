@@ -12,7 +12,7 @@ from backend.pipelines.pipeline_v2_0 import Pipeline_v2_0
 import torch
 from PIL import Image
 
-HF_TOKEN = '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'
+HF_TOKEN = 'YOUR HF TOKEN'
 RESIZING_ALGORITHM = Image.BICUBIC
 REFINER_POSITIVE_PROMPT = 'masterpiece, best quality, ultra detailed, 8k, photorealistic, sharp focus, intricate details, award winning, cinematic lighting, professional photo, realistic shadows, high dynamic range'
 REFINER_NEGATIVE_PROMPT = 'low quality, blurry, pixelated, deformed, bad anatomy, oversaturated, underexposed, artifacts, watermark, jpeg artifacts, text, cartoon, out of focus, noisy, grainy, overcompressed'
@@ -134,31 +134,42 @@ async def edit_image(img2imgRequest: Img2ImgRequest, current_user: dict = Depend
 
     return JSONResponse(content={"image": image_base64})
 
+
 @models_router.post('/generate/inpainting')
 async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(get_current_user)):
     if inpainting.model_version not in model_version_to_pipeline:
         raise HTTPException(status_code=404, detail="Model version does not exist.")
-    
+
     pipeline = model_version_to_pipeline[inpainting.model_version]()
-    
+
     if pipeline is None:
         raise HTTPException(status_code=500, detail="Model data is None. This shouldn't happen.")
-    
+
     _, _, inpainting_pipe, resolution, model = pipeline.get_model_data()
-    
+
     image = string_to_image(inpainting.image)
     mask = string_to_image(inpainting.mask_image)
     img_width, img_height = image.size
 
-    image = image.resize((512, 512), RESIZING_ALGORITHM)
-    mask = mask.resize((512, 512), RESIZING_ALGORITHM)
+    image = image.resize(resolution, RESIZING_ALGORITHM)
+    mask = mask.resize(resolution, RESIZING_ALGORITHM)
+
+    width, height = resolution
+    print(width, height)
+
+    print(mask.size, image.size)
+
+    assert image.size == mask.size, f"Image and mask sizes must match. Got {image.size} and {mask.size}"
+
+    #image = image.resize((resolution[1], resolution[0]), RESIZING_ALGORITHM)
+    #mask = mask.resize((resolution[1], resolution[0]), RESIZING_ALGORITHM)
 
     image = inpainting_pipe(
         prompt=inpainting.prompt,
         image=image,
         mask_image=mask,
-        height=resolution[0],
-        width=resolution[1],
+        #height=resolution[0],
+        #width=resolution[1],
         strength=1.0,
         guidance_scale=inpainting.guidance_scale,
         negative_prompt=inpainting.negative_prompt,

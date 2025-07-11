@@ -5,30 +5,32 @@ import {
   Button,
   Wrap,
   Stack,
-  Image,
+  Image as ChakraImage,
   Box,
   SkeletonCircle,
   SkeletonText,
 } from "@chakra-ui/react";
-import { toaster } from "../../../components/ui/toaster"
+import { toaster } from "../../../components/ui/toaster";
 import { FaTimes } from "react-icons/fa";
 import axios from "axios";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import SliderControl from "../../../components/SliderControl";
+import InpaintingCanvas from "../../../components/InpaintingCanvas";
 
 const Inpainting = () => {
   const [image, updateImage] = useState();
   const [loadedImage, setLoadedImage] = useState(null);
   const [loadedImageFilename, setLoadedImageFilename] = useState("");
-  const [loadedMask, setLoadedMask] = useState(null);
-  const [loadedMaskFilename, setLoadedMaskFilename] = useState("");
-
+  const [maskData, setMaskData] = useState(null);
   const [prompt, updatePrompt] = useState("");
   const [negativePrompt, updateNegativePrompt] = useState("");
   const [loading, updateLoading] = useState(false);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
-  const [model, setModel] = useState("v1.5");
+  const [model, setModel] = useState("runwayml/stable-diffusion-inpainting");
+  const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
+
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -36,12 +38,19 @@ const Inpainting = () => {
       try {
         const data = JSON.parse(stored);
         if (data) {
-          setLoadedImage(`data:image/png;base64,${data.image_base64}`);
-          setLoadedImageFilename("from_gallery.png");
-          updatePrompt(data.prompt || "");
-          updateNegativePrompt(data.negative_prompt || "");
-          setGuidance(data.guidance_scale || 7.0);
-          setSeed(data.seed || 0);
+          const img = new Image();
+          img.src = `data:image/png;base64,${data.image_base64}`;
+          img.onload = () => {
+            const validatedWidth = Math.round(img.width / 8) * 8;
+            const validatedHeight = Math.round(img.height / 8) * 8;
+            setImageDimensions({ width: validatedWidth, height: validatedHeight });
+            setLoadedImage(`data:image/png;base64,${data.image_base64}`);
+            setLoadedImageFilename("from_gallery.png");
+            updatePrompt(data.prompt || "");
+            updateNegativePrompt(data.negative_prompt || "");
+            setGuidance(data.guidance_scale || 7.0);
+            setSeed(data.seed || 0);
+          };
         }
       } catch (err) {
         console.error("Failed to parse stored image data", err);
@@ -51,19 +60,30 @@ const Inpainting = () => {
     }
   }, []);
 
-  const loadImage = (e, filenameSetter, imgSetter) => {
+  const loadImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
-    filenameSetter(file.name);
+    setLoadedImageFilename(file.name);
     const reader = new FileReader();
-    reader.onloadend = () => imgSetter(reader.result);
+    reader.onloadend = () => {
+      const img = new Image();
+      img.src = reader.result;
+      img.onload = () => {
+        const validatedWidth = Math.round(img.width / 8) * 8;
+        const validatedHeight = Math.round(img.height / 8) * 8;
+        setImageDimensions({ width: validatedWidth, height: validatedHeight });
+        setLoadedImage(reader.result);
+      };
+    };
     reader.readAsDataURL(file);
   };
 
-  const unloadImage = (e, filenameSetter, imgSetter) => {
-    filenameSetter(null);
-    imgSetter("");
+  const unloadImage = () => {
+    setLoadedImageFilename("");
+    setLoadedImage(null);
+    setMaskData(null);
+    setImageDimensions({ width: 512, height: 512 });
   };
 
   const generate = async () => {
@@ -80,10 +100,21 @@ const Inpainting = () => {
       return;
     }
 
-    if (!loadedImage || !loadedMask) {
+    if (!loadedImage) {
       toaster.create({
-        title: "Missing image or mask",
-        description: "You must load both an image and a mask.",
+        title: "Missing image",
+        description: "You must load an image.",
+        status: "error",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+
+    if (!maskData) {
+      toaster.create({
+        title: "Missing mask",
+        description: "You must draw a mask on the image.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -99,11 +130,12 @@ const Inpainting = () => {
         {
           model_version: model,
           image: loadedImage.split(",")[1],
-          mask_image: loadedMask.split(",")[1],
+          mask_image: maskData.split(",")[1],
           prompt,
           negative_prompt: negativePrompt,
           guidance_scale: guidance,
           seed,
+          strength: 1.0,
         },
         {
           headers: {
@@ -114,10 +146,10 @@ const Inpainting = () => {
 
       updateImage(response.data.image);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error:", error.response?.data?.detail || error.message);
       toaster.create({
         title: "Generation failed",
-        description: "Could not generate image.",
+        description: error.response?.data?.detail || "Could not generate image.",
         status: "error",
         duration: 3000,
         isClosable: true,
@@ -138,25 +170,13 @@ const Inpainting = () => {
         align={{ base: "center", md: "flex-start" }}
       >
         <Box width={{ base: "100%", md: "35%" }} display="flex" flexDirection="column" mb={{ base: 10, md: 0 }}>
-
-          {/* Image input */}
           <FileInput
             id="upload-image"
             label="Load Image"
             filename={loadedImageFilename}
             hasFile={!!loadedImage}
-            onLoad={(e) => loadImage(e, setLoadedImageFilename, setLoadedImage)}
-            onRemove={(e) => unloadImage(e, setLoadedImageFilename, setLoadedImage)}
-          />
-
-          {/* Mask input */}
-          <FileInput
-            id="upload-mask"
-            label="Load Mask"
-            filename={loadedMaskFilename}
-            hasFile={!!loadedMask}
-            onLoad={(e) => loadImage(e, setLoadedMaskFilename, setLoadedMask)}
-            onRemove={(e) => unloadImage(e, setLoadedMaskFilename, setLoadedMask)}
+            onLoad={loadImage}
+            onRemove={unloadImage}
           />
 
           <Wrap mb="10px" width="100%">
@@ -175,9 +195,7 @@ const Inpainting = () => {
           <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={setSeed} />
 
           <Flex direction="column" align="left" gap={1} pb={4}>
-            <Text>
-              Choose model
-            </Text>
+            <Text>Choose model</Text>
             <Flex direction="row" gap={4}>
               <Button
                 onClick={() => setModel("v1.4")}
@@ -191,13 +209,13 @@ const Inpainting = () => {
                 v1.4
               </Button>
               <Button
-                onClick={() => setModel("v1.5")}
+                onClick={() => setModel("runwayml/stable-diffusion-inpainting")}
                 borderRadius="2xl"
                 border="2px solid"
                 borderColor="blue.400"
-                bg={model === "v1.5" ? "blue.400" : "transparent"}
-                color={model === "v1.5" ? "white" : "blue.400"}
-                _hover={{ bg: model === "v1.5" ? "blue.500" : "blue.100" }}
+                bg={model === "runwayml/stable-diffusion-inpainting" ? "blue.400" : "transparent"}
+                color={model === "runwayml/stable-diffusion-inpainting" ? "white" : "blue.400"}
+                _hover={{ bg: model === "runwayml/stable-diffusion-inpainting" ? "blue.500" : "blue.100" }}
               >
                 v1.5
               </Button>
@@ -215,19 +233,19 @@ const Inpainting = () => {
             </Flex>
           </Flex>
 
-          <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
+          <Button onClick={generate} color="black" backgroundColor="yellow.400" width="100%">
             Generate
           </Button>
         </Box>
 
-        {/* Output Image */}
         <Flex
-          width={{ base: "100%", md: "512px" }}
-          height={{ base: "auto", md: "512px" }}
+          width={{ base: "100%", md: `${imageDimensions.width}px` }}
+          height={{ base: "auto", md: `${imageDimensions.height}px` }}
           align="center"
           justify="center"
           bg="gray.200"
           borderRadius="md"
+          position="relative"
         >
           {loading ? (
             <Stack width="100%" height="100%">
@@ -235,7 +253,7 @@ const Inpainting = () => {
               <SkeletonText />
             </Stack>
           ) : image ? (
-            <Image
+            <ChakraImage
               src={`data:image/png;base64,${image}`}
               alt="Generated Image"
               boxShadow="lg"
@@ -244,7 +262,17 @@ const Inpainting = () => {
               height="100%"
               objectFit="contain"
             />
-          ) : null}
+          ) : loadedImage ? (
+            <InpaintingCanvas
+
+              imageSrc={loadedImage}
+              onMaskUpdate={setMaskData}
+              width={imageDimensions.width}
+              height={imageDimensions.height}
+            />
+          ) : (
+            <Text color="gray.500">No image loaded</Text>
+          )}
         </Flex>
       </Flex>
     </Box>
@@ -255,7 +283,7 @@ const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
   <Wrap mb="10px" width="100%">
     <Flex width="100%" align="center" justify="space-between">
       <Input type="file" accept="image/*" display="none" id={id} onChange={onLoad} />
-      <Button as="label" htmlFor={id} cursor="pointer" color='black' backgroundColor="yellow.400" width="50%">
+      <Button as="label" htmlFor={id} cursor="pointer" color="black" backgroundColor="yellow.400" width="50%">
         {label}
       </Button>
 
