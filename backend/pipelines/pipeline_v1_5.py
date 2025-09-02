@@ -19,6 +19,10 @@ class Pipeline_v1_5:
         self.device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.dtype = torch.float16 if self.device == 'cuda' else torch.float32
 
+        print(torch.cuda.is_available())
+        print(torch.cuda.get_device_name(0))
+
+
         # Text to Image
         self.txt2img = StableDiffusionPipeline.from_pretrained(
             self.MODEL,
