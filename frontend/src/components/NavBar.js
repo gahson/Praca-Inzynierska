@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Box, Flex, Link, Button, Heading, Text } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { Link as RouterLink } from "react-router-dom";
+import Logo from "../assets/logo.png";
 
 import {FaUser} from "react-icons/fa";
 import { FiGrid } from "react-icons/fi";
@@ -29,7 +30,7 @@ export default function Navbar() {
 
   return (
     <Box
-      bg="blue.500"
+      bg="black"
       color="white"
       px={{ base: 4, md: 8 }}
       py={{ base: 3, md: 4 }}
@@ -46,12 +47,27 @@ export default function Navbar() {
         wrap="wrap"
         gap={4}
       >
-        {/* Logo */}
-        <Box flexShrink={0}>
-          <Heading size={{ base: "md", md: "lg" }} cursor="default">
-            <Text>AInterior</Text>
-          </Heading>
-        </Box>
+{/* Logo jako obrazek */}
+<Box
+  flexShrink={0}
+  display="flex"
+  alignItems="center"
+  maxHeight="50px"    // ogranicza wysokość navbaru
+  cursor="pointer"
+>
+  <Link as={RouterLink} to="/views/dashboard">
+    <img
+      src={Logo}
+      alt="AInterior Logo"
+      style={{
+        height: '40px',   // wysokość logo w navbarze
+        width: 'auto',    // zachowuje proporcje (210x109 -> ok 40x20, w proporcji)
+        display: 'block', // usuwa ewentualne odstępy inline
+        objectFit: 'contain' // logo mieści się w boxie, nie rozciąga się
+      }}
+    />
+  </Link>
+</Box>
 
         {/* Links */}
         <Flex
