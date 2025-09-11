@@ -4,12 +4,14 @@ from diffusers import (
     StableDiffusionPipeline,
     StableDiffusionImg2ImgPipeline,
     StableDiffusionInpaintPipeline,
+    AutoPipelineForInpainting,
     DPMSolverMultistepScheduler,
     UniPCMultistepScheduler,
 )
 
 class Pipeline_v1_5:
     MODEL = 'stable-diffusion-v1-5/stable-diffusion-v1-5'
+    MODEL_INPAINTING = 'runwayml/stable-diffusion-inpainting'
     DEFAULT_TEXT2IMAGE_SCHEDULER = UniPCMultistepScheduler
     DEFAULT_IMG2IMG_SCHEDULER = DPMSolverMultistepScheduler
     DEFAULT_INPAINTING_SCHEDULER = DPMSolverMultistepScheduler
@@ -46,7 +48,9 @@ class Pipeline_v1_5:
             algorithm_type="sde-dpmsolver++"
         )
 
-        # Inpainting
+        # Inpainting - use AutoPipelineForInpainting for better compatibility
+        #self.inpainting = AutoPipelineForInpainting.from_pretrained(
+        #    self.MODEL_INPAINTING,
         self.inpainting = StableDiffusionInpaintPipeline.from_pretrained(
             self.MODEL,
             use_safetensors=True,

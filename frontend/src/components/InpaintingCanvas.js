@@ -1,18 +1,22 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
 import { Box, Button, VStack } from "@chakra-ui/react";
+import SliderControl from "./SliderControl";
 
 const InpaintingCanvas = forwardRef(
   ({ imageSrc, onMaskUpdate, width, height }, ref) => {
-    const imageCanvasRef = useRef(null); // Canvas for the image
-    const maskCanvasRef = useRef(null); // Canvas for the mask
-    const tempCanvasRef = useRef(null); // Temporary canvas for consistent opacity
+    const imageCanvasRef = useRef(null);
+    const maskCanvasRef = useRef(null);
+    const tempCanvasRef = useRef(null);
     const [isDrawing, setIsDrawing] = useState(false);
     const [context, setContext] = useState(null);
     const [tempContext, setTempContext] = useState(null);
 
+    const [brushSize, setBrushSize] = useState(15);
+
     useEffect(() => {
       const imageCanvas = imageCanvasRef.current;
       const maskCanvas = maskCanvasRef.current;
+
       const tempCanvas = document.createElement("canvas");
       tempCanvas.width = width;
       tempCanvas.height = height;
@@ -20,30 +24,28 @@ const InpaintingCanvas = forwardRef(
 
       const imageCtx = imageCanvas.getContext("2d");
       const maskCtx = maskCanvas.getContext("2d");
-      const tempCtx = tempCanvas.getContext("2d");
+      const tmpCtx = tempCanvas.getContext("2d");
 
-      // Load the background image
+      // Załaduj obraz tła
       const img = new Image();
       img.src = imageSrc;
       img.onload = () => {
+        imageCtx.clearRect(0, 0, width, height);
         imageCtx.drawImage(img, 0, 0, width, height);
-        console.log("Image loaded:", img.width, img.height);
       };
 
-      // Initialize mask canvas (transparent background)
-      maskCtx.fillStyle = "rgba(0, 0, 0, 0)";
-      maskCtx.fillRect(0, 0, width, height);
+      // Inicjalizacja maski (nie czyścimy, jeśli już istnieje)
+      if (!context) maskCtx.clearRect(0, 0, width, height);
 
-      // Initialize temporary canvas for drawing
-      tempCtx.fillStyle = "rgba(0, 0, 0, 0)";
-      tempCtx.fillRect(0, 0, width, height);
-      tempCtx.strokeStyle = "black"; // Solid black for temporary drawing
-      tempCtx.lineWidth = 10;
-      tempCtx.lineCap = "round";
+      // Inicjalizacja płótna tymczasowego
+      tmpCtx.clearRect(0, 0, width, height);
+      tmpCtx.strokeStyle = "black";
+      tmpCtx.lineCap = "round";
 
       setContext(maskCtx);
-      setTempContext(tempCtx);
-    }, [imageSrc, width, height]);
+      setTempContext(tmpCtx);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [imageSrc, width, height]); // <- brushSize nie w dependencies
 
     const startDrawing = (e) => {
       if (!tempContext) return;
@@ -56,16 +58,18 @@ const InpaintingCanvas = forwardRef(
     const draw = (e) => {
       if (!isDrawing || !tempContext || !context) return;
       const { offsetX, offsetY } = e.nativeEvent;
+
+      tempContext.lineWidth = brushSize; // <- dynamiczna grubość
       tempContext.lineTo(offsetX, offsetY);
       tempContext.stroke();
 
-      // Clear mask canvas and redraw with uniform opacity
+      // Rysujemy maskę z zachowaniem wcześniejszych pikseli
       context.clearRect(0, 0, width, height);
-      context.fillStyle = "rgba(0, 0, 0, 0.5)"; // Uniform semi-transparent black
+      context.fillStyle = "rgba(0,0,0,0.5)";
       context.fillRect(0, 0, width, height);
-      context.globalCompositeOperation = "destination-in"; // Only keep areas where tempCanvas has drawn
+      context.globalCompositeOperation = "destination-in";
       context.drawImage(tempCanvasRef.current, 0, 0);
-      context.globalCompositeOperation = "source-over"; // Reset to default
+      context.globalCompositeOperation = "source-over";
     };
 
     const stopDrawing = () => {
@@ -73,34 +77,32 @@ const InpaintingCanvas = forwardRef(
       setIsDrawing(false);
       tempContext.closePath();
 
-      // Generate grayscale mask (white = masked area)
-      const tempCanvas = document.createElement("canvas");
-      tempCanvas.width = width;
-      tempCanvas.height = height;
-      const tempCtx = tempCanvas.getContext("2d");
+      // Tworzymy finalną maskę
+      const finalCanvas = document.createElement("canvas");
+      finalCanvas.width = width;
+      finalCanvas.height = height;
+      const finalCtx = finalCanvas.getContext("2d");
+      finalCtx.drawImage(tempCanvasRef.current, 0, 0, width, height);
 
-      tempCtx.drawImage(tempCanvasRef.current, 0, 0, width, height);
-
-      const imageData = tempCtx.getImageData(0, 0, width, height);
+      const imageData = finalCtx.getImageData(0, 0, width, height);
       const data = imageData.data;
       for (let i = 0; i < data.length; i += 4) {
-        const a = data[i + 3]; // Check alpha channel
-        if (a > 0) { // Any non-transparent pixel becomes white
-          data[i] = 255; // R
-          data[i + 1] = 255; // G
-          data[i + 2] = 255; // B
-          data[i + 3] = 255; // A
+        const a = data[i + 3];
+        if (a > 0) {
+          data[i] = 255;
+          data[i + 1] = 255;
+          data[i + 2] = 255;
+          data[i + 3] = 255;
         } else {
-          data[i] = 0; // R
-          data[i + 1] = 0; // G
-          data[i + 2] = 0; // B
-          data[i + 3] = 0; // A
+          data[i] = 0;
+          data[i + 1] = 0;
+          data[i + 2] = 0;
+          data[i + 3] = 0;
         }
       }
-      tempCtx.putImageData(imageData, 0, 0);
+      finalCtx.putImageData(imageData, 0, 0);
 
-      const maskData = tempCanvas.toDataURL("image/png");
-      console.log("Mask generated:", width, height);
+      const maskData = finalCanvas.toDataURL("image/png");
       onMaskUpdate(maskData);
     };
 
@@ -108,14 +110,12 @@ const InpaintingCanvas = forwardRef(
       if (!context || !tempContext) return;
       context.clearRect(0, 0, width, height);
       tempContext.clearRect(0, 0, width, height);
-      onMaskUpdate(null); // Send null to indicate no mask
-      console.log("Mask cleared");
+      onMaskUpdate(null);
     };
 
     return (
       <VStack spacing={4}>
         <Box position="relative" width={`${width}px`} height={`${height}px`}>
-          {/* Image canvas */}
           <canvas
             ref={imageCanvasRef}
             width={width}
@@ -128,7 +128,6 @@ const InpaintingCanvas = forwardRef(
               borderRadius: "8px",
             }}
           />
-          {/* Mask canvas */}
           <canvas
             ref={maskCanvasRef}
             width={width}
@@ -148,7 +147,15 @@ const InpaintingCanvas = forwardRef(
           />
         </Box>
 
-        {/* Buttons */}
+        <SliderControl
+          label="Brush size"
+          value={brushSize}
+          min={1}
+          max={100}
+          step={1}
+          onChange={(val) => setBrushSize(val)}
+        />
+
         <Button colorScheme="red" onClick={clearMask}>
           Delete mask
         </Button>

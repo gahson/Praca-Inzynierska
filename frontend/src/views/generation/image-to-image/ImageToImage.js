@@ -200,8 +200,8 @@ const ImageToImage = () => {
           />
         </Wrap>
 
-        <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={setGuidance} />
-        <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={setSeed} />
+        <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(value) => setGuidance(value[0])} />
+        <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(value) => setSeed(value[0])} />
 
         <Flex width='100%' direction="column" align="left" gap={1} pb={4}>
           <Text>
