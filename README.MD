@@ -16,9 +16,4 @@ interior architects to use artificial intelligence models in their work.
 - Containerization: Docker
 
 ### TODO
-- Panel administratora
-- Wyświetlanie obrazków w img2img, inpainting
-- Rysowanie maski w inpainting
-- Dodanie https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/gligen
-- Dodanie https://huggingface.co/docs/diffusers/main/en/api/pipelines/stable_diffusion/latent_upscale zamiast upscalingu z PIL
-- Customowe workflowy, tylko pytanie jak
+- https://docs.google.com/spreadsheets/d/14Qgea61NWSY51Ych7NmncooW5y2MEWiRMU0njNSEz4M/edit?gid=0#gid=0
