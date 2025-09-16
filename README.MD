@@ -24,20 +24,25 @@ It is recommended to run this application on either native or wsl Ubuntu
 
 2. Install NVIDIA Container Toolkit \
     a. Add NVIDIA GPG key and repository \
+
         curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
         sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
-
         curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
         sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
         sudo tee /etc/apt/sources.list.d/nvidia-container-toolkit.list \
+
     b. Update package list \
+
         sudo apt-get update
+
     c. Install the toolkit \
+
         sudo apt-get install -y nvidia-container-toolkit \
+
     d. Configure the runtime \
+
         sudo nvidia-ctk runtime configure --runtime=docker \
         sudo systemctl restart docker \ 
-
         sudo nvidia-ctk runtime configure --runtime=containerd \
         sudo systemctl restart containerd \
 
