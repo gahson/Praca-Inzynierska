@@ -1,0 +1,6 @@
+.idea
+node_modules
+package.json
+package-lock.json
+requirements.txt
+cuda-repo-wsl-ubuntu-13-0-local_13.0.1-1_amd64.deb

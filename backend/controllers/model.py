@@ -3,16 +3,16 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from huggingface_hub import login
-from backend.schemas.generation import TextToImageRequest, Img2ImgRequest, Inpainting
-from backend.utils.auth_helpers import get_current_user
-from backend.utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
-from backend.pipelines.pipeline_v1_4 import Pipeline_v1_4
-from backend.pipelines.pipeline_v1_5 import Pipeline_v1_5
-from backend.pipelines.pipeline_v2_0 import Pipeline_v2_0
+from schemas.generation import TextToImageRequest, Img2ImgRequest, Inpainting
+from utils.auth_helpers import get_current_user
+from utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
+from pipelines.pipeline_v1_4 import Pipeline_v1_4
+from pipelines.pipeline_v1_5 import Pipeline_v1_5
+from pipelines.pipeline_v2_0 import Pipeline_v2_0
 import torch
 from PIL import Image
 
-HF_TOKEN = 'YOUR TOKEN'
+HF_TOKEN = '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'
 RESIZING_ALGORITHM = Image.BICUBIC
 REFINER_POSITIVE_PROMPT = 'masterpiece, best quality, ultra detailed, 8k, photorealistic, sharp focus, intricate details, award winning, cinematic lighting, professional photo, realistic shadows, high dynamic range'
 REFINER_NEGATIVE_PROMPT = 'low quality, blurry, pixelated, deformed, bad anatomy, oversaturated, underexposed, artifacts, watermark, jpeg artifacts, text, cartoon, out of focus, noisy, grainy, overcompressed'

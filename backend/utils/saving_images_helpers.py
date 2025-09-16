@@ -4,7 +4,7 @@ from io import BytesIO
 import base64
 from PIL import Image
 
-from backend.database.mongo import db
+from database.mongo import db
 images_collection = db["generated_images"]
 
 def image_to_string(image):

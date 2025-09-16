@@ -1,14 +1,14 @@
 from fastapi import APIRouter, HTTPException, Depends
 from bson.objectid import ObjectId
 
-from backend.schemas.user import UserCreate, UserLogin
-from backend.utils.auth_helpers import (
+from schemas.user import UserCreate, UserLogin
+from utils.auth_helpers import (
     hash_password,
     verify_password,
     create_access_token,
     get_current_user
 )
-from backend.database.mongo import db
+from database.mongo import db
 
 auth_router = APIRouter()
 

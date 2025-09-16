@@ -5,10 +5,10 @@ from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from bson.objectid import ObjectId
 from os import getenv
-from ..database.mongo import db
+from database.mongo import db
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path="backend/.env")
+load_dotenv(dotenv_path=".env")
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 auth_scheme = HTTPBearer()
 

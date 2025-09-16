@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException
-from backend.utils.auth_helpers import get_current_user
-from backend.database.mongo import db
+from utils.auth_helpers import get_current_user
+from database.mongo import db
 
 prompts_router = APIRouter()
 
