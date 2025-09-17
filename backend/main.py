@@ -22,3 +22,6 @@ app.include_router(prompts_router, prefix="/prompts", tags=["prompts"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(models_router, prefix='/model', tags=['model'])
 app.include_router(health, prefix='/health', tags=['health'])
+
+def waitress_get_app():
+    return app

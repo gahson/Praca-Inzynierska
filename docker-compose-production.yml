@@ -3,15 +3,23 @@ services:
   frontend:
     build:
       context: ./frontend
-      dockerfile: Dockerfile.development
+      dockerfile: Dockerfile.production
     ports:
-     - 5173:5173
-    volumes:
-     - ./frontend:/frontend
+     - 5173:80
     working_dir: /frontend
-    command: npm run dev -- --host
+    command: ["nginx", "-g", "daemon off;"]
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/health"]
+      start_period: 5s
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart:
+      unless-stopped
     deploy:
       resources:
         reservations:
@@ -24,18 +32,27 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5555:5555
-    volumes:
-      - ./backend:/backend
     environment:
       ENV_FILE: .env
     working_dir: /backend
-    command: uvicorn main:app --host 0.0.0.0 --port 5555 --reload
+    #command: uvicorn main:app --host 0.0.0.0 --port 5555
+    command: gunicorn main:app -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:5555 --timeout 360
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
+        restart: true
+    healthcheck:
+      test: ["CMD", "curl", "-i", "http://localhost:5555/health"]
+      start_period: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: 
+      unless-stopped
     deploy:
       resources:
         reservations:
-          cpus: '1'
+          cpus: '2'
           memory: 2G
           devices:
             - driver: nvidia
@@ -58,6 +75,14 @@ services:
     volumes:
       - db_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh mongodb://admin:mongo@localhost:27017/admin --quiet
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+    restart: 
+      unless-stopped
     deploy:
       resources:
         reservations:
@@ -77,14 +102,14 @@ services:
       ME_CONFIG_BASICAUTH_USERNAME: admin
       ME_CONFIG_BASICAUTH_PASSWORD: mongo
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
+        restart: true
     deploy:
       resources:
         reservations:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '0.2'
+          memory: 256M
 
 volumes:
   db_data:
-
-

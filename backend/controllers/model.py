@@ -11,8 +11,17 @@ from pipelines.pipeline_v1_5 import Pipeline_v1_5
 from pipelines.pipeline_v2_0 import Pipeline_v2_0
 import torch
 from PIL import Image
+from os import getenv
+from dotenv import load_dotenv
 
-HF_TOKEN = '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'
+env_file = getenv('ENV_FILE', '.env')
+load_dotenv(env_file)
+
+HF_TOKEN = getenv("HF_TOKEN")
+
+if not HF_TOKEN:
+    raise ValueError('HF_TOKEN not set in .env')
+
 RESIZING_ALGORITHM = Image.BICUBIC
 REFINER_POSITIVE_PROMPT = 'masterpiece, best quality, ultra detailed, 8k, photorealistic, sharp focus, intricate details, award winning, cinematic lighting, professional photo, realistic shadows, high dynamic range'
 REFINER_NEGATIVE_PROMPT = 'low quality, blurry, pixelated, deformed, bad anatomy, oversaturated, underexposed, artifacts, watermark, jpeg artifacts, text, cartoon, out of focus, noisy, grainy, overcompressed'

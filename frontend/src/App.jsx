@@ -23,6 +23,7 @@ import Logout from "./views/account/logout/Logout";
 import Profile from "./views/account/profile/Profile";
 import Register from "./views/account/register/Register";
 import Workflows from "./views/workflows/Workflows";
+import Health from "./views/health/Health";
 
 const App = () => (
   <Provider store={store}>
@@ -47,6 +48,7 @@ const App = () => (
             <Route path="/views/account/logout" element={<PrivateRoute><Logout /></PrivateRoute>} />
             <Route path="/views/account/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
             <Route path="/views/workflows" element={<PrivateRoute><Workflows /></PrivateRoute>} />
+            <Route path="/views/health" element={<Health />} />
           </Routes>
           <Footer />
         </Flex>

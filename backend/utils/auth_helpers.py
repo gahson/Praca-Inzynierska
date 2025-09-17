@@ -8,14 +8,21 @@ from os import getenv
 from database.mongo import db
 from dotenv import load_dotenv
 
-load_dotenv(dotenv_path=".env")
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-auth_scheme = HTTPBearer()
+env_file = getenv('ENV_FILE', '.env')
+load_dotenv(env_file)
 
 SECRET_KEY = getenv("SECRET_KEY")
 ALGORITHM = getenv("ALGORITHM", "HS256")
+
+
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY not loaded. Check your .env path or variable name.")
+
+if not ALGORITHM:
+    raise ValueError("ALGORITHM not loaded. Check your .env path or variable name.")
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+auth_scheme = HTTPBearer()
 
 def hash_password(password: str) -> str:
     return pwd_context.hash(password)
