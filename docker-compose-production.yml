@@ -61,6 +61,26 @@ services:
     runtime: 
       nvidia
 
+  comfyui:
+    build:
+      context: ./comfyui
+      dockerfile: Dockerfile
+    ports:
+      - 8188:8188
+    working_dir: /comfyui
+    command: python main.py --listen 0.0.0.0
+    deploy:
+      resources:
+        reservations:
+          cpus: '1'
+          memory: 2G
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: 
+      nvidia
+
   mongo:
     image: mongo:latest
     ports:

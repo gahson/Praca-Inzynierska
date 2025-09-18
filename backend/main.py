@@ -5,6 +5,7 @@ from controllers.prompts import prompts_router
 from controllers.auth import auth_router
 from controllers.model import models_router
 from controllers.health import health
+from controllers.comfyui import comfyui
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -22,6 +23,4 @@ app.include_router(prompts_router, prefix="/prompts", tags=["prompts"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(models_router, prefix='/model', tags=['model'])
 app.include_router(health, prefix='/health', tags=['health'])
-
-def waitress_get_app():
-    return app
+app.include_router(comfyui, prefix='/comfyui', tags=['comfyui'])
