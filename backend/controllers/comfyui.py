@@ -10,7 +10,7 @@ comfyui = APIRouter()
 # THIS IS ONLY EXAMPLE ENDPOINT TO TEST OUT COMFYUI API
 @comfyui.get("/txt2img")
 async def txt2img():
-    txt2img_path = 'utils/comfyui/txt2img.json'
+    txt2img_path = 'workflows/example.json'
     
     if not os.path.exists(txt2img_path):
         raise HTTPException(status_code=404, detail="File not found")

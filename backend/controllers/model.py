@@ -1,23 +1,28 @@
-# Pozostały importy
+import os
+import json
+import time
+import torch
+import requests
+from PIL import Image
+from dotenv import load_dotenv
+
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from huggingface_hub import login
-from schemas.generation import TextToImageRequest, Img2ImgRequest, Inpainting
-from utils.auth_helpers import get_current_user
-from utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
+
 from pipelines.pipeline_v1_4 import Pipeline_v1_4
 from pipelines.pipeline_v1_5 import Pipeline_v1_5
 from pipelines.pipeline_v2_0 import Pipeline_v2_0
-import torch
-from PIL import Image
-from os import getenv
-from dotenv import load_dotenv
+from utils.auth_helpers import get_current_user
+from utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
+from schemas.generation import TextToImageRequest, Img2ImgRequest, Inpainting
 
-env_file = getenv('ENV_FILE', '.env')
+
+env_file = os.getenv('ENV_FILE', '.env')
 load_dotenv(env_file)
 
-HF_TOKEN = getenv("HF_TOKEN")
+HF_TOKEN = os.getenv("HF_TOKEN")
 
 if not HF_TOKEN:
     raise ValueError('HF_TOKEN not set in .env')
@@ -33,57 +38,82 @@ model_version_to_pipeline = {
     'runwayml/stable-diffusion-inpainting': Pipeline_v1_5
 }
 
-models_router = APIRouter()
+models= APIRouter()
 login(HF_TOKEN)
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
 def text_to_image_callback(step, timestamp, latents):
     pass
 
-@models_router.post('/generate/text-to-image')
+@models.post('/generate/text-to-image')
 async def text_to_image(textToImageRequest: TextToImageRequest, current_user: dict = Depends(get_current_user)):
-    if textToImageRequest.model_version not in model_version_to_pipeline:
-        raise HTTPException(status_code=404, detail="Model version does not exist.")
+    #if textToImageRequest.model_version not in model_version_to_pipeline:
+    #    raise HTTPException(status_code=404, detail="Model version does not exist.")
+    txt2img_path = 'workflows/txt2img.json'
     
-    pipeline = model_version_to_pipeline[textToImageRequest.model_version]()
-    
-    if pipeline is None:
-        raise HTTPException(status_code=500, detail="Model data is None. This shouldn't happen.")
-    
-    txt2img, img2img, _, resolution, model = pipeline.get_model_data()
-    
-    image = txt2img(
-        prompt=textToImageRequest.prompt,
-        height=resolution[0],
-        width=resolution[1],
-        num_inference_steps=30,
-        guidance_scale=textToImageRequest.guidance_scale,
-        negative_prompt=textToImageRequest.negative_prompt,
-        num_images_per_prompt=1,
-        generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
-        #callback=text_to_image_callback,
-    ).images[0]
+    if not os.path.exists(txt2img_path):
+        raise HTTPException(status_code=404, detail='File not found')
 
-    image = img2img(
-        prompt=textToImageRequest.prompt + REFINER_POSITIVE_PROMPT,
-        image=image,
-        strength=1.0,
-        num_inference_steps=30,
-        guidance_scale=10,
-        negative_prompt=textToImageRequest.negative_prompt + REFINER_NEGATIVE_PROMPT,
-        num_images_per_prompt=1,
-        generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
-        #callback=text_to_image_callback,
-    ).images[0]
+    prompt_json = {}
+    
+    with open(txt2img_path, 'r') as f:
+        prompt_json = json.load(f)
+    
+    prompt_json['3']['inputs']['seed'] = textToImageRequest.seed
+    prompt_json['3']['inputs']['steps'] = 30
+    prompt_json['3']['inputs']['cfg'] = 8
+    prompt_json['3']['inputs']['sampler_name'] = 'euler'
+    prompt_json['3']['inputs']['scheduler'] = 'normal'
+    prompt_json['3']['inputs']['denoise'] = 1
+    
+    prompt_json['5']['inputs']['width'] = textToImageRequest.width
+    prompt_json['5']['inputs']['height'] = textToImageRequest.height    
+    prompt_json['5']['inputs']['barch_size'] = 1
+    
+    prompt_json['6']['inputs']['text'] = textToImageRequest.prompt
+    prompt_json['7']['inputs']['text'] = textToImageRequest.negative_prompt    
+    
+    queue_payload = {'prompt': prompt_json}
 
-    image = image.resize((textToImageRequest.width, textToImageRequest.height), RESIZING_ALGORITHM)
+    queue_response = requests.post('http://comfyui:8188/prompt', json=queue_payload)
+
+    if not queue_response.ok:
+        raise HTTPException(status_code=404, detail='Error queueing prompt')
+    
+    queue_response_json = queue_response.json()
+        
+    if 'prompt_id' not in queue_response_json:
+        raise HTTPException(status_code=404, detail='Error obraining prompt_id')
+    
+    prompt_id = queue_response_json['prompt_id']
+    
+    # Poll the endpoint until a non-empty response is received
+    max_attempts = 60
+    for attempt in range(max_attempts):
+        image_response = requests.get(f'http://comfyui:8188/history/{prompt_id}')
+        if image_response.ok and image_response.content and image_response.content != b'{}':
+            break
+        time.sleep(1)
+    else:
+        raise HTTPException(status_code=504, detail='Timeout waiting for image generation response.')
+     
+    image_response_json = image_response.json()
+
+    filename = image_response_json[prompt_id]['outputs']['9']['images'][0]['filename']
+    
+    image_path = os.path.join('images', filename)
+    
+    if not os.path.exists(image_path):
+       raise HTTPException(status_code=404, detail=f"Image file {image_path} not found")
+
+    image = Image.open(image_path)
     image_base64 = image_to_string(image)
-
+            
     await save_image_record(
         user_id=str(current_user["_id"]),
         image_base64=image_base64,
         metadata={
-            "model": model,
+            "model": 'v1-5-pruned-emaonly-fp16.safetensors',
             "mode": "text2img",
             "prompt": textToImageRequest.prompt,
             "negative_prompt": textToImageRequest.negative_prompt,
@@ -95,8 +125,68 @@ async def text_to_image(textToImageRequest: TextToImageRequest, current_user: di
     )
 
     return JSONResponse(content={"image": image_base64})
+    
+    
+    
+    
 
-@models_router.post('/generate/image-to-image')
+# @models.post('/generate/text-to-image')
+# async def text_to_image(textToImageRequest: TextToImageRequest, current_user: dict = Depends(get_current_user)):
+#     if textToImageRequest.model_version not in model_version_to_pipeline:
+#         raise HTTPException(status_code=404, detail="Model version does not exist.")
+    
+#     pipeline = model_version_to_pipeline[textToImageRequest.model_version]()
+    
+#     if pipeline is None:
+#         raise HTTPException(status_code=500, detail="Model data is None. This shouldn't happen.")
+    
+#     txt2img, img2img, _, resolution, model = pipeline.get_model_data()
+    
+#     image = txt2img(
+#         prompt=textToImageRequest.prompt,
+#         height=resolution[0],
+#         width=resolution[1],
+#         num_inference_steps=30,
+#         guidance_scale=textToImageRequest.guidance_scale,
+#         negative_prompt=textToImageRequest.negative_prompt,
+#         num_images_per_prompt=1,
+#         generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
+#         #callback=text_to_image_callback,
+#     ).images[0]
+
+#     image = img2img(
+#         prompt=textToImageRequest.prompt + REFINER_POSITIVE_PROMPT,
+#         image=image,
+#         strength=1.0,
+#         num_inference_steps=30,
+#         guidance_scale=10,
+#         negative_prompt=textToImageRequest.negative_prompt + REFINER_NEGATIVE_PROMPT,
+#         num_images_per_prompt=1,
+#         generator=torch.Generator(device=device).manual_seed(textToImageRequest.seed),
+#         #callback=text_to_image_callback,
+#     ).images[0]
+
+#     image = image.resize((textToImageRequest.width, textToImageRequest.height), RESIZING_ALGORITHM)
+#     image_base64 = image_to_string(image)
+
+#     await save_image_record(
+#         user_id=str(current_user["_id"]),
+#         image_base64=image_base64,
+#         metadata={
+#             "model": model,
+#             "mode": "text2img",
+#             "prompt": textToImageRequest.prompt,
+#             "negative_prompt": textToImageRequest.negative_prompt,
+#             "guidance_scale": textToImageRequest.guidance_scale,
+#             "width": textToImageRequest.width,
+#             "height": textToImageRequest.height,
+#             "seed": textToImageRequest.seed
+#         }
+#     )
+
+#     return JSONResponse(content={"image": image_base64})
+
+@models.post('/generate/image-to-image')
 async def edit_image(img2imgRequest: Img2ImgRequest, current_user: dict = Depends(get_current_user)):
     if img2imgRequest.model_version not in model_version_to_pipeline:
         raise HTTPException(status_code=404, detail="Model version does not exist.")
@@ -145,7 +235,7 @@ async def edit_image(img2imgRequest: Img2ImgRequest, current_user: dict = Depend
     return JSONResponse(content={"image": image_base64})
 
 
-@models_router.post('/generate/inpainting')
+@models.post('/generate/inpainting')
 async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(get_current_user)):
     print("=== Inpainting endpoint called ===")
     print("Model version requested:", inpainting.model_version)

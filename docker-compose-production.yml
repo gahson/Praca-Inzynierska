@@ -32,6 +32,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - 5555:5555
+    volumes:
+      - images:/backend/images
     environment:
       ENV_FILE: .env
     working_dir: /backend
@@ -68,7 +70,9 @@ services:
     ports:
       - 8188:8188
     working_dir: /comfyui
-    command: python main.py --listen 0.0.0.0
+    command: sh -c "rm -rf output && ln -s images output && python main.py --listen 0.0.0.0"
+    volumes:
+       - images:/comfyui/images
     deploy:
       resources:
         reservations:
@@ -133,3 +137,4 @@ services:
 
 volumes:
   db_data:
+  images:
