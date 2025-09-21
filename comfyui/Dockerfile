@@ -13,9 +13,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY extra_model_paths.yaml  extra_model_paths.yaml.example
 
-# 2GB
-RUN mkdir -p models/checkpoints && \
-    curl -L -o models/checkpoints/v1-5-pruned-emaonly-fp16.safetensors \
-    "https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive/resolve/main/v1-5-pruned-emaonly-fp16.safetensors?download=true"
-
-# TODO: INSTALL OTHER RELEVANT MODELS
+RUN rm -rf input && ln -s input_images input
+RUN rm -rf output && ln -s output_images output

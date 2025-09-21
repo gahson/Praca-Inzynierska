@@ -46,9 +46,9 @@ It is recommended to run this application on either native or wsl Ubuntu
         sudo nvidia-ctk runtime configure --runtime=containerd
         sudo systemctl restart containerd
 
-3. Generate read only token on https://huggingface.co/settings/tokens and then assign in to the HF_TOKEN in backend/.env
+3. Generate read only token on https://huggingface.co/settings/tokens and run ./download_models.sh <HF_TOKEN>.
 
-4. Build & run container in the developement mode (Use after making changes to the docker related files or when installing new packages/modules) AT FIRST IT WILL TAKE A LONG TIME!!!:
+4. Build & run container in the developement mode (Use after making changes to the docker related files or when installing new packages/modules) FIRST RUN WILL TAKE A LONG TIME!!!:
     - docker compose down && docker compose up --build
 
 5. Run container in the developement mode:

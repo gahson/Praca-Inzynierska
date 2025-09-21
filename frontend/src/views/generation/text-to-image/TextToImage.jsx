@@ -25,7 +25,7 @@ const TextToImage = () => {
   const [height, setHeight] = useState(1024);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
-  const [model, setModel] = useState("v1.5");
+  const [model, setModel] = useState("1.5");
 
   const [searchParams] = useSearchParams();
   const urlPrompt = searchParams.get("prompt");
@@ -141,37 +141,48 @@ const TextToImage = () => {
             </Text>
             <Flex direction="row" gap={4}>
               <Button
-                onClick={() => setModel("v1.4")}
+                onClick={() => setModel("1.5")}
                 borderRadius="2xl"
                 border="2px solid"
                 borderColor="green.400"
-                bg={model === "v1.4" ? "green.400" : "transparent"}
-                color={model === "v1.4" ? "white" : "green.400"}
-                _hover={{ bg: model === "v1.4" ? "green.500" : "green.100" }}
+                bg={model === "1.5" ? "green.400" : "transparent"}
+                color={model === "1.5" ? "white" : "green.400"}
+                _hover={{ bg: model === "1.5" ? "green.500" : "green.100" }}
               >
-                v1.4
+                1.5
               </Button>
               <Button
-                onClick={() => setModel("v1.5")}
+                onClick={() => setModel("2.1")}
+                borderRadius="2xl"
+                border="2px solid"
+                borderColor="orange.400"
+                bg={model === "2.1" ? "orange.400" : "transparent"}
+                color={model === "2.1" ? "white" : "orange.400"}
+                _hover={{ bg: model === "2.1" ? "orange.500" : "orange.100" }}
+              >
+                2.1
+              </Button>
+              <Button
+                onClick={() => setModel("3.0")}
                 borderRadius="2xl"
                 border="2px solid"
                 borderColor="blue.400"
-                bg={model === "v1.5" ? "blue.400" : "transparent"}
-                color={model === "v1.5" ? "white" : "blue.400"}
-                _hover={{ bg: model === "v1.5" ? "blue.500" : "blue.100" }}
+                bg={model === "3.0" ? "blue.400" : "transparent"}
+                color={model === "3.0" ? "white" : "blue.400"}
+                _hover={{ bg: model === "3.0" ? "blue.500" : "blue.100" }}
               >
-                v1.5
+                3.0
               </Button>
               <Button
-                onClick={() => setModel("v2.0")}
+                onClick={() => setModel("xl")}
                 borderRadius="2xl"
                 border="2px solid"
                 borderColor="purple.400"
-                bg={model === "v2.0" ? "purple.400" : "transparent"}
-                color={model === "v2.0" ? "white" : "purple.400"}
-                _hover={{ bg: model === "v2.0" ? "purple.500" : "purple.100" }}
+                bg={model === "xl" ? "purple.400" : "transparent"}
+                color={model === "xl" ? "white" : "purple.400"}
+                _hover={{ bg: model === "xl" ? "purple.500" : "purple.100" }}
               >
-                v2.0
+                xl
               </Button>
             </Flex>
           </Flex>

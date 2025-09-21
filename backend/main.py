@@ -1,12 +1,11 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from controllers.gallery import gallery_router
 from controllers.prompts import prompts_router
 from controllers.auth import auth_router
 from controllers.model import models
 from controllers.health import health
-from controllers.comfyui import comfyui
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
@@ -23,4 +22,3 @@ app.include_router(prompts_router, prefix="/prompts", tags=["prompts"])
 app.include_router(auth_router, prefix="/auth", tags=["auth"])
 app.include_router(models, prefix='/model', tags=['model'])
 app.include_router(health, prefix='/health', tags=['health'])
-app.include_router(comfyui, prefix='/comfyui', tags=['comfyui'])
