@@ -12,18 +12,15 @@ from fastapi.responses import JSONResponse
 from fastapi import HTTPException
 from huggingface_hub import login
 
-from pipelines.pipeline_v1_4 import Pipeline_v1_4
-from pipelines.pipeline_v1_5 import Pipeline_v1_5
-from pipelines.pipeline_v2_0 import Pipeline_v2_0
 from utils.auth_helpers import get_current_user
 from utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
 from schemas.generation import TextToImageRequest, Img2ImgRequest, Inpainting
 
 models= APIRouter()
 
-# 'runwayml/stable-diffusion-inpainting': Pipeline_v1_5
 model_versions = {
     '1.5' : 'stable-diffusion-1-5.safetensors',
+    '2.0-inpainting' : 'stable-diffusion-2-0-inpainting.safetensors',
     '2.1' : 'stable-diffusion-2-1.ckpt',
     '3.0' : 'stable-diffusion-3-medium.safetensors',
     'xl' : 'stable-diffusion-xl.safetensors'

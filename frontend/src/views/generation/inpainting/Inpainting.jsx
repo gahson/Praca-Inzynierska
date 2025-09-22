@@ -27,7 +27,7 @@ const Inpainting = () => {
   const [loading, updateLoading] = useState(false);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(0);
-  const [model, setModel] = useState("1.5");
+  const [model, setModel] = useState("2.0-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
 
   const canvasRef = useRef(null);
@@ -198,48 +198,15 @@ const Inpainting = () => {
             <Text>Choose model</Text>
             <Flex direction="row" gap={4}>
               <Button
-                onClick={() => setModel("1.5")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="green.400"
-                bg={model === "1.5" ? "green.400" : "transparent"}
-                color={model === "1.5" ? "white" : "green.400"}
-                _hover={{ bg: model === "1.5" ? "green.500" : "green.100" }}
-              >
-                1.5
-              </Button>
-              <Button
-                onClick={() => setModel("2.1")}
+                onClick={() => setModel("2.0-inpainting")}
                 borderRadius="2xl"
                 border="2px solid"
                 borderColor="orange.400"
-                bg={model === "2.1" ? "orange.400" : "transparent"}
-                color={model === "2.1" ? "white" : "orange.400"}
-                _hover={{ bg: model === "2.1" ? "orange.500" : "orange.100" }}
+                bg={model === "2.0-inpainting" ? "orange.400" : "transparent"}
+                color={model === "2.0-inpainting" ? "white" : "orange.400"}
+                _hover={{ bg: model === "2.0-inpainting" ? "orange.500" : "orange.100" }}
               >
-                2.1
-              </Button>
-              <Button
-                onClick={() => setModel("3.0")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="blue.400"
-                bg={model === "3.0" ? "blue.400" : "transparent"}
-                color={model === "3.0" ? "white" : "blue.400"}
-                _hover={{ bg: model === "3.0" ? "blue.500" : "blue.100" }}
-              >
-                3.0
-              </Button>
-              <Button
-                onClick={() => setModel("xl")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="purple.400"
-                bg={model === "xl" ? "purple.400" : "transparent"}
-                color={model === "xl" ? "white" : "purple.400"}
-                _hover={{ bg: model === "xl" ? "purple.500" : "purple.100" }}
-              >
-                xl
+                2.0-inpainting
               </Button>
             </Flex>
           </Flex>
