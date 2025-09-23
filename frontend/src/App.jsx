@@ -15,8 +15,6 @@ import Inpainting from "./views/generation/inpainting/Inpainting";
 import BoundingBoxes from "./views/generation/bounding-boxes/BoundingBoxes";
 import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
-import Privacy from "./views/privacy/Privacy";
-import Terms from "./views/terms/Terms";
 import Login from "./views/account/login/Login";
 import Logout from "./views/account/logout/Logout";
 import Profile from "./views/account/profile/Profile";
@@ -32,8 +30,6 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/views/dashboard" replace />} />
             <Route path="/views/account/login" element={<Login />} />
-            <Route path="/views/privacy" element={<Privacy />} />
-            <Route path="/views/terms" element={<Terms />} />
             <Route path="/views/account/register" element={<Register />} />
             <Route path="/views/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
             <Route path="/views/generation/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
