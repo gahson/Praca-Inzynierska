@@ -26,10 +26,10 @@ export default function Navbar() {
   if (!hasMounted) return null;
 
   return (
-    <nav className="bg-black text-white sticky top-0 z-10 w-screen shadow-md px-4 md:px-8 py-3 md:py-4">
-      <div className="flex flex-col md:flex-row md:items-center justify-between flex-wrap gap-4">
+    <nav className="bg-black text-white shadow-lg p-5">
+      <div className="flex flex-row justify-between gap-4">
         {/* Logo */}
-        <div className="flex items-center flex-shrink-0 cursor-pointer max-h-[50px]">
+        <div className="flex-shrink-0 cursor-pointer">
           <RouterLink to="/views/dashboard">
             <img
               src={Logo}
@@ -40,26 +40,23 @@ export default function Navbar() {
         </div>
 
         {/* Links */}
-        <div className="flex flex-wrap justify-center md:justify-center gap-4 flex-grow">
+        <div className="flex flex-wrap justify-center gap-5">
           {navLinks.map(({ href, label, icon: Icon }) => (
-            <div key={href} className="flex items-center gap-2">
-              <Icon size={20} />
-              <RouterLink
-                to={href}
-                className="px-3 py-2 text-white hover:text-gray-300 no-underline"
-              >
+            <RouterLink to={href} className="text-white hover:text-gray-300 no-underline p-3 ">
+              <div key={href} className="flex items-center gap-2">
+                <Icon className="w-7 h-7"/>
                 {label}
-              </RouterLink>
-            </div>
+              </div>
+            </RouterLink>
           ))}
         </div>
 
         {/* Auth Controls */}
-        <div className="flex items-center gap-4 justify-center md:justify-end flex-shrink-0">
+        <div className="flex items-center justify-center gap-4">
           {isAuthenticated && (
             <RouterLink to="/views/account/profile">
-              <div className="cursor-pointer">
-                <FaUser color="white" size={27} />
+              <div className="text-white hover:text-gray-300cursor-pointer">
+                <FaUser className="w-7 h-7"/>
               </div>
             </RouterLink>
           )}
