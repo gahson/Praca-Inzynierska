@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { logout } from "../../../features/auth/authSlice";
 import { useNavigate } from "react-router-dom";
-import { Center, Heading, Spinner } from "@chakra-ui/react";
+import { logout } from "../../../features/auth/authSlice";
 
 export default function Logout() {
   const dispatch = useDispatch();
@@ -14,11 +13,9 @@ export default function Logout() {
   }, [dispatch, navigate]);
 
   return (
-    <Center height="100vh" bg="gray.100" flexDirection="column">
-      <Heading fontSize="4xl" color="gray.700" mb={4}>
-        Logging out...
-      </Heading>
-      <Spinner size="xl" color="gray.500" />
-    </Center>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
+      <h1 className="text-4xl text-gray-700 mb-4">Logging out...</h1>
+      <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-gray-500 border-solid"></div>
+    </div>
   );
 }

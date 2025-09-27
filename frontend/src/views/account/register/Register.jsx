@@ -1,17 +1,11 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Stack,
-} from "@chakra-ui/react";
-import { toaster } from "../../../components/ui/toaster"
+import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
+
+import { toaster } from "../../../components/ui/toaster"
 import { loginSuccess } from "../../../features/auth/authSlice";
+
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -104,55 +98,50 @@ const Register = () => {
   };
 
   return (
-    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50" height='100%'>
-      <Box
-        bg="white"
-        p={8}
-        borderRadius="md"
-        boxShadow="lg"
-        width={{ base: "90%", md: "400px" }}
-      >
-        <Heading mb={6} size="lg" textAlign="center">
-          Register
-        </Heading>
-        <Stack spacing={4}>
-          <Input
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+      <div className="w-[90%] sm:w-[400px] bg-white rounded-md shadow-lg p-8">
+        <h1 className="text-lg font-semibold text-center mb-6">Register</h1>
+        <div className="flex flex-col gap-4">
+          <input
             name="first_name"
             placeholder="First Name"
             value={form.first_name}
             onChange={handleChange}
+            className="border border-gray-300 rounded px-3 py-2"
           />
-          <Input
+          <input
             name="last_name"
             placeholder="Last Name"
             value={form.last_name}
             onChange={handleChange}
+            className="border border-gray-300 rounded px-3 py-2"
           />
-          <Input
+          <input
             name="email"
             type="email"
             placeholder="Email"
             value={form.email}
             onChange={handleChange}
+            className="border border-gray-300 rounded px-3 py-2"
           />
-          <Input
+          <input
             name="password"
             type="password"
             placeholder="Password"
             value={form.password}
             onChange={handleChange}
+            className="border border-gray-300 rounded px-3 py-2"
           />
-          <Button
-            colorScheme="yellow"
+          <button
             onClick={handleRegister}
-            isLoading={loading}
-            loadingText="Registering"
+            className="bg-yellow-400 text-black rounded hover:bg-yellow-500 disabled:opacity-50 py-2"
+            disabled={loading}
           >
-            Register
-          </Button>
-        </Stack>
-      </Box>
-    </Flex>
+            {loading ? "Registering" : "Register"}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 };
 

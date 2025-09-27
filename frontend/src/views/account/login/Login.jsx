@@ -1,18 +1,11 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
-import { toaster } from "../../../components/ui/toaster"
+import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { loginSuccess } from "../../../features/auth/authSlice";
-import axios from "axios";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
+
+import { toaster } from "../../../components/ui/toaster"
+import { loginSuccess } from "../../../features/auth/authSlice";
+
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -94,49 +87,42 @@ const Login = () => {
   };
 
   return (
-    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50" height='100%'>
-      <Box
-        bg="white"
-        p={8}
-        borderRadius="md"
-        boxShadow="lg"
-        width={{ base: "90%", sm: "400px" }}
-      >
-        <Heading mb={6} size="lg" textAlign="center">
-          Log In
-        </Heading>
-
-        <Stack spacing={4}>
-          <Input
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+      <div className="w-[90%] sm:w-[400px] bg-white rounded-md shadow-lg p-8">
+        <h2 className="text-lg font-semibold text-center mb-6">Log In</h2>
+        <div className="flex flex-col gap-4">
+          <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 rounded p-2"
           />
-          <Input
+          <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="border border-gray-300 rounded px-3 py-2 rounded p-2"
           />
-          <Button
-            colorScheme="yellow"
+          <button
             onClick={handleLogin}
-            isLoading={loading}
-            loadingText="Logging in"
+            className="bg-yellow-400 text-black rounded hover:bg-yellow-500 disabled:opacity-50 py-2"
+            disabled={loading}
           >
-            Log in
-          </Button>
-        </Stack>
+            {loading ? "Logging in" : "Log in"}
+          </button>
+        </div>
 
-        <Text mt={4} fontSize="sm" textAlign="center">
-          Don&apos;t have an account?{" "}
-          <RouterLink to="/views/account/register" style={{ color: "#D69E2E" }}>
+        <p className="text-sm text-center mt-4">
+          Don't have an account?{" "}
+          <RouterLink to="/views/account/register" className="text-yellow-600">
             Register
           </RouterLink>
-        </Text>
-      </Box>
-    </Flex>
+        </p>
+      </div>
+    </div>
+
   );
 };
 

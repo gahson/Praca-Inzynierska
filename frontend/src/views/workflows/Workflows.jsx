@@ -1,76 +1,78 @@
-import { Avatar, Card, Flex } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-
-import {
-  FaFileImage,
-  FaImages,
-  FaMagic,
-} from "react-icons/fa";
-
 import { BsBoundingBoxCircles } from "react-icons/bs";
+import { FaFileImage, FaImages, FaMagic } from "react-icons/fa";
 
 const Workflows = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    return (
+  return (
+    <div className="w-full h-screen bg-gray-100 flex flex-col p-5 gap-5">
 
-        <Flex align='center' justify='center'  width='100%' height='100%' bg='gray.100'>
+        <h1 className="font-bold text-3xl">Basic workflows</h1>
 
-            <Flex gap='4' direction='row' wrap='wrap' width='70%'>
-                
-                <Card.Root as='button' flex="1 1 40%" minWidth="250px" variant="elevated" height='auto' _hover={{ bg: "gray.200", cursor: "pointer" }} onClick={() => navigate("/views/generation/text-to-image")}>
-                    <Card.Body gap='2'>
-                        <Avatar.Root size='lg' shape='rounded' bg='blue.200'>
-                           <FaFileImage/>
-                        </Avatar.Root>
-                        <Card.Title mb='2'>Text to Image</Card.Title>
-                        <Card.Description>
-                            Generates an image based on a text prompt
-                        </Card.Description>
-                    </Card.Body>
-                </Card.Root>
+        <div className='w-full flex flex-wrap gap-10'>
 
-                <Card.Root flex="1 1 40%" minWidth="250px" variant="elevated" height='auto' _hover={{ bg: "gray.200", cursor: "pointer" }} onClick={() => navigate("/views/generation/image-to-image")}>
-                    <Card.Body gap='2'>
-                        <Avatar.Root size='lg' shape='rounded' bg='green.200'>
-                        <FaImages/>
-                        </Avatar.Root>
-                        <Card.Title mb='2'>Image to Image</Card.Title>
-                        <Card.Description>
-                            Transform an input image by providing a text prompt.
-                        </Card.Description>
-                    </Card.Body>
-                </Card.Root>
+        {/* Text to Image */}
+        <button
+          onClick={() => navigate("/views/workflows/text-to-image")}
+          className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
+        >
+          <div className="bg-blue-200 flex items-center justify-center p-3 rounded-lg">
+            <FaFileImage className="w-6 h-6"/>
+          </div>
+          <h3 className="text-lg font-semibold">Text to Image</h3>
+          <p className="text-gray-700 text-sm">
+            Generate an image based on a text prompt
+          </p>
+        </button>
 
-                <Card.Root flex="1 1 40%" minWidth="250px" variant="elevated" height='auto' _hover={{ bg: "gray.200", cursor: "pointer" }} onClick={() => navigate("/views/generation/inpainting")}>
-                    <Card.Body gap='2'>
-                        <Avatar.Root size='lg' shape='rounded' bg='purple.200'>
-                            <FaMagic/>
-                        </Avatar.Root>
-                        <Card.Title mb='2'>Inpainting</Card.Title>
-                        <Card.Description>
-                            Inpainting lets you paint out areas on the image that you want to change.
-                        </Card.Description>
-                    </Card.Body>
-                </Card.Root>
+        {/* Image to Image */}
+        <button
+          onClick={() => navigate("/views/workflows/image-to-image")}
+          className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
+        >
+          <div className="bg-green-200 flex items-center justify-center p-3 rounded-lg">
+            <FaImages className="w-6 h-6" />
+          </div>
+          <h3 className="text-lg font-semibold mb-1">Image to Image</h3>
+          <p className="text-gray-700 text-sm">
+            Transform an input image by providing a text prompt.
+          </p>
+        </button>
 
-                <Card.Root flex="1 1 40%" minWidth="250px" variant="elevated" height='auto' _hover={{ bg: "gray.200", cursor: "pointer" }} onClick={() => navigate("/views/generation/bounding-boxes")}>
-                    <Card.Body gap='2'>
-                        <Avatar.Root size='lg' shape='rounded' bg='yellow.200'>
-                            <BsBoundingBoxCircles size='24'/>
-                        </Avatar.Root>
-                        <Card.Title mb='2'>Bounding Boxes</Card.Title>
-                        <Card.Description>
-                            Draw rectangular regions on an image to alter its appearance
-                        </Card.Description>
-                    </Card.Body>
-                </Card.Root>
+        {/* Inpainting */}
+        <button
+          onClick={() => navigate("/views/workflows/inpainting")}
+          className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
+        >
+          <div className="bg-purple-200 flex items-center justify-center p-3 rounded-lg">
+            <FaMagic className="w-6 h-6" />
+          </div>
+          <h3 className="text-lg font-semibold mb-1">Inpainting</h3>
+          <p className="text-gray-700 text-sm">
+            Inpainting lets you paint out areas on the image that you want to change.
+          </p>
+        </button>
 
-            </Flex>
+        {/* Bounding Boxes */}
+        <button
+          onClick={() => navigate("/views/workflows/bounding-boxes")}
+          className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
+        >
+          <div className="bg-yellow-200 flex items-center justify-center p-3 rounded-lg">
+            <BsBoundingBoxCircles className="w-6 h-6" />
+          </div>
+          <h3 className="text-lg font-semibold mb-1">Bounding Boxes</h3>
+          <p className="text-gray-700 text-sm">
+            Draw rectangular regions on an image to alter its appearance
+          </p>
+        </button>
 
-        </Flex>
+        </div>
 
-    );
-}
+
+    </div>
+  );
+};
 
 export default Workflows;

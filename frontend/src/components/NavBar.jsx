@@ -1,22 +1,19 @@
-import { useEffect, useState } from "react";
-import { Box, Flex, Link, Button, Heading, Text } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
-import { Link as RouterLink } from "react-router-dom";
-import Logo from "../assets/logo.png";
-
-import {FaUser} from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import { FiGrid } from "react-icons/fi";
 import { LuHouse } from "react-icons/lu";
-import { MdOutlineTextSnippet, MdOutlineDashboard, MdOutlineLan } from "react-icons/md";
+import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { MdOutlineTextSnippet, MdOutlineLan } from "react-icons/md";
+
+import Logo from "../assets/logo.png";
 
 const navLinks = [
   { href: "/views/dashboard", label: "Dashboard", icon: LuHouse },
-  { href: "/views/workflows", label: "Workflows", icon: MdOutlineLan  },
+  { href: "/views/workflows", label: "Workflows", icon: MdOutlineLan },
   { href: "/views/prompts", label: "Prompts", icon: MdOutlineTextSnippet },
   { href: "/views/gallery", label: "Gallery", icon: FiGrid },
 ];
-
-
 
 export default function Navbar() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -29,97 +26,50 @@ export default function Navbar() {
   if (!hasMounted) return null;
 
   return (
-    <Box
-      bg="black"
-      color="white"
-      px={{ base: 4, md: 8 }}
-      py={{ base: 3, md: 4 }}
-      boxShadow="md"
-      position="sticky"
-      top="0"
-      zIndex="10"
-      width='100vw'
-    >
-      <Flex
-        direction={{ base: "column", md: "row" }}
-        align={{ base: "stretch", md: "center" }}
-        justify="space-between"
-        wrap="wrap"
-        gap={4}
-      >
-{/* Logo jako obrazek */}
-<Box
-  flexShrink={0}
-  display="flex"
-  alignItems="center"
-  maxHeight="50px"    // ogranicza wysokość navbaru
-  cursor="pointer"
->
-  <Link as={RouterLink} to="/views/dashboard">
-    <img
-      src={Logo}
-      alt="AInterior Logo"
-      style={{
-        height: '40px',   // wysokość logo w navbarze
-        width: 'auto',    // zachowuje proporcje (210x109 -> ok 40x20, w proporcji)
-        display: 'block', // usuwa ewentualne odstępy inline
-        objectFit: 'contain' // logo mieści się w boxie, nie rozciąga się
-      }}
-    />
-  </Link>
-</Box>
+    <nav className="bg-black text-white shadow-lg p-5">
+      <div className="flex flex-row justify-between gap-4">
+        {/* Logo */}
+        <div className="flex-shrink-0 cursor-pointer">
+          <RouterLink to="/views/dashboard">
+            <img
+              src={Logo}
+              alt="AInterior Logo"
+              className="h-10 w-auto object-contain block"
+            />
+          </RouterLink>
+        </div>
 
         {/* Links */}
-        <Flex
-          wrap="wrap"
-          justify={{ base: "center", md: "center" }}
-          gap={4}
-          flexGrow={1}
-        >
+        <div className="flex flex-wrap justify-center gap-5">
           {navLinks.map(({ href, label, icon: Icon }) => (
-            <Flex key={href} align="center" gap={2}>
-              <Icon size={20} />
-              <Link
-                as={RouterLink}
-                to={href}
-                px={3}
-                py={2}
-              >
-                {<Text color='white' _hover={{ color: "gray.300", textDecoration: "none" }}>{label}</Text>}
-              </Link>
-            </Flex>
+            <RouterLink to={href} className="text-white hover:text-gray-300 no-underline p-3 ">
+              <div key={href} className="flex items-center gap-2">
+                <Icon className="w-7 h-7"/>
+                {label}
+              </div>
+            </RouterLink>
           ))}
-        </Flex>
+        </div>
 
         {/* Auth Controls */}
-        <Flex
-          align="center"
-          gap={4}
-          justify={{ base: "center", md: "flex-end" }}
-          flexShrink={0}
-        >
+        <div className="flex items-center justify-center gap-4">
           {isAuthenticated && (
-            <Link as={RouterLink} to="/views/account/profile">
-              <Box cursor="pointer">
-                <FaUser color="white" size={27} />
-              </Box>
-            </Link>
+            <RouterLink to="/views/account/profile">
+              <div className="text-white hover:text-gray-300cursor-pointer">
+                <FaUser className="w-7 h-7"/>
+              </div>
+            </RouterLink>
           )}
 
-          <Link
-            as={RouterLink}
-            to={
-              isAuthenticated
-                ? "/views/account/logout"
-                : "/views/account/login"
-            }
+          <RouterLink
+            to={isAuthenticated ? "/views/account/logout" : "/views/account/login"}
           >
-            <Button backgroundColor="yellow.400" color="black">
+            <button className="bg-yellow-400 text-black px-4 py-2 rounded-lg">
               {isAuthenticated ? "Logout" : "Login"}
-            </Button>
-          </Link>
-        </Flex>
-      </Flex>
-    </Box>
+            </button>
+          </RouterLink>
+        </div>
+      </div>
+    </nav>
   );
 }

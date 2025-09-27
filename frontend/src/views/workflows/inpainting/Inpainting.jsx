@@ -1,19 +1,8 @@
-import {
-  Flex,
-  Text,
-  Input,
-  Button,
-  Wrap,
-  Stack,
-  Image as ChakraImage,
-  Box,
-  SkeletonCircle,
-  SkeletonText,
-} from "@chakra-ui/react";
-import { toaster } from "../../../components/ui/toaster";
-import { FaTimes } from "react-icons/fa";
 import axios from "axios";
 import { useState, useEffect, useRef } from "react";
+import { FaTimes } from "react-icons/fa";
+
+import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
 import InpaintingCanvas from "../../../components/InpaintingCanvas";
 
@@ -29,6 +18,7 @@ const Inpainting = () => {
   const [seed, setSeed] = useState(0);
   const [model, setModel] = useState("2.0-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
+  const [maskEditorOpen, setMaskEditorOpen] = useState(false);
 
   const canvasRef = useRef(null);
 
@@ -63,8 +53,8 @@ const Inpainting = () => {
   const loadImage = (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setLoadedImageFilename(file.name);
+
     const reader = new FileReader();
     reader.onloadend = () => {
       const img = new Image();
@@ -74,6 +64,7 @@ const Inpainting = () => {
         const validatedHeight = Math.round(img.height / 8) * 8;
         setImageDimensions({ width: validatedWidth, height: validatedHeight });
         setLoadedImage(reader.result);
+        setMaskEditorOpen(true);
       };
     };
     reader.readAsDataURL(file);
@@ -84,6 +75,7 @@ const Inpainting = () => {
     setLoadedImage(null);
     setMaskData(null);
     setImageDimensions({ width: 512, height: 512 });
+    setMaskEditorOpen(false);
   };
 
   const generate = async () => {
@@ -94,8 +86,6 @@ const Inpainting = () => {
         title: "Not logged in",
         description: "You must be logged in to generate images.",
         status: "warning",
-        duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -105,8 +95,6 @@ const Inpainting = () => {
         title: "Missing image",
         description: "You must load an image.",
         status: "error",
-        duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -116,8 +104,6 @@ const Inpainting = () => {
         title: "Missing mask",
         description: "You must draw a mask on the image.",
         status: "error",
-        duration: 3000,
-        isClosable: true,
       });
       return;
     }
@@ -138,9 +124,7 @@ const Inpainting = () => {
           strength: 1.0,
         },
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -151,8 +135,6 @@ const Inpainting = () => {
         title: "Generation failed",
         description: error.response?.data?.detail || "Could not generate image.",
         status: "error",
-        duration: 3000,
-        isClosable: true,
       });
     } finally {
       updateLoading(false);
@@ -160,16 +142,10 @@ const Inpainting = () => {
   };
 
   return (
-    <Box bg="gray.100" minHeight="100vh" px={{ base: 4, md: 8 }} py={{ base: 6, md: 12 }}>
-      <Flex
-        mt={{ base: "1vh", md: "15vh" }}
-        mb={{ base: "1vh", md: "15vh" }}
-        justify="center"
-        gap={{ base: "5%", md: "20%" }}
-        direction={{ base: "column", md: "row" }}
-        align={{ base: "center", md: "flex-start" }}
-      >
-        <Box width={{ base: "100%", md: "35%" }} display="flex" flexDirection="column" mb={{ base: 10, md: 0 }}>
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
+      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8"> {/*justify-center items-center mx-auto*/}
+        {/* Panel */}
+        <div className="flex-1 flex flex-col gap-4 justify-center items-start">
           <FileInput
             id="upload-image"
             label="Load Image"
@@ -179,104 +155,98 @@ const Inpainting = () => {
             onRemove={unloadImage}
           />
 
-          <Wrap mb="10px" width="100%">
-            <Input value={prompt} onChange={(e) => updatePrompt(e.target.value)} placeholder="Enter prompt" />
-          </Wrap>
+          <input
+            value={prompt}
+            onChange={(e) => updatePrompt(e.target.value)}
+            placeholder="Enter prompt"
+            className="w-full p-2 border rounded"
+          />
+          <input
+            value={negativePrompt}
+            onChange={(e) => updateNegativePrompt(e.target.value)}
+            placeholder="Enter negative prompt (optional)"
+            className="w-full p-2 border rounded"
+          />
 
-          <Wrap mb="10px" width="100%">
-            <Input
-              value={negativePrompt}
-              onChange={(e) => updateNegativePrompt(e.target.value)}
-              placeholder="Enter negative prompt (optional)"
-            />
-          </Wrap>
+          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
 
-          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(value) => setGuidance(value[0])} />
-          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(value) => setSeed(value[0])} />
-
-          <Flex direction="column" align="left" gap={1} pb={4}>
-            <Text>Choose model</Text>
-            <Flex direction="row" gap={4}>
-              <Button
+          <div className="flex flex-col gap-2 items-start w-full">
+            <p>Choose model</p>
+            <div className="flex gap-4 flex-wrap">
+              <button
                 onClick={() => setModel("2.0-inpainting")}
-                borderRadius="2xl"
-                border="2px solid"
-                borderColor="orange.400"
-                bg={model === "2.0-inpainting" ? "orange.400" : "transparent"}
-                color={model === "2.0-inpainting" ? "white" : "orange.400"}
-                _hover={{ bg: model === "2.0-inpainting" ? "orange.500" : "orange.100" }}
+                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "2.0-inpainting"
+                  ? "bg-black text-white"
+                  : "text-black bg-transparent hover:bg-gray-200"
+                  }`}
               >
                 2.0-inpainting
-              </Button>
-            </Flex>
-          </Flex>
+              </button>
+            </div>
+          </div>
 
-          <Button onClick={generate} color="black" backgroundColor="yellow.400" width="100%">
+          <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
             Generate
-          </Button>
-        </Box>
+          </button>
+        </div>
 
-        <Flex
-          width={{ base: "100%", md: `${imageDimensions.width}px` }}
-          height={{ base: "auto", md: `${imageDimensions.height}px` }}
-          align="center"
-          justify="center"
-          bg="gray.200"
-          borderRadius="md"
-          position="relative"
-        >
+        {/* Generated Image */}
+        <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
           {loading ? (
-            <Stack width="100%" height="100%">
-              <SkeletonCircle />
-              <SkeletonText />
-            </Stack>
-          ) : image ? (
-            <ChakraImage
-              src={`data:image/png;base64,${image}`}
-              alt="Generated Image"
-              boxShadow="lg"
-              borderRadius="md"
-              width="100%"
-              height="100%"
-              objectFit="contain"
-            />
-          ) : loadedImage ? (
-            <InpaintingCanvas
+            <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
+              <div className="rounded-full bg-gray-300 h-12 w-12"></div>
+              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+            </div>
+          ) : (
+            image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+          )}
+        </div>
+      </div>
 
+      {maskEditorOpen && (
+        <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center">
+          <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center bg-black/90" />
+          <div className="relative z-[9999] flex justify-center items-center">
+            <InpaintingCanvas
               imageSrc={loadedImage}
               onMaskUpdate={setMaskData}
               width={imageDimensions.width}
               height={imageDimensions.height}
+              setMaskEditorOpenRef={setMaskEditorOpen}
             />
-          ) : (
-            <Text color="gray.500">No image loaded</Text>
-          )}
-        </Flex>
-      </Flex>
-    </Box>
+          </div>
+        </div>
+      )}
+    </div>
   );
 };
 
 const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
-  <Wrap mb="10px" width="100%">
-    <Flex width="100%" align="center" justify="space-between">
-      <Input type="file" accept="image/*" display="none" id={id} onChange={onLoad} />
-      <Button as="label" htmlFor={id} cursor="pointer" color="black" backgroundColor="yellow.400" width="50%">
-        {label}
-      </Button>
+  <div className="w-full flex items-center gap-2">
+    <input type="file" accept="image/*" id={id} onChange={onLoad} className="hidden" />
+    <label
+      htmlFor={id}
+      className="cursor-pointer bg-yellow-400 text-black px-4 py-2 rounded w-1/2 text-center"
+    >
+      {label}
+    </label>
 
-      {hasFile ? (
-        <Flex align="center" justify="flex-end" width="100%" maxW="300px">
-          <Text>{filename}</Text>
-          <Button backgroundColor="red.500" variant="ghost" aria-label="Delete" onClick={onRemove}>
-            <FaTimes size={20} />
-          </Button>
-        </Flex>
-      ) : (
-        <Text color="gray.500">No file loaded</Text>
-      )}
-    </Flex>
-  </Wrap>
+    {hasFile ? (
+      <div className="flex items-center gap-2">
+        <span className="truncate max-w-[200px]">{filename}</span>
+        <button
+          onClick={onRemove}
+          className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
+        >
+          <FaTimes size={16} />
+        </button>
+      </div>
+    ) : (
+      <span className="text-gray-500">No file loaded</span>
+    )}
+  </div>
 );
 
 export default Inpainting;
