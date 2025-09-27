@@ -1,4 +1,5 @@
 import React from "react";
+import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ChakraProvider, Flex } from "@chakra-ui/react";
 import { defaultSystem } from "@chakra-ui/react"
@@ -26,26 +27,27 @@ import Health from "./views/health/Health";
 
 const App = () => (
   <Provider store={store}>
-      <ColorModeProvider />
-      <BrowserRouter>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Navigate to="/views/dashboard" replace />} />
-            <Route path="/views/account/login" element={<Login />} />
-            <Route path="/views/account/register" element={<Register />} />
-            <Route path="/views/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/views/workflows/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
-            <Route path="/views/workflows/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
-            <Route path="/views/workflows/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
-            <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} />
-            <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />
-            <Route path="/views/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
-            <Route path="/views/account/logout" element={<PrivateRoute><Logout /></PrivateRoute>} />
-            <Route path="/views/account/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
-            <Route path="/views/workflows" element={<PrivateRoute><Workflows /></PrivateRoute>} />
-            <Route path="/views/health" element={<Health />} />
-          </Routes>
-      </BrowserRouter>
+    <ColorModeProvider />
+    <BrowserRouter>
+      <Navbar />
+      <Toaster />
+      <Routes>
+        <Route path="/" element={<Navigate to="/views/dashboard" replace />} />
+        <Route path="/views/account/login" element={<Login />} />
+        <Route path="/views/account/register" element={<Register />} />
+        <Route path="/views/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+        <Route path="/views/workflows/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
+        <Route path="/views/workflows/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
+        <Route path="/views/workflows/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
+        <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} />
+        <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />
+        <Route path="/views/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
+        <Route path="/views/account/logout" element={<PrivateRoute><Logout /></PrivateRoute>} />
+        <Route path="/views/account/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="/views/workflows" element={<PrivateRoute><Workflows /></PrivateRoute>} />
+        <Route path="/views/health" element={<Health />} />
+      </Routes>
+    </BrowserRouter>
   </Provider>
 );
 
