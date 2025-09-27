@@ -1,9 +1,8 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
-import { Box, Button, VStack } from "@chakra-ui/react";
 import SliderControl from "./SliderControl";
 
 const InpaintingCanvas = forwardRef(
-  ({ imageSrc, onMaskUpdate, width, height }, ref) => {
+  ({ imageSrc, onMaskUpdate, width, height, setMaskEditorOpenRef }, ref) => {
     const imageCanvasRef = useRef(null);
     const maskCanvasRef = useRef(null);
     const tempCanvasRef = useRef(null);
@@ -26,7 +25,6 @@ const InpaintingCanvas = forwardRef(
       const maskCtx = maskCanvas.getContext("2d");
       const tmpCtx = tempCanvas.getContext("2d");
 
-      // Załaduj obraz tła
       const img = new Image();
       img.src = imageSrc;
       img.onload = () => {
@@ -34,18 +32,15 @@ const InpaintingCanvas = forwardRef(
         imageCtx.drawImage(img, 0, 0, width, height);
       };
 
-      // Inicjalizacja maski (nie czyścimy, jeśli już istnieje)
       if (!context) maskCtx.clearRect(0, 0, width, height);
 
-      // Inicjalizacja płótna tymczasowego
       tmpCtx.clearRect(0, 0, width, height);
       tmpCtx.strokeStyle = "black";
       tmpCtx.lineCap = "round";
 
       setContext(maskCtx);
       setTempContext(tmpCtx);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [imageSrc, width, height]); // <- brushSize nie w dependencies
+    }, [imageSrc, width, height]);
 
     const startDrawing = (e) => {
       if (!tempContext) return;
@@ -59,11 +54,10 @@ const InpaintingCanvas = forwardRef(
       if (!isDrawing || !tempContext || !context) return;
       const { offsetX, offsetY } = e.nativeEvent;
 
-      tempContext.lineWidth = brushSize; // <- dynamiczna grubość
+      tempContext.lineWidth = brushSize;
       tempContext.lineTo(offsetX, offsetY);
       tempContext.stroke();
 
-      // Rysujemy maskę z zachowaniem wcześniejszych pikseli
       context.clearRect(0, 0, width, height);
       context.fillStyle = "rgba(0,0,0,0.5)";
       context.fillRect(0, 0, width, height);
@@ -77,7 +71,6 @@ const InpaintingCanvas = forwardRef(
       setIsDrawing(false);
       tempContext.closePath();
 
-      // Tworzymy finalną maskę
       const finalCanvas = document.createElement("canvas");
       finalCanvas.width = width;
       finalCanvas.height = height;
@@ -114,19 +107,13 @@ const InpaintingCanvas = forwardRef(
     };
 
     return (
-      <VStack spacing={4}>
-        <Box position="relative" width={`${width}px`} height={`${height}px`}>
+      <div className="flex flex-col items-center gap-4">
+        <div className="grid">
           <canvas
             ref={imageCanvasRef}
             width={width}
             height={height}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              zIndex: 1,
-              borderRadius: "8px",
-            }}
+            className="rounded-lg row-start-1 col-start-1"
           />
           <canvas
             ref={maskCanvasRef}
@@ -136,17 +123,10 @@ const InpaintingCanvas = forwardRef(
             onMouseMove={draw}
             onMouseUp={stopDrawing}
             onMouseOut={stopDrawing}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              zIndex: 2,
-              borderRadius: "8px",
-              cursor: "crosshair",
-            }}
+            className="rounded-lg cursor-crosshair row-start-1 col-start-1"
           />
-        </Box>
-
+        </div>
+        
         <SliderControl
           label="Brush size"
           value={brushSize}
@@ -154,12 +134,26 @@ const InpaintingCanvas = forwardRef(
           max={100}
           step={1}
           onChange={(val) => setBrushSize(val)}
+          textColor="text-white"
         />
 
-        <Button colorScheme="red" onClick={clearMask}>
+        <button
+          onClick={() => setMaskEditorOpenRef(false)}
+          className="bg-yellow-500 text-white rounded hover:bg-red-600 transition px-4 py-2"
+        >
+          Save mask
+        </button>
+
+        <button
+          onClick={clearMask}
+          className="bg-red-500 text-white rounded hover:bg-red-600 transition px-4 py-2"
+        >
           Delete mask
-        </Button>
-      </VStack>
+        </button>
+
+         
+
+      </div>
     );
   }
 );

@@ -1,6 +1,6 @@
-const SliderControl = ({ label, value, min, max, step, onChange }) => (
+const SliderControl = ({ label, value, min, max, step, onChange, textColor = "text-gray-700" }) => (
   <div className="w-full mb-4">
-    <label className="block mb-2 text-sm font-medium text-gray-700">
+    <label className={`block mb-2 text-sm font-medium ${textColor}`}>
       {label}: {value}
     </label>
     <input

@@ -1,32 +1,38 @@
-import { Wrap, Flex, Input, Button, Text } from "@chakra-ui/react";
 import { FaTimes } from "react-icons/fa";
 
 const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
-  <Wrap width="100%">
-    <Flex width="100%" align="center" justify="space-between">
-      <Input
+  <div className="w-full">
+    <div className="flex w-full items-center justify-between">
+      <input
         type="file"
         accept="image/*"
-        display="none"
         id={id}
         onChange={onLoad}
+        className="hidden"
       />
-      <Button as="label" htmlFor={id} cursor="pointer" color='black' backgroundColor='yellow.400' width="50%">
+      <label
+        htmlFor={id}
+        className="w-1/2 bg-yellow-400 cursor-pointer text-black rounded text-center px-4 py-2"
+      >
         {label}
-      </Button>
+      </label>
 
       {hasFile ? (
-        <Flex align="center" justify="flex-end" width="100%" maxW="300px">
-          <Text>{filename}</Text>
-          <Button colorScheme="red" variant="ghost" aria-label="Delete" onClick={onRemove}>
+        <div className="w-full max-w-[300px] flex items-center justify-end gap-2">
+          <span className="truncate">{filename}</span>
+          <button
+            onClick={onRemove}
+            aria-label="Delete"
+            className="text-red-500 hover:text-red-700"
+          >
             <FaTimes size={20} />
-          </Button>
-        </Flex>
+          </button>
+        </div>
       ) : (
-        <Text color="gray.500">No file loaded</Text>
+        <span className="text-gray-500">No file loaded</span>
       )}
-    </Flex>
-  </Wrap>
+    </div>
+  </div>
 );
 
 export default FileInput;
