@@ -10,9 +10,9 @@ interior architects to use artificial intelligence models in their work.
 - Prompt gallery with all prompts written by user
 
 ### Techstack
-- Backend: FastAPI (python)
-- Frontend: React + ChakraUI
-- Database: PostgreSQL
+- Backend: Python + FastAPI
+- Frontend: React + Tailwindcss
+- Database: MongoDB
 - Containerization: Docker
 
 ### How to run
