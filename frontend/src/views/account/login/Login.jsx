@@ -94,49 +94,43 @@ const Login = () => {
   };
 
   return (
-    <Flex justify="center" align="center" minHeight="80vh" bg="gray.50" height='100%'>
-      <Box
-        bg="white"
-        p={8}
-        borderRadius="md"
-        boxShadow="lg"
-        width={{ base: "90%", sm: "400px" }}
-      >
-        <Heading mb={6} size="lg" textAlign="center">
-          Log In
-        </Heading>
+    <div className="flex justify-center items-center min-h-[80vh] bg-gray-50 h-full">
+      <div className="bg-white p-8 rounded-md shadow-lg w-[90%] sm:w-[400px]">
+        <h2 className="text-lg font-semibold mb-6 text-center">Log In</h2>
 
-        <Stack spacing={4}>
-          <Input
+        <div className="flex flex-col gap-4">
+          <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            className="border p-2 rounded"
           />
-          <Input
+          <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            className="border p-2 rounded"
           />
-          <Button
-            colorScheme="yellow"
+          <button
             onClick={handleLogin}
-            isLoading={loading}
-            loadingText="Logging in"
+            className="bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500 disabled:opacity-50"
+            disabled={loading}
           >
-            Log in
-          </Button>
-        </Stack>
+            {loading ? "Logging in" : "Log in"}
+          </button>
+        </div>
 
-        <Text mt={4} fontSize="sm" textAlign="center">
-          Don&apos;t have an account?{" "}
-          <RouterLink to="/views/account/register" style={{ color: "#D69E2E" }}>
+        <p className="mt-4 text-sm text-center">
+          Don't have an account?{" "}
+          <RouterLink to="/views/account/register" className="text-yellow-600">
             Register
           </RouterLink>
-        </Text>
-      </Box>
-    </Flex>
+        </p>
+      </div>
+    </div>
+
   );
 };
 

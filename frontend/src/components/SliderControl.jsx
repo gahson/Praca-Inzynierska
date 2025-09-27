@@ -1,35 +1,18 @@
-import {
-  Box,
-  Slider,
-  Text,
-  Wrap,
-} from "@chakra-ui/react";
-
 const SliderControl = ({ label, value, min, max, step, onChange }) => (
-  <Wrap mb="10px" width="100%">
-    <Box mb="10px" width="100%">
-      <Text mb={2}>
-        {label}: {value}
-      </Text>
-
-      <Slider.Root colorPalette="cyan" defaultValue={[value]} step={step} min={min} max={max} onValueChange={(e)=>onChange(e.value)}>
-        <Slider.Label />
-        <Slider.Control>
-          <Slider.Track>
-            <Slider.Range />
-          </Slider.Track>
-          <Slider.Thumb>
-            <Slider.DraggingIndicator />
-            <Slider.HiddenInput />
-          </Slider.Thumb>
-          <Slider.MarkerGroup>
-            <Slider.Marker />
-          </Slider.MarkerGroup>
-        </Slider.Control>
-      </Slider.Root>
-      
-    </Box>
-  </Wrap>
+  <div className="w-full mb-4">
+    <label className="block mb-2 text-sm font-medium text-gray-700">
+      {label}: {value}
+    </label>
+    <input
+      type="range"
+      min={min}
+      max={max}
+      step={step}
+      value={value}
+      onChange={(e) => onChange([Number(e.target.value)])}
+      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-cyan-500"
+    />
+  </div>
 );
 
 export default SliderControl;

@@ -9,17 +9,19 @@ import PrivateRoute from "./components/PrivateRoute";
 import { ColorModeProvider } from "./components/ui/color-mode"
 
 import Dashboard from "./views/dashboard/Dashboard";
-import TextToImage from "./views/generation/text-to-image/TextToImage";
-import ImageToImage from "./views/generation/image-to-image/ImageToImage";
-import Inpainting from "./views/generation/inpainting/Inpainting";
-import BoundingBoxes from "./views/generation/bounding-boxes/BoundingBoxes";
+
+import Workflows from "./views/workflows/Workflows";
+import TextToImage from "./views/workflows/text-to-image/TextToImage";
+import ImageToImage from "./views/workflows/image-to-image/ImageToImage";
+import Inpainting from "./views/workflows/inpainting/Inpainting";
+import BoundingBoxes from "./views/workflows/bounding-boxes/BoundingBoxes";
+
 import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
 import Login from "./views/account/login/Login";
 import Logout from "./views/account/logout/Logout";
 import Profile from "./views/account/profile/Profile";
 import Register from "./views/account/register/Register";
-import Workflows from "./views/workflows/Workflows";
 import Health from "./views/health/Health";
 
 const App = () => (
@@ -32,10 +34,10 @@ const App = () => (
             <Route path="/views/account/login" element={<Login />} />
             <Route path="/views/account/register" element={<Register />} />
             <Route path="/views/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/views/generation/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
-            <Route path="/views/generation/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
-            <Route path="/views/generation/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
-            <Route path="/views/generation/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} />
+            <Route path="/views/workflows/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
+            <Route path="/views/workflows/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
+            <Route path="/views/workflows/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
+            <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} />
             <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />
             <Route path="/views/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
             <Route path="/views/account/logout" element={<PrivateRoute><Logout /></PrivateRoute>} />

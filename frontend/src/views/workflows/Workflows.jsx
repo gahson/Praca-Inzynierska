@@ -14,7 +14,7 @@ const Workflows = () => {
 
         {/* Text to Image */}
         <button
-          onClick={() => navigate("/views/generation/text-to-image")}
+          onClick={() => navigate("/views/workflows/text-to-image")}
           className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
         >
           <div className="bg-blue-200 flex items-center justify-center p-3 rounded-lg">
@@ -28,7 +28,7 @@ const Workflows = () => {
 
         {/* Image to Image */}
         <button
-          onClick={() => navigate("/views/generation/image-to-image")}
+          onClick={() => navigate("/views/workflows/image-to-image")}
           className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
         >
           <div className="bg-green-200 flex items-center justify-center p-3 rounded-lg">
@@ -42,7 +42,7 @@ const Workflows = () => {
 
         {/* Inpainting */}
         <button
-          onClick={() => navigate("/views/generation/inpainting")}
+          onClick={() => navigate("/views/workflows/inpainting")}
           className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
         >
           <div className="bg-purple-200 flex items-center justify-center p-3 rounded-lg">
@@ -56,7 +56,7 @@ const Workflows = () => {
 
         {/* Bounding Boxes */}
         <button
-          onClick={() => navigate("/views/generation/bounding-boxes")}
+          onClick={() => navigate("/views/workflows/bounding-boxes")}
           className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
         >
           <div className="bg-yellow-200 flex items-center justify-center p-3 rounded-lg">
