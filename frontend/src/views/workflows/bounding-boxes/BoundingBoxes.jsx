@@ -1,11 +1,9 @@
-import { Center, Heading } from "@chakra-ui/react";
-
 export default function BoundingBoxes() {
   return (
-      <Center height="100vh" bg="gray.100">
-        <Heading fontSize="6xl" color="gray.700">
-          Bounding Boxes
-        </Heading>
-      </Center>
+    <div className="flex items-center justify-center h-screen bg-gray-100">
+      <h1 className="text-6xl text-gray-700">
+        Bounding Boxes
+      </h1>
+    </div>
   );
 }

@@ -1,22 +1,9 @@
-import {
-  Flex,
-  Text,
-  Input,
-  Button,
-  Wrap,
-  Stack,
-  Image,
-  Box,
-  SkeletonCircle,
-  SkeletonText,
-} from "@chakra-ui/react";
-import { toaster } from "../../../components/ui/toaster"
 import axios from "axios";
 import { useState, useEffect } from "react";
+import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
-import { FileUpload, Icon, Float, useFileUploadContext } from "@chakra-ui/react"
-import { LuX } from "react-icons/lu"
-import { FiUpload } from 'react-icons/fi'; // Feather icons
+import { LuX } from "react-icons/lu";
+import { FiUpload } from 'react-icons/fi';
 
 const ImageToImage = () => {
   const [image, updateImage] = useState();
@@ -111,177 +98,126 @@ const ImageToImage = () => {
   };
 
 
-  const handleFileChange = (fileChangeDetails) => {
-
-    const files = fileChangeDetails.acceptedFiles;
-
-    if (files.length === 0) {
-      setLoadedImage(null);
-
-    } else {
-      const file = files[0];
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
       const reader = new FileReader();
       reader.onloadend = () => setLoadedImage(reader.result);
       reader.readAsDataURL(file);
-
+    } else {
+      setLoadedImage(null);
     }
-  }
+  };
 
   return (
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
+      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8">
+        {/* Panel */}
+        <div className="flex-1 flex flex-col gap-4">
+          {/* File Upload */}
+          <div className="w-full h-64 border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+              id="file-input"
+            />
+            {loadedImage === null ? (
+              <label
+                htmlFor="file-input"
+                className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
+              >
+                <FiUpload size={23} className="mb-2 text-gray-500" />
+                <p className="text-gray-700">Drag and drop files here</p>
+                <p className="text-gray-500 text-sm">.png, .jpg up to 5MB</p>
+              </label>
+            ) : (
+              <div className="relative w-full h-full">
+                <img
+                  src={loadedImage}
+                  alt="Preview"
+                  className="w-full h-full object-contain rounded-md"
+                />
+                <button
+                  className="absolute top-2 right-2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 transition"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    setLoadedImage(null);
+                  }}
+                >
+                  <LuX />
+                </button>
+              </div>
+            )}
+          </div>
 
-    <Flex
-      width='100%'
-      height='100%'
-      direction="row"
-      wrap="wrap"
-      bg="gray.100"
-      justify="center"
-      align='center'
-    >
-
-      <Flex w={{ base: "80%", md: "40%" }} direction='column' justify='center' align='center' gap='1'>
-
-        <FileUpload.Root width='100%' alignItems="stretch" maxFiles={1} onFileChange={handleFileChange}>
-          <FileUpload.HiddenInput />
-          <FileUpload.Dropzone width='100%' height="256px" bg='gray.100'>
-            <FileUpload.DropzoneContent width='100%' height='100%'>
-              <Flex width='100%' height='100%' align='center' justify='center' direction='column'>
-
-                {loadedImage === null ? (
-                  <>
-                    <FiUpload size='23'></FiUpload>
-                    <Box>Drag and drop files here</Box>
-                    <Box color="fg.muted">.png, .jpg up to 5MB</Box>
-                  </>
-                ) : (
-
-                  <Box position="relative" width="100%" height="100%">
-                    <Image
-                      src={loadedImage}
-                      alt="Preview"
-                      width="100%"
-                      height="100%"
-                      objectFit="contain"
-                      borderRadius="md"
-                    />
-                    <Float placement='top-end'>
-                      <Button
-                        position="absolute"
-                        bg="gray.700"
-                        color="white"
-                        borderRadius="full"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          setLoadedImage(null);
-                        }}
-                      >
-                        <LuX />
-                      </Button>
-                    </Float>
-                  </Box>
-                )}
-
-              </Flex>
-            </FileUpload.DropzoneContent>
-
-          </FileUpload.Dropzone>
-        </FileUpload.Root>
-
-        <Wrap width="100%">
-          <Input value={prompt} onChange={(e) => updatePrompt(e.target.value)} placeholder="Enter prompt" />
-        </Wrap>
-
-        <Wrap width="100%">
-          <Input
+          <input
+            value={prompt}
+            onChange={(e) => updatePrompt(e.target.value)}
+            placeholder="Enter prompt"
+            className="w-full p-2 border rounded"
+          />
+          <input
             value={negativePrompt}
             onChange={(e) => updateNegativePrompt(e.target.value)}
             placeholder="Enter negative prompt (optional)"
+            className="w-full p-2 border rounded"
           />
-        </Wrap>
 
-        <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(value) => setGuidance(value[0])} />
-        <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(value) => setSeed(value[0])} />
+          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
 
-        <Flex direction="column" align="left" gap={1} pb={4}>
-          <Text>
-            Choose model
-          </Text>
-          <Flex direction="row" gap={4}>
-            <Button
-              onClick={() => setModel("1.5")}
-              borderRadius="2xl"
-              border="2px solid"
-              borderColor="green.400"
-              bg={model === "1.5" ? "green.400" : "transparent"}
-              color={model === "1.5" ? "white" : "green.400"}
-              _hover={{ bg: model === "1.5" ? "green.500" : "green.100" }}
-            >
-              1.5
-            </Button>
-            <Button
-              onClick={() => setModel("2.1")}
-              borderRadius="2xl"
-              border="2px solid"
-              borderColor="orange.400"
-              bg={model === "2.1" ? "orange.400" : "transparent"}
-              color={model === "2.1" ? "white" : "orange.400"}
-              _hover={{ bg: model === "2.1" ? "orange.500" : "orange.100" }}
-            >
-              2.1
-            </Button>
-            <Button
-              onClick={() => setModel("3.0")}
-              borderRadius="2xl"
-              border="2px solid"
-              borderColor="blue.400"
-              bg={model === "3.0" ? "blue.400" : "transparent"}
-              color={model === "3.0" ? "white" : "blue.400"}
-              _hover={{ bg: model === "3.0" ? "blue.500" : "blue.100" }}
-            >
-              3.0
-            </Button>
-            <Button
-              onClick={() => setModel("xl")}
-              borderRadius="2xl"
-              border="2px solid"
-              borderColor="purple.400"
-              bg={model === "xl" ? "purple.400" : "transparent"}
-              color={model === "xl" ? "white" : "purple.400"}
-              _hover={{ bg: model === "xl" ? "purple.500" : "purple.100" }}
-            >
-              xl
-            </Button>
-          </Flex>
-        </Flex>
+          <div className="flex flex-col gap-2">
+            <p>Choose model</p>
+            <div className="flex gap-4 flex-wrap">
+              <button
+                onClick={() => setModel("1.5")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                1.5
+              </button>
+              <button
+                onClick={() => setModel("2.1")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                2.1
+              </button>
+              <button
+                onClick={() => setModel("3.0")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                3.0
+              </button>
+              <button
+                onClick={() => setModel("xl")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                xl
+              </button>
+            </div>
+          </div>
 
-        <Button onClick={generate} color='black' backgroundColor="yellow.400" width="100%">
-          Generate
-        </Button>
-      </Flex>
+          <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+            Generate
+          </button>
+        </div>
 
-      <Flex width={{ base: "80%", md: "45%" }} align='center' justify='center'>
-        <Box width='512px' height='512px' bg="gray.200" borderRadius="md">
+        {/* Generated Image */}
+        <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
           {loading ? (
-            <Stack width="100%" height="100%">
-              <SkeletonCircle />
-              <SkeletonText />
-            </Stack>
-          ) : image ? (
-            <Image
-              src={`data:image/png;base64,${image}`}
-              alt="Generated Image"
-              boxShadow="lg"
-              borderRadius="md"
-              width="100%"
-              height="100%"
-              objectFit="contain"
-            />
-          ) : null
-          }
-        </Box>
-      </Flex>
-    </Flex >
+            <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
+              <div className="rounded-full bg-gray-300 h-12 w-12"></div>
+              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+            </div>
+          ) : (
+            image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 

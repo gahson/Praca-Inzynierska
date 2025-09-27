@@ -1,16 +1,8 @@
-import {
-  Box,
-  Heading,
-  Text,
-  Image,
-  Stack,
-  Button,
-  Wrap,
-} from "@chakra-ui/react";
-import { toaster } from "../../components/ui/toaster"
+import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { toaster } from "../../components/ui/toaster"
+
 
 const Gallery = () => {
   const [gallery, setGallery] = useState([]);
@@ -79,69 +71,60 @@ const Gallery = () => {
   };
 
   return (
-    
-    <Box p={10} bg="gray.100" minHeight='100vh' height="auto" overflowY="auto">
-      <Heading mb={8}>Your Gallery</Heading>
-      <Wrap spacing="20px" justify="center">
+
+    <div className="min-h-screen bg-gray-100 p-10">
+      <h1 className="text-3xl font-bold mb-8">Your Gallery</h1>
+      <div className="flex flex-wrap justify-center gap-5">
         {gallery.map((img) => (
-          <Box
+          <div
             key={img.id}
-            p={3}
-            bg="white"
-            borderRadius="md"
-            boxShadow="md"
-            w="300px"
+            className="w-[300px] bg-white rounded-md shadow-md p-3"
           >
-            <Image
+            <img
               src={`data:image/png;base64,${img.image_base64}`}
               alt="generated"
-              borderRadius="md"
-              mb={3}
-              w="100%"
+              className="w-full rounded-md mb-3 "
             />
-            <Stack spacing={0.5} fontSize="sm">
-              <Text><b>Model:</b> {img.model}</Text>
-              <Text><b>Mode:</b> {img.mode}</Text>
-              <Text><b>Size:</b> {img.width} × {img.height}</Text>
-              <Text><b>Prompt:</b> {img.prompt}</Text>
-              <Text><b>Seed:</b> {img.seed}</Text>
-              <Text><b>Guidance:</b> {img.guidance_scale}</Text>
-              <Text><b>Created:</b> {new Date(img.created_at).toLocaleString()}</Text>
-            </Stack>
-            <Stack direction="column" spacing={2} mt={3}>
-              <Button
-                size="xs"
-                bg="blue.500"
+            <div className="flex flex-col text-sm space-y-1.5">
+              <p><b>Model:</b> {img.model}</p>
+              <p><b>Mode:</b> {img.mode}</p>
+              <p><b>Size:</b> {img.width} × {img.height}</p>
+              <p><b>Prompt:</b> {img.prompt}</p>
+              <p><b>Seed:</b> {img.seed}</p>
+              <p><b>Guidance:</b> {img.guidance_scale}</p>
+              <p><b>Created:</b> {new Date(img.created_at).toLocaleString()}</p>
+            </div>
+            <div className="flex flex-col mt-3 space-y-2">
+              <button
+                className="bg-blue-500 text-xs text-white rounded p-1"
                 onClick={() => handleRedirect(img, "text-to-image")}
               >
                 Use in Text2Image
-              </Button>
-              <Button
-                size="xs"
-                bg="green.500"
+              </button>
+              <button
+                className="bg-green-500 text-xs text-white rounded  p-1"
                 onClick={() => handleRedirect(img, "image-to-image")}
               >
                 Use in Img2Img
-              </Button>
-              <Button
-                size="xs"
-                bg="purple.500"
+              </button>
+              <button
+                className="bg-purple-500 text-xs text-white rounded p-1"
                 onClick={() => handleRedirect(img, "inpainting")}
               >
                 Use in Inpainting
-              </Button>
-              <Button
-                size="xs"
-                bg="red.500"
+              </button>
+              <button
+                className="bg-red-500 text-xs text-white rounded  p-1"
                 onClick={() => handleDelete(img.id)}
               >
                 Delete
-              </Button>
-            </Stack>
-          </Box>
+              </button>
+            </div>
+          </div>
         ))}
-      </Wrap>
-    </Box>
+      </div>
+    </div>
+
   );
 };
 
