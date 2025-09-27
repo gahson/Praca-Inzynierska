@@ -1,17 +1,8 @@
-import {
-  Box,
-  Button,
-  Flex,
-  Heading,
-  Input,
-  Stack,
-  Text,
-} from "@chakra-ui/react";
-import { toaster } from "../../../components/ui/toaster"
+import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { toaster } from "../../../components/ui/toaster"
 import { loginSuccess } from "../../../features/auth/authSlice";
-import axios from "axios";
 import { useNavigate, Link as RouterLink } from "react-router-dom";
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -94,9 +85,9 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-[80vh] bg-gray-50 h-full">
-      <div className="bg-white p-8 rounded-md shadow-lg w-[90%] sm:w-[400px]">
-        <h2 className="text-lg font-semibold mb-6 text-center">Log In</h2>
+    <div className="min-h-screen flex justify-center items-center bg-gray-100">
+      <div className=" w-[90%] sm:w-[400px] bg-white rounded-md shadow-lg p-8 ">
+        <h2 className="text-lg font-semibold text-center mb-6">Log In</h2>
 
         <div className="flex flex-col gap-4">
           <input
@@ -104,25 +95,25 @@ const Login = () => {
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border p-2 rounded"
+            className="border rounded p-2 "
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border p-2 rounded"
+            className="border rounded p-2 "
           />
           <button
             onClick={handleLogin}
-            className="bg-yellow-400 text-black py-2 rounded hover:bg-yellow-500 disabled:opacity-50"
+            className="bg-yellow-400 text-black rounded hover:bg-yellow-500 disabled:opacity-50 py-2"
             disabled={loading}
           >
             {loading ? "Logging in" : "Log in"}
           </button>
         </div>
 
-        <p className="mt-4 text-sm text-center">
+        <p className="text-sm text-center mt-4">
           Don't have an account?{" "}
           <RouterLink to="/views/account/register" className="text-yellow-600">
             Register
