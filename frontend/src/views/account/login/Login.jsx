@@ -1,9 +1,11 @@
 import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
+import { useNavigate, Link as RouterLink } from "react-router-dom";
+
 import { toaster } from "../../../components/ui/toaster"
 import { loginSuccess } from "../../../features/auth/authSlice";
-import { useNavigate, Link as RouterLink } from "react-router-dom";
+
 
 const isValidEmail = (email) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
@@ -85,24 +87,23 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100">
-      <div className=" w-[90%] sm:w-[400px] bg-white rounded-md shadow-lg p-8 ">
+    <div className="min-h-screen bg-gray-100 flex justify-center items-center">
+      <div className="w-[90%] sm:w-[400px] bg-white rounded-md shadow-lg p-8">
         <h2 className="text-lg font-semibold text-center mb-6">Log In</h2>
-
         <div className="flex flex-col gap-4">
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border rounded p-2 "
+            className="border border-gray-300 rounded px-3 py-2 rounded p-2"
           />
           <input
             type="password"
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="border rounded p-2 "
+            className="border border-gray-300 rounded px-3 py-2 rounded p-2"
           />
           <button
             onClick={handleLogin}
