@@ -1,22 +1,18 @@
-import React from "react";
+import { store } from "./store";
+import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { ChakraProvider, Flex } from "@chakra-ui/react";
-import { defaultSystem } from "@chakra-ui/react"
-import { Provider } from "react-redux";
-import { store } from "./store";
+
 import Navbar from "./components/NavBar";
 import PrivateRoute from "./components/PrivateRoute";
 import { ColorModeProvider } from "./components/ui/color-mode"
 
 import Dashboard from "./views/dashboard/Dashboard";
-
 import Workflows from "./views/workflows/Workflows";
 import TextToImage from "./views/workflows/text-to-image/TextToImage";
 import ImageToImage from "./views/workflows/image-to-image/ImageToImage";
 import Inpainting from "./views/workflows/inpainting/Inpainting";
 import BoundingBoxes from "./views/workflows/bounding-boxes/BoundingBoxes";
-
 import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
 import Login from "./views/account/login/Login";

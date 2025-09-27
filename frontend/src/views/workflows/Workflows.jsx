@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { FaFileImage, FaImages, FaMagic } from "react-icons/fa";
 import { BsBoundingBoxCircles } from "react-icons/bs";
+import { FaFileImage, FaImages, FaMagic } from "react-icons/fa";
 
 const Workflows = () => {
   const navigate = useNavigate();

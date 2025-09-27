@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useRef, useState } from "react";
+
 import SliderControl from "./SliderControl";
 
 const InpaintingCanvas = forwardRef(

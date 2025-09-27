@@ -1,9 +1,10 @@
 import axios from "axios";
-import { useState, useEffect } from "react";
-import { toaster } from "../../../components/ui/toaster";
-import SliderControl from "../../../components/SliderControl";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
+import { useState, useEffect } from "react";
+
+import { toaster } from "../../../components/ui/toaster";
+import SliderControl from "../../../components/SliderControl";
 
 const ImageToImage = () => {
   const [image, updateImage] = useState();

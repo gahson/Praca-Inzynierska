@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
 
