@@ -15,11 +15,11 @@ interior architects to use artificial intelligence models in their work.
 - Database: MongoDB
 - Containerization: Docker
 
-### How to run
+## How to run
 
 It is recommended to run this application on either native or wsl Ubuntu
 
-## Preparation
+### Preparation
 1. Install docker with this instructions https://docs.docker.com/engine/install/ubuntu/ (In case of buildix issue: https://forums.docker.com/t/tips-for-how-to-fix-my-borked-cli-plugins/144327/3)
 
 2. Install NVIDIA Container Toolkit
@@ -40,19 +40,30 @@ It is recommended to run this application on either native or wsl Ubuntu
         sudo apt-get install -y nvidia-container-toolkit
 
     d. Configure the runtime
-
+        
         sudo nvidia-ctk runtime configure --runtime=docker
         sudo systemctl restart docker
         sudo nvidia-ctk runtime configure --runtime=containerd
         sudo systemctl restart containerd
 
-3. Generate read only token on https://huggingface.co/settings/tokens and run ./download_models.sh <HF_TOKEN>.
+3. Generate read only api token on https://huggingface.co/settings/tokens.
+
+4. Generate api token on https://civitai.com/user/account.
+
+5. In main directory create `api_keys.env` file with following contents:
+
+    ```
+    HF_TOKEN=<hf_api_token>
+    CIVITAI_TOKEN=<civitai_api_token>
+    ```
+    
+6. Run `sudo ./download_models.sh`to download all the models (This needs to be run only once)
 
 4. Build & run container in the developement mode (Use after making changes to the docker related files or when installing new packages/modules) FIRST RUN WILL TAKE A LONG TIME!!!:
-    - docker compose down && docker compose up --build
+    - `docker compose down && docker compose up --build`
 
 5. Run container in the developement mode:
-    - docker compose down && docker compose up
+    - `docker compose down && docker compose up`
 
-### TODO
+## TODO
 - https://docs.google.com/spreadsheets/d/14Qgea61NWSY51Ych7NmncooW5y2MEWiRMU0njNSEz4M/edit?gid=0#gid=0

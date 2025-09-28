@@ -55,9 +55,9 @@ services:
     working_dir: /comfyui
     command: python main.py --listen 0.0.0.0
     volumes:
-       - ./models:/comfyui/models/checkpoints
-       - input_images:/comfyui/input_images
-       - output_images:/comfyui/output_images
+       - ./models:/comfyui/models
+       - input_images:/comfyui/input
+       - output_images:/comfyui/output
     deploy:
       resources:
         reservations:

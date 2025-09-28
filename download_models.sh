@@ -3,17 +3,33 @@
 
 set -e
 
-HF_TOKEN=$1
+source api_keys.env
 
-if [ -z "$HF_TOKEN" ]; then
-    echo "Usage: $0 <HF_TOKEN>"
-    exit 1
-fi
+mkdir -p "models"
+cd "models"
 
-TARGET_DIR="models"
-mkdir -p "$TARGET_DIR"
+mkdir -p "checkpoints"
+mkdir -p "loras"
+mkdir -p "vae"
+mkdir -p "text_encoders"
+mkdir -p "diffusion_models"
+mkdir -p "clip_vision"
+mkdir -p "style_models"
+mkdir -p "embeddings"
+mkdir -p "diffusers"
+mkdir -p "vae_approx"
+mkdir -p "controlnet"
+mkdir -p "gligen"
+mkdir -p "upscale_models"
+mkdir -p "hypernetworks"
+mkdir -p "photomaker"
+mkdir -p "classifiers"
+mkdir -p "model_patches"
+mkdir -p "audio_encoders"
 
-cd "$TARGET_DIR"
+# Checkpoints
+
+cd "checkpoints"
 
 # Stable Diffusion 1.5 - 2GB
 if [ -f "stable-diffusion-1-5.safetensors" ]; then
@@ -60,4 +76,40 @@ else
         "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true"
 fi
 
-echo "All models downloaded and save in $TARGET_DIR"
+# Dream Creation Virtual 3DE Commerce
+if [ -f "dreamCreationVirtual3DECommerce_v10.safetensors" ]; then
+    echo "dreamCreationVirtual3DECommerce_v10.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" \
+        -o dreamCreationVirtual3DECommerce_v10.safetensors \
+        "https://civitai.com/api/download/models/731340?type=Model&format=SafeTensor&size=full&fp=fp16"
+fi
+
+# vae
+
+cd ".."
+cd "vae"
+
+if [ -f "vae-ft-mse-840000-ema-pruned.safetensors" ]; then
+    echo "vae-ft-mse-840000-ema-pruned.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+        -o vae-ft-mse-840000-ema-pruned.safetensors \
+        "https://huggingface.co/stabilityai/sd-vae-ft-mse-original/resolve/main/vae-ft-mse-840000-ema-pruned.safetensors?download=true"
+fi
+
+# controlnet
+
+cd ".."
+cd "controlnet"
+
+if [ -f "control_v11p_sd15_scribble_fp16.safetensors" ]; then
+    echo "control_v11p_sd15_scribble_fp16.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+        -o control_v11p_sd15_scribble_fp16.safetensors \
+        "https://huggingface.co/comfyanonymous/ControlNet-v1-1_fp16_safetensors/resolve/main/control_v11p_sd15_scribble_fp16.safetensors?download=true"
+fi
+
+
+echo "All models downloaded and saved in $TARGET_DIR"

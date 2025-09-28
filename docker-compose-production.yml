@@ -70,11 +70,11 @@ services:
     ports:
       - 8188:8188
     working_dir: /comfyui
-    command: sh -c "rm -rf output && ln -s images output && python main.py --listen 0.0.0.0"
+    command: python main.py --listen 0.0.0.0
     volumes:
        - ./models:/comfyui/models/checkpoints
-       - input_images:/comfyui/input_images
-       - output_images:/comfyui/output_images
+       - input_images:/comfyui/input
+       - output_images:/comfyui/output
     deploy:
       resources:
         reservations:
