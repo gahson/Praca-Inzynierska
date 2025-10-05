@@ -53,7 +53,26 @@ def get_image(prompt_json):
      
     image_response_json = image_response.json()
 
-    filename = image_response_json[prompt_id]['outputs']['9']['images'][0]['filename']
+    # Dynamically find the SaveImage node in the outputs
+    if prompt_id not in image_response_json:
+        raise HTTPException(status_code=404, detail=f'No history found for prompt_id: {prompt_id}')
+    
+    outputs = image_response_json[prompt_id].get('outputs', {})
+    if not outputs:
+        raise HTTPException(status_code=404, detail='No outputs found in workflow response')
+    
+    # Find the first SaveImage node output
+    filename = None
+    for node_id, node_output in outputs.items():
+        if 'images' in node_output and len(node_output['images']) > 0:
+            filename = node_output['images'][0]['filename']
+            break
+    
+    if not filename:
+        # Debug information
+        print(f"Debug - Available outputs: {list(outputs.keys())}")
+        print(f"Debug - Outputs content: {outputs}")
+        raise HTTPException(status_code=404, detail='No image output found in workflow response')
     
     image_path = os.path.join('output_images', filename)
     
@@ -85,7 +104,7 @@ async def text_to_image(textToImageRequest: TextToImageRequest, current_user: di
     
     prompt_json['3']['inputs']['seed'] = textToImageRequest.seed
     prompt_json['3']['inputs']['steps'] = 30
-    prompt_json['3']['inputs']['cfg'] = 8
+    prompt_json['3']['inputs']['cfg'] = textToImageRequest.guidance_scale
     
     prompt_json['5']['inputs']['width'] = textToImageRequest.width
     prompt_json['5']['inputs']['height'] = textToImageRequest.height    
@@ -140,7 +159,7 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
     
     prompt_json['3']['inputs']['seed'] = img2ImgRequest.seed
     prompt_json['3']['inputs']['steps'] = 30
-    prompt_json['3']['inputs']['cfg'] = 8
+    prompt_json['3']['inputs']['cfg'] = img2ImgRequest.guidance_scale
     
     prompt_json['6']['inputs']['text'] = img2ImgRequest.prompt
     prompt_json['7']['inputs']['text'] = img2ImgRequest.negative_prompt    
