@@ -48,13 +48,13 @@ const Login = () => {
         password,
       });
 
-      const { access_token, first_name, last_name, email: userEmail } = res.data;
+      const { access_token, first_name, last_name, email: userEmail, role:role } = res.data;
 
       localStorage.setItem("token", access_token);
 
       dispatch(
         loginSuccess({
-          user: { first_name, last_name, email: userEmail },
+          user: { first_name, last_name, email: userEmail, role: role },
           token: access_token,
         })
       );

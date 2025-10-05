@@ -6,6 +6,7 @@ class UserCreate(BaseModel):
     last_name: str
     email: EmailStr
     password: str
+    role: str
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -18,6 +19,7 @@ class UserResponse(BaseModel):
     email: EmailStr
     gallery: List[str] = []
     prompts: List[str] = []
+    role: str
 
     model_config = {
         "from_attributes": True

@@ -5,10 +5,11 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { MdOutlineTextSnippet, MdOutlineLan } from "react-icons/md";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 import Logo from "../assets/logo.png";
 
-const navLinks = [
+const baseLinks = [
   { href: "/views/dashboard", label: "Dashboard", icon: LuHouse },
   { href: "/views/workflows", label: "Workflows", icon: MdOutlineLan },
   { href: "/views/prompts", label: "Prompts", icon: MdOutlineTextSnippet },
@@ -17,13 +18,22 @@ const navLinks = [
 
 export default function Navbar() {
   const [hasMounted, setHasMounted] = useState(false);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
   if (!hasMounted) return null;
+
+  const navLinks = [...baseLinks];
+  if (user?.role === "admin") {
+    navLinks.push({
+      href: "/views/adminPanel",
+      label: "Admin Panel",
+      icon: MdAdminPanelSettings,
+    });
+  }
 
   return (
     <nav className="bg-black text-white shadow-lg p-5">
@@ -42,9 +52,9 @@ export default function Navbar() {
         {/* Links */}
         <div className="flex flex-wrap justify-center gap-5">
           {navLinks.map(({ href, label, icon: Icon }) => (
-            <RouterLink to={href} className="text-white hover:text-gray-300 no-underline p-3 ">
-              <div key={href} className="flex items-center gap-2">
-                <Icon className="w-7 h-7"/>
+            <RouterLink key={href} to={href} className="text-white hover:text-gray-300 no-underline p-3">
+              <div className="flex items-center gap-2">
+                <Icon className="w-7 h-7" />
                 {label}
               </div>
             </RouterLink>
@@ -55,8 +65,8 @@ export default function Navbar() {
         <div className="flex items-center justify-center gap-4">
           {isAuthenticated && (
             <RouterLink to="/views/account/profile">
-              <div className="text-white hover:text-gray-300cursor-pointer">
-                <FaUser className="w-7 h-7"/>
+              <div className="text-white hover:text-gray-300 cursor-pointer">
+                <FaUser className="w-7 h-7" />
               </div>
             </RouterLink>
           )}

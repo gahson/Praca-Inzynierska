@@ -20,6 +20,9 @@ import Logout from "./views/account/logout/Logout";
 import Profile from "./views/account/profile/Profile";
 import Register from "./views/account/register/Register";
 import Health from "./views/health/Health";
+import AdminPanel from "./views/adminPanel/AdminPanel";
+import AdminRoute from "./components/AdminRoute"; 
+import UserDetails from "./views/adminPanel/UserDetails";
 
 const App = () => (
   <Provider store={store}>
@@ -42,6 +45,8 @@ const App = () => (
         <Route path="/views/account/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
         <Route path="/views/workflows" element={<PrivateRoute><Workflows /></PrivateRoute>} />
         <Route path="/views/health" element={<Health />} />
+        <Route path="/views/adminPanel" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+        <Route path="/views/adminPanel/user/:id" element={<AdminRoute><UserDetails /></AdminRoute>}/>
       </Routes>
     </BrowserRouter>
   </Provider>

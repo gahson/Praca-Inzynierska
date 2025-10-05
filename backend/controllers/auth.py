@@ -24,7 +24,8 @@ async def register(user: UserCreate):
         "email": user.email,
         "password": hash_password(user.password),
         "gallery": [],
-        "prompts": []
+        "prompts": [],
+        "role": "user"
     }
 
     result = await db.users.insert_one(user_data)
@@ -43,7 +44,8 @@ async def login(user: UserLogin):
         "access_token": token,
         "first_name": db_user["first_name"],
         "last_name": db_user["last_name"],
-        "email": db_user["email"]
+        "email": db_user["email"],
+        "role": db_user["role"]
     }
 
 
@@ -55,3 +57,4 @@ async def get_me(current_user: dict = Depends(get_current_user)):
         "last_name": current_user["last_name"],
         "email": current_user["email"],
     }
+
