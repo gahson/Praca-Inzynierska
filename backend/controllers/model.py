@@ -20,10 +20,12 @@ models= APIRouter()
 
 model_versions = {
     '1.5' : 'stable-diffusion-1-5.safetensors',
+    '1.5-inpainting' : 'sd-v1-5-inpainting.safetensors',
     '2.0-inpainting' : 'stable-diffusion-2-0-inpainting.safetensors',
     '2.1' : 'stable-diffusion-2-1.ckpt',
     '3.0' : 'stable-diffusion-3-medium.safetensors',
-    'xl' : 'stable-diffusion-xl.safetensors'
+    'xl' : 'stable-diffusion-xl.safetensors',
+    'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
 }
 
 def get_image(prompt_json):

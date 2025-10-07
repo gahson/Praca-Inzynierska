@@ -175,6 +175,12 @@ const Inpainting = () => {
             <p>Choose model</p>
             <div className="flex gap-4 flex-wrap">
               <button
+                onClick={() => setModel("1.5-inpainting")}
+                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "1.5-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                1.5-inpainting
+              </button>
+              <button
                 onClick={() => setModel("2.0-inpainting")}
                 className={`rounded-2xl border-2 px-4 py-2 transition ${model === "2.0-inpainting"
                   ? "bg-black text-white"
@@ -182,6 +188,12 @@ const Inpainting = () => {
                   }`}
               >
                 2.0-inpainting
+              </button>
+              <button
+                onClick={() => setModel("xl-inpainting")}
+                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "xl-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                xl-inpainting
               </button>
             </div>
           </div>

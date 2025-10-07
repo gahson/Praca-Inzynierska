@@ -40,6 +40,16 @@ else
         "https://huggingface.co/Comfy-Org/stable-diffusion-v1-5-archive/resolve/main/v1-5-pruned-emaonly-fp16.safetensors?download=true"
 fi
 
+# Stable Diffusion 1.5-inpainting - 4.5GB
+if [ -f "sd-v1-5-inpainting.safetensors" ]; then
+    echo "sd-v1-5-inpainting.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+        -o sd-v1-5-inpainting.safetensors \
+        "https://huggingface.co/webui/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.safetensors?download=true"
+fi
+
+
 # Stable Diffusion 2.0-inpainting - 5GB
 if [ -f "stable-diffusion-2-0-inpainting.safetensors" ]; then
     echo "stable-diffusion-2-0-inpainting.safetensors exists"
@@ -75,6 +85,16 @@ else
         -o stable-diffusion-xl.safetensors \
         "https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors?download=true"
 fi
+
+# Stable Diffusion XL - inpainting - 7GB
+if [ -f "sd_xl_base_1.0_inpainting_0.1.safetensors" ]; then
+    echo "sd_xl_base_1.0_inpainting_0.1.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+        -o sd_xl_base_1.0_inpainting_0.1.safetensors \
+        "https://huggingface.co/wangqyqq/sd_xl_base_1.0_inpainting_0.1.safetensors/resolve/main/sd_xl_base_1.0_inpainting_0.1.safetensors?download=true"
+fi
+
 
 # Dream Creation Virtual 3DE Commerce
 if [ -f "dreamCreationVirtual3DECommerce_v10.safetensors" ]; then
