@@ -8,21 +8,22 @@ services:
      - 5173:5173
     volumes:
      - ./frontend:/frontend
-    working_dir: /frontend
-    command: npm run dev -- --host
-    depends_on:
-      - backend
+    #working_dir: /frontend
+    #command: npm run dev -- --host
+    #depends_on:
+    #  - backend
     deploy:
       resources:
         reservations:
-          cpus: '0.5'
-          memory: 512M
+          cpus: '2'
+          memory: 3G
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     ports:
+      - 8081:80
       - 5555:5555
     volumes:
       - ./backend:/backend
@@ -30,10 +31,10 @@ services:
       - output_images:/backend/output_images
     environment:
       ENV_FILE: .env
-    working_dir: /backend
-    command: uvicorn main:app --host 0.0.0.0 --port 5555 --reload
-    depends_on:
-      - mongo
+    #working_dir: /backend
+    #command: uvicorn main:app --host 0.0.0.0 --port 5555 --reload
+    #depends_on:
+    #  - mongo
     deploy:
       resources:
         reservations:
@@ -46,70 +47,70 @@ services:
     runtime: 
       nvidia
 
-  comfyui:
-    build:
-      context: ./comfyui
-      dockerfile: Dockerfile
-    ports:
-      - 8188:8188
-    working_dir: /comfyui
-    command: python main.py --listen 0.0.0.0
-    volumes:
-       - ./models:/comfyui/models
-       - input_images:/comfyui/input
-       - output_images:/comfyui/output
-    deploy:
-      resources:
-        reservations:
-          cpus: '1'
-          memory: 2G
-          devices:
-            - driver: nvidia
-              count: all
-              capabilities: [gpu]
-    runtime: 
-      nvidia
-
-  mongo:
-    image: mongo:latest
-    ports:
-      - "27017:27017"
-    command: 
-      - '--logpath'
-      - '/var/log/mongodb/mongod.log'
-    environment:
-      MONGO_INITDB_DATABASE: mongo
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: mongo
-    volumes:
-      - db_data:/data/db
-      - ./mongod.conf:/etc/mongo/mongod.conf:ro
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
-
-  mongo-express:
-    image: 
-      mongo-express
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: mongo
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_BASICAUTH: "true"
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: mongo
-    depends_on:
-      - mongo
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
-
+#  comfyui:
+#    build:
+#      context: ./comfyui
+#      dockerfile: Dockerfile
+#    ports:
+#      - 8188:8188
+#    working_dir: /comfyui
+#    command: python main.py --listen 0.0.0.0
+#    volumes:
+#       - ./models:/comfyui/models
+#       - input_images:/comfyui/input
+#       - output_images:/comfyui/output
+#    deploy:
+#      resources:
+#        reservations:
+#          cpus: '1'
+#          memory: 2G
+#          devices:
+#            - driver: nvidia
+#              count: all
+#              capabilities: [gpu]
+#    runtime: 
+#      nvidia
+#
+#  mongo:
+#    image: mongo:latest
+#    ports:
+#      - "27017:27017"
+#    command: 
+#      - '--logpath'
+#      - '/var/log/mongodb/mongod.log'
+#    environment:
+#      MONGO_INITDB_DATABASE: mongo
+#      MONGO_INITDB_ROOT_USERNAME: admin
+#      MONGO_INITDB_ROOT_PASSWORD: mongo
+#    volumes:
+#      - db_data:/data/db
+#      - ./mongod.conf:/etc/mongo/mongod.conf:ro
+#    deploy:
+#      resources:
+#        reservations:
+#          cpus: '0.5'
+#          memory: 512M
+#
+#  mongo-express:
+#    image: 
+#      mongo-express
+#    ports:
+#      - "8081:8081"
+#    environment:
+#      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+#      ME_CONFIG_MONGODB_ADMINPASSWORD: mongo
+#      ME_CONFIG_MONGODB_SERVER: mongo
+#      ME_CONFIG_BASICAUTH: "true"
+#      ME_CONFIG_BASICAUTH_USERNAME: admin
+#      ME_CONFIG_BASICAUTH_PASSWORD: mongo
+#    depends_on:
+#      - mongo
+#    deploy:
+#      resources:
+#        reservations:
+#          cpus: '0.5'
+#          memory: 512M
+#
 volumes:
   db_data:
   input_images:
