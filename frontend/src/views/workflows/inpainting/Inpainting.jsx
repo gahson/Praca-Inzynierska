@@ -5,6 +5,7 @@ import { FaTimes } from "react-icons/fa";
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
 import InpaintingCanvas from "../../../components/InpaintingCanvas";
+import CanvasPreview from "./Canvas"; // <-- import dodany
 
 const Inpainting = () => {
   const [image, updateImage] = useState();
@@ -143,7 +144,7 @@ const Inpainting = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
-      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8"> {/*justify-center items-center mx-auto*/}
+      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8">
         {/* Panel */}
         <div className="flex-1 flex flex-col gap-4 justify-center items-start">
           <FileInput
@@ -182,10 +183,7 @@ const Inpainting = () => {
               </button>
               <button
                 onClick={() => setModel("2.0-inpainting")}
-                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "2.0-inpainting"
-                  ? "bg-black text-white"
-                  : "text-black bg-transparent hover:bg-gray-200"
-                  }`}
+                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "2.0-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
               >
                 2.0-inpainting
               </button>
@@ -203,7 +201,7 @@ const Inpainting = () => {
           </button>
         </div>
 
-        {/* Generated Image */}
+        {/* Image Preview */}
         <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
@@ -212,7 +210,18 @@ const Inpainting = () => {
               <div className="h-4 bg-gray-300 rounded w-1/2"></div>
             </div>
           ) : (
-            image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+            <>
+              {loadedImage ? (
+                <CanvasPreview
+                  original={loadedImage}
+                  mask={maskData}
+                  width={imageDimensions.width}
+                  height={imageDimensions.height}
+                />
+              ) : (
+                image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+              )}
+            </>
           )}
         </div>
       </div>
@@ -235,30 +244,48 @@ const Inpainting = () => {
   );
 };
 
-const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => (
-  <div className="w-full flex items-center gap-2">
-    <input type="file" accept="image/*" id={id} onChange={onLoad} className="hidden" />
-    <label
-      htmlFor={id}
-      className="cursor-pointer bg-yellow-400 text-black px-4 py-2 rounded w-1/2 text-center"
-    >
-      {label}
-    </label>
+const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => {
+  const inputRef = useRef(null);
 
-    {hasFile ? (
-      <div className="flex items-center gap-2">
-        <span className="truncate max-w-[200px]">{filename}</span>
-        <button
-          onClick={onRemove}
-          className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
-        >
-          <FaTimes size={16} />
-        </button>
-      </div>
-    ) : (
-      <span className="text-gray-500">No file loaded</span>
-    )}
-  </div>
-);
+  const handleRemove = () => {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
+    onRemove();
+  };
+
+  return (
+    <div className="w-full flex items-center gap-2">
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/*"
+        id={id}
+        onChange={onLoad}
+        className="hidden"
+      />
+      <label
+        htmlFor={id}
+        className="cursor-pointer bg-yellow-400 text-black px-4 py-2 rounded w-1/2 text-center"
+      >
+        {label}
+      </label>
+
+      {hasFile ? (
+        <div className="flex items-center gap-2">
+          <span className="truncate max-w-[200px]">{filename}</span>
+          <button
+            onClick={handleRemove}
+            className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
+          >
+            <FaTimes size={16} />
+          </button>
+        </div>
+      ) : (
+        <span className="text-gray-500">No file loaded</span>
+      )}
+    </div>
+  );
+};
 
 export default Inpainting;
