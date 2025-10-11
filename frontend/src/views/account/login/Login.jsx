@@ -43,7 +43,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:5555/auth/login", {
+      const res = await axios.post(`http://${location.hostname}:5555/auth/login`, {
         email,
         password,
       });

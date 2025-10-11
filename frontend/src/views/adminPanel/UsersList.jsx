@@ -18,7 +18,7 @@ export default function UsersList() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get("http://localhost:5555/admin/users", {
+        const res = await axios.get(`http://${location.hostname}:5555/admin/users`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -58,7 +58,7 @@ export default function UsersList() {
   const handleSave = async () => {
     try {
       const res = await axios.patch(
-        `http://localhost:5555/admin/user/${editingUser.id}`,
+        `http://${location.hostname}:5555/admin/user/${editingUser.id}`,
         formData,
         {
           headers: {

@@ -113,7 +113,7 @@ const Inpainting = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5555/model/generate/inpainting",
+        `http://${location.hostname}:5555/model/generate/inpainting`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],
