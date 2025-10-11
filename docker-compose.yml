@@ -6,8 +6,16 @@ services:
       dockerfile: Dockerfile.development
     ports:
      - 5173:5173
+     - 5555:5555
+     - 8080:80
+     - 7022:22
     volumes:
      - ./frontend:/frontend
+     - ./backend:/backend
+     - input_images:/backend/input_images
+     - output_images:/backend/output_images
+    env_file:
+      - backend/.env
     #working_dir: /frontend
     #command: npm run dev -- --host
     #depends_on:
@@ -25,6 +33,7 @@ services:
     ports:
       - 8081:80
       - 5555:5555
+      - 7022:22
     volumes:
       - ./backend:/backend
       - input_images:/backend/input_images
@@ -47,30 +56,38 @@ services:
     runtime: 
       nvidia
 
-#  comfyui:
-#    build:
-#      context: ./comfyui
-#      dockerfile: Dockerfile
-#    ports:
-#      - 8188:8188
-#    working_dir: /comfyui
-#    command: python main.py --listen 0.0.0.0
-#    volumes:
-#       - ./models:/comfyui/models
-#       - input_images:/comfyui/input
-#       - output_images:/comfyui/output
-#    deploy:
-#      resources:
-#        reservations:
-#          cpus: '1'
-#          memory: 2G
-#          devices:
-#            - driver: nvidia
-#              count: all
-#              capabilities: [gpu]
-#    runtime: 
-#      nvidia
-#
+  comfyui:
+    build:
+      context: ./comfyui
+      dockerfile: Dockerfile
+    ports:
+      - 8188:8188
+      - 5173:5173
+      - 5555:5555
+      - 8080:80
+      - 7022:22
+    #working_dir: /comfyui
+    #command: python main.py --listen 0.0.0.0
+    volumes:
+       - ./models:/comfyui/models
+       - ./frontend:/frontend
+       - ./backend:/backend
+       - input_images:/backend/input_images
+       - output_images:/backend/output_images
+    env_file:
+      - backend/.env
+    deploy:
+      resources:
+        reservations:
+          cpus: '3'
+          memory: 5G
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    runtime: 
+      nvidia
+
 #  mongo:
 #    image: mongo:latest
 #    ports:

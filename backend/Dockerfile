@@ -1,7 +1,6 @@
-#FROM python:3.13
 #FROM pytorch/pytorch
 
-FROM test-container
+FROM praca-inzynierska-combined
 
 COPY --chmod=0755 run-uvicorn-backend.sh /
 

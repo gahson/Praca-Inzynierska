@@ -1,0 +1,107 @@
+Sending build context to Docker daemon  424.4kB
+Step 1/10 : FROM praca-inzynierska-backend
+ ---> b72f95950259
+Step 2/10 : COPY node-frontend.supervisord.conf /etc/supervisor/conf.d/
+ ---> 3c3d32afa538
+Step 3/10 : WORKDIR /frontend
+ ---> Running in 68081091abb7
+ ---> Removed intermediate container 68081091abb7
+ ---> 7844a90181f1
+Step 4/10 : COPY package.json package.json
+ ---> 71a851bd8ba5
+Step 5/10 : COPY package-lock.json package-lock.json
+ ---> 114497454ee2
+Step 6/10 : RUN curl -sL https://deb.nodesource.com/setup_22.x | bash
+ ---> Running in c9c1a900a390
+[38;5;79m2025-10-10 11:10:19 - Installing pre-requisites[0m
+Get:1 http://security.ubuntu.com/ubuntu jammy-security InRelease [129 kB]
+Hit:2 http://archive.ubuntu.com/ubuntu jammy InRelease
+Hit:3 https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.2 InRelease
+Get:4 http://archive.ubuntu.com/ubuntu jammy-updates InRelease [128 kB]
+Get:5 http://security.ubuntu.com/ubuntu jammy-security/main amd64 Packages [3425 kB]
+Get:6 http://security.ubuntu.com/ubuntu jammy-security/universe amd64 Packages [1276 kB]
+Get:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease [127 kB]
+Get:8 http://archive.ubuntu.com/ubuntu jammy-updates/main amd64 Packages [3750 kB]
+Get:9 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 Packages [1584 kB]
+Fetched 10.4 MB in 2s (5612 kB/s)
+Reading package lists...
+Reading package lists...
+Building dependency tree...
+Reading state information...
+ca-certificates is already the newest version (20240203~22.04.1).
+ca-certificates set to manually installed.
+curl is already the newest version (7.81.0-1ubuntu1.21).
+gnupg is already the newest version (2.2.27-3ubuntu2.4).
+The following NEW packages will be installed:
+  apt-transport-https
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 1510 B of archives.
+After this operation, 170 kB of additional disk space will be used.
+Get:1 http://archive.ubuntu.com/ubuntu jammy-updates/universe amd64 apt-transport-https all 2.4.14 [1510 B]
+[91mdebconf: delaying package configuration, since apt-utils is not installed
+[0mFetched 1510 B in 0s (5454 B/s)
+Selecting previously unselected package apt-transport-https.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 18667 files and directories currently installed.)
+Preparing to unpack .../apt-transport-https_2.4.14_all.deb ...
+Unpacking apt-transport-https (2.4.14) ...
+Setting up apt-transport-https (2.4.14) ...
+Hit:1 http://security.ubuntu.com/ubuntu jammy-security InRelease
+Get:2 https://deb.nodesource.com/node_22.x nodistro InRelease [12.1 kB]
+Hit:3 http://archive.ubuntu.com/ubuntu jammy InRelease
+Hit:4 https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/8.2 InRelease
+Hit:5 http://archive.ubuntu.com/ubuntu jammy-updates InRelease
+Get:6 https://deb.nodesource.com/node_22.x nodistro/main amd64 Packages [7843 B]
+Hit:7 http://archive.ubuntu.com/ubuntu jammy-backports InRelease
+Fetched 20.0 kB in 1s (18.8 kB/s)
+Reading package lists...
+[1;34m2025-10-10 11:10:27 - Repository configured successfully.[0m
+[38;5;79m2025-10-10 11:10:27 - To install Node.js, run: apt-get install nodejs -y[0m
+[38;5;79m2025-10-10 11:10:27 - You can use N|solid Runtime as a node.js alternative[0m
+[1;32m2025-10-10 11:10:27 - To install N|solid Runtime, run: apt-get install nsolid -y 
+[0m
+ ---> Removed intermediate container c9c1a900a390
+ ---> 513022b9a5cf
+Step 7/10 : RUN apt-get install -y nodejs
+ ---> Running in ca8e3c28a11b
+Reading package lists...
+Building dependency tree...
+Reading state information...
+The following NEW packages will be installed:
+  nodejs
+0 upgraded, 1 newly installed, 0 to remove and 0 not upgraded.
+Need to get 37.5 MB of archives.
+After this operation, 237 MB of additional disk space will be used.
+Get:1 https://deb.nodesource.com/node_22.x nodistro/main amd64 nodejs amd64 22.20.0-1nodesource1 [37.5 MB]
+[91mdebconf: delaying package configuration, since apt-utils is not installed
+[0mFetched 37.5 MB in 1s (30.8 MB/s)
+Selecting previously unselected package nodejs.
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 18671 files and directories currently installed.)
+Preparing to unpack .../nodejs_22.20.0-1nodesource1_amd64.deb ...
+Unpacking nodejs (22.20.0-1nodesource1) ...
+Setting up nodejs (22.20.0-1nodesource1) ...
+ ---> Removed intermediate container ca8e3c28a11b
+ ---> 21beb363cd26
+Step 8/10 : RUN npm install
+ ---> Running in a83ea6d33995
+
+added 317 packages, and audited 318 packages in 6s
+
+71 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities
+[91mnpm notice
+npm notice New major version of npm available! 10.9.3 -> 11.6.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.6.2
+npm notice To update run: npm install -g npm@11.6.2
+npm notice
+[0m ---> Removed intermediate container a83ea6d33995
+ ---> 63c792c9aae7
+Step 9/10 : EXPOSE 5173
+ ---> Running in a6c04260ac9d
+ ---> Removed intermediate container a6c04260ac9d
+ ---> b736ed172fae
+Step 10/10 : COPY . .
+ ---> 7aba40099596
+Successfully built 7aba40099596
+Successfully tagged praca-inzynierska-frontend:latest
