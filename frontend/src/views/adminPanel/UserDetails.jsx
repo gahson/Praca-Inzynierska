@@ -11,7 +11,7 @@ export default function UserDetails() {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const res = await axios.get(`http://localhost:5555/admin/user/${id}/details`, {
+        const res = await axios.get(`http://${location.hostname}:5555/admin/user/${id}/details`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -30,7 +30,7 @@ export default function UserDetails() {
     if (!window.confirm("Are you sure you want to delete this image?")) return;
 
     try {
-      await axios.delete(`http://localhost:5555/admin/user/${id}/image/${imageId}`, {
+      await axios.delete(`http://${location.hostname}:5555/admin/user/${id}/image/${imageId}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

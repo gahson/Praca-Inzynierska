@@ -13,7 +13,7 @@ const Gallery = () => {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await axios.get("http://localhost:5555/gallery", {
+      const res = await axios.get(`http://${location.hostname}:5555/gallery`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,7 +42,7 @@ const Gallery = () => {
     const token = localStorage.getItem("token");
 
     try {
-      await axios.delete(`http://localhost:5555/gallery/${imageId}`, {
+      await axios.delete(`http://${location.hostname}:5555/gallery/${imageId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
