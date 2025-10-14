@@ -29,8 +29,21 @@ model_versions = {
     'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
 }
 
+def _find_node_id_by_class(pj, class_type: str) -> str | None:
+    for k, v in pj.items():
+        try:
+            if v.get("class_type") == class_type:
+                return str(k)
+        except AttributeError:
+            continue
+    return None
+
+# --- ZMIEŃ get_image tak, by brał obraz z SaveImage ---
 def get_image(prompt_json):
     COMFY = os.getenv("COMFY_URL", "http://comfyui:8188")
+
+    # 1) znajdź ID SaveImage w przekazanym workflowie
+    save_node_id = _find_node_id_by_class(prompt_json, "SaveImage")
 
     queue_payload = {"prompt": prompt_json}
     r = requests.post(f"{COMFY}/prompt", json=queue_payload)
@@ -41,6 +54,7 @@ def get_image(prompt_json):
     if not prompt_id:
         raise HTTPException(status_code=502, detail="No prompt_id returned")
 
+    # 2) poll /history
     max_attempts = 60
     for _ in range(max_attempts):
         h = requests.get(f"{COMFY}/history/{prompt_id}")
@@ -48,9 +62,16 @@ def get_image(prompt_json):
             hist = h.json()
             item = hist.get(prompt_id, {})
             outputs = item.get("outputs", {})
+
+            # 3) priorytet: obrazy tylko z SaveImage
             images = []
-            for node_out in outputs.values():
-                images.extend(node_out.get("images", []))
+            if save_node_id and outputs.get(save_node_id, {}).get("images"):
+                images = outputs[save_node_id]["images"]
+            else:
+                # awaryjnie: weź tylko obrazy typu "output" (pomija preview/temp)
+                for node_out in outputs.values():
+                    images.extend([im for im in node_out.get("images", []) if im.get("type") == "output"])
+
             if images:
                 meta = images[0]
                 filename  = meta.get("filename")
@@ -65,8 +86,10 @@ def get_image(prompt_json):
                 if not view.ok:
                     raise HTTPException(status_code=502, detail=f"Failed to fetch image via /view (filename={filename})")
 
-                image_base64 = base64.b64encode(view.content).decode("utf-8")
-                return image_base64
+                # (opcjonalne logi pomocnicze)
+                print("DEBUG /view params:", filename, subfolder, img_type)
+
+                return base64.b64encode(view.content).decode("utf-8")
         time.sleep(1)
 
     raise HTTPException(status_code=504, detail="Timeout waiting for image generation response.")
