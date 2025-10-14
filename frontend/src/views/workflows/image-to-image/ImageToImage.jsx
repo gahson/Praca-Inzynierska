@@ -68,7 +68,7 @@ const ImageToImage = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5555/model/generate/image-to-image",
+        `http://${location.hostname}:5555/model/generate/image-to-image`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],
@@ -193,25 +193,7 @@ const ImageToImage = () => {
               onClick={() => setModel("1.5")}
               className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
             >
-              1.5
-            </button>
-            <button
-              onClick={() => setModel("2.1")}
-              className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-            >
-              2.1
-            </button>
-            <button
-              onClick={() => setModel("3.0")}
-              className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-            >
-              3.0
-            </button>
-            <button
-              onClick={() => setModel("xl")}
-              className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-            >
-              xl
+              control net
             </button>
           </div>
         </div>
