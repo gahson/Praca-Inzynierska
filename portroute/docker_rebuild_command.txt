@@ -1,0 +1,14 @@
+docker build -t mramut/ainterior2 ./portroute
+
+docker image rm mramut/ainterior
+
+docker image tag  mramut/ainterior2 mramut/ainterior
+
+docker image rm mramut/ainterior2
+
+docker push mramut/ainterior
+
+
+
+komenda do ssh vps:
+ssh root@188.68.242.171

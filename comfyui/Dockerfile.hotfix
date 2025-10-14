@@ -1,0 +1,3 @@
+FROM mramut/ainterior
+
+COPY --chmod=700 run-comfyui.sh /

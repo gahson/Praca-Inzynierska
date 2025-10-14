@@ -6,6 +6,7 @@ import torch
 import requests
 from PIL import Image, ImageOps
 from dotenv import load_dotenv
+import base64
 
 from fastapi import APIRouter, Depends
 from fastapi.responses import JSONResponse
@@ -28,63 +29,70 @@ model_versions = {
     'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
 }
 
+def _find_node_id_by_class(pj, class_type: str) -> str | None:
+    for k, v in pj.items():
+        try:
+            if v.get("class_type") == class_type:
+                return str(k)
+        except AttributeError:
+            continue
+    return None
+
+# --- ZMIEŃ get_image tak, by brał obraz z SaveImage ---
 def get_image(prompt_json):
-    queue_payload = {'prompt': prompt_json}
+    COMFY = os.getenv("COMFY_URL", "http://comfyui:8188")
 
-    queue_response = requests.post('http://comfyui:8188/prompt', json=queue_payload)
+    # 1) znajdź ID SaveImage w przekazanym workflowie
+    save_node_id = _find_node_id_by_class(prompt_json, "SaveImage")
 
-    if not queue_response.ok:
-        raise HTTPException(status_code=404, detail='Error queueing prompt')
-    
-    queue_response_json = queue_response.json()
-        
-    if 'prompt_id' not in queue_response_json:
-        raise HTTPException(status_code=404, detail='Error obraining prompt_id')
-    
-    prompt_id = queue_response_json['prompt_id']
-    
-    # Poll the endpoint until a non-empty response is received
+    queue_payload = {"prompt": prompt_json}
+    r = requests.post(f"{COMFY}/prompt", json=queue_payload)
+    if not r.ok:
+        raise HTTPException(status_code=502, detail="Error queueing prompt")
+    data = r.json()
+    prompt_id = data.get("prompt_id")
+    if not prompt_id:
+        raise HTTPException(status_code=502, detail="No prompt_id returned")
+
+    # 2) poll /history
     max_attempts = 60
-    for attempt in range(max_attempts):
-        image_response = requests.get(f'http://comfyui:8188/history/{prompt_id}')
-        if image_response.ok and image_response.content and image_response.content != b'{}':
-            break
+    for _ in range(max_attempts):
+        h = requests.get(f"{COMFY}/history/{prompt_id}")
+        if h.ok and h.content and h.content != b"{}":
+            hist = h.json()
+            item = hist.get(prompt_id, {})
+            outputs = item.get("outputs", {})
+
+            # 3) priorytet: obrazy tylko z SaveImage
+            images = []
+            if save_node_id and outputs.get(save_node_id, {}).get("images"):
+                images = outputs[save_node_id]["images"]
+            else:
+                # awaryjnie: weź tylko obrazy typu "output" (pomija preview/temp)
+                for node_out in outputs.values():
+                    images.extend([im for im in node_out.get("images", []) if im.get("type") == "output"])
+
+            if images:
+                meta = images[0]
+                filename  = meta.get("filename")
+                subfolder = meta.get("subfolder", "")
+                img_type  = meta.get("type", "output")
+
+                view = requests.get(
+                    f"{COMFY}/view",
+                    params={"filename": filename, "subfolder": subfolder, "type": img_type},
+                    stream=True,
+                )
+                if not view.ok:
+                    raise HTTPException(status_code=502, detail=f"Failed to fetch image via /view (filename={filename})")
+
+                # (opcjonalne logi pomocnicze)
+                print("DEBUG /view params:", filename, subfolder, img_type)
+
+                return base64.b64encode(view.content).decode("utf-8")
         time.sleep(1)
-    else:
-        raise HTTPException(status_code=504, detail='Timeout waiting for image generation response.')
-     
-    image_response_json = image_response.json()
 
-    # Dynamically find the SaveImage node in the outputs
-    if prompt_id not in image_response_json:
-        raise HTTPException(status_code=404, detail=f'No history found for prompt_id: {prompt_id}')
-    
-    outputs = image_response_json[prompt_id].get('outputs', {})
-    if not outputs:
-        raise HTTPException(status_code=404, detail='No outputs found in workflow response')
-    
-    # Find the first SaveImage node output
-    filename = None
-    for node_id, node_output in outputs.items():
-        if 'images' in node_output and len(node_output['images']) > 0:
-            filename = node_output['images'][0]['filename']
-            break
-    
-    if not filename:
-        # Debug information
-        print(f"Debug - Available outputs: {list(outputs.keys())}")
-        print(f"Debug - Outputs content: {outputs}")
-        raise HTTPException(status_code=404, detail='No image output found in workflow response')
-    
-    image_path = os.path.join('output_images', filename)
-    
-    if not os.path.exists(image_path):
-       raise HTTPException(status_code=404, detail=f"Image file {image_path} not found")
-
-    image = Image.open(image_path)
-    image_base64 = image_to_string(image)
-    
-    return image_base64
+    raise HTTPException(status_code=504, detail="Timeout waiting for image generation response.")
     
 
 @models.post('/generate/text-to-image')
@@ -140,7 +148,7 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
     if img2ImgRequest.model_version not in model_versions:
         raise HTTPException(status_code=404, detail='Model version does not exist.')
     
-    img2img_path = os.path.join('workflows_api', 'img2img.json')
+    img2img_path = os.path.join('workflows_api', 'controlnet_example.json')
     
     if not os.path.exists(img2img_path):
         raise HTTPException(status_code=404, detail='File not found')
@@ -155,10 +163,10 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
     image_name = f'{uuid.uuid4()}.png'
     image.save(os.path.join('input_images', image_name))
         
-    prompt_json['14']['inputs']['ckpt_name'] = model_versions[img2ImgRequest.model_version]
+    #prompt_json['14']['inputs']['ckpt_name'] = model_versions[img2ImgRequest.model_version]
     
-    prompt_json['10']['inputs']['image'] = image_name
-    
+    prompt_json['11']['inputs']['image'] = image_name
+
     prompt_json['3']['inputs']['seed'] = img2ImgRequest.seed
     prompt_json['3']['inputs']['steps'] = 30
     prompt_json['3']['inputs']['cfg'] = img2ImgRequest.guidance_scale
