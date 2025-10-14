@@ -196,6 +196,7 @@ const Inpainting = () => {
             </div>
           </div>
 
+
           <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
             Generate
           </button>
