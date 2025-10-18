@@ -5,7 +5,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Navbar from "./components/NavBar";
 import PrivateRoute from "./components/PrivateRoute";
-import { ColorModeProvider } from "./components/ui/color-mode"
+// import { ColorModeProvider } from "./components/ui/color-mode"
 
 import Dashboard from "./views/dashboard/Dashboard";
 import Workflows from "./views/workflows/Workflows";
@@ -26,7 +26,7 @@ import UserDetails from "./views/adminPanel/UserDetails";
 
 const App = () => (
   <Provider store={store}>
-    <ColorModeProvider />
+    {/* <ColorModeProvider /> */}
     <BrowserRouter>
       <Navbar />
       <Toaster />
