@@ -55,7 +55,7 @@ const Workflows = () => {
         </button>
 
         {/* Bounding Boxes */}
-        <button
+        {/* <button
           onClick={() => navigate("/views/workflows/bounding-boxes")}
           className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
         >
@@ -66,7 +66,7 @@ const Workflows = () => {
           <p className="text-gray-700 text-sm">
             Draw rectangular regions on an image to alter its appearance
           </p>
-        </button>
+        </button> */}
 
         </div>
 

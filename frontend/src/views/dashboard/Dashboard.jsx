@@ -14,7 +14,7 @@ export default function Dashboard() {
   return (
 
     <div className="w-full h-screen bg-gray-100 flex flex-col items-center justify-center gap-10">
-      <h1 className="text-6xl text-center m-0">
+      <h1 className="text-6xl font-bold text-center m-0">
        Welcome to the world of AInterior...
       </h1>
 

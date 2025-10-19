@@ -5,7 +5,7 @@ import { FaTimes } from "react-icons/fa";
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
 import InpaintingCanvas from "../../../components/InpaintingCanvas";
-import CanvasPreview from "./Canvas"; // <-- import dodany
+import CanvasPreview from "./Canvas";
 
 const Inpainting = () => {
   const [image, updateImage] = useState();
@@ -41,6 +41,7 @@ const Inpainting = () => {
             updateNegativePrompt(data.negative_prompt || "");
             setGuidance(data.guidance_scale || 7.0);
             setSeed(data.seed || 0);
+            setMaskEditorOpen(true);
           };
         }
       } catch (err) {
@@ -130,6 +131,7 @@ const Inpainting = () => {
       );
 
       updateImage(response.data.image);
+      setLoadedImage(null);
     } catch (error) {
       console.error("Error:", error.response?.data?.detail || error.message);
       toaster.create({
@@ -144,9 +146,9 @@ const Inpainting = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
-      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8">
+      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8  bg-white rounded-lg shadow p-5">
         {/* Panel */}
-        <div className="flex-1 flex flex-col gap-4 justify-center items-start">
+        <div className="flex-1 flex flex-col gap-4">
           <FileInput
             id="upload-image"
             label="Load Image"
@@ -156,12 +158,14 @@ const Inpainting = () => {
             onRemove={unloadImage}
           />
 
+          <p className="block text-sm font-medium">Positive prompt</p>
           <input
             value={prompt}
             onChange={(e) => updatePrompt(e.target.value)}
             placeholder="Enter prompt"
             className="w-full p-2 border rounded"
           />
+          <p className="block text-sm font-medium">Negative prompt</p>
           <input
             value={negativePrompt}
             onChange={(e) => updateNegativePrompt(e.target.value)}
@@ -170,7 +174,27 @@ const Inpainting = () => {
           />
 
           <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
+          {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
+
+          <div className="flex flex-col gap-2">
+            <p className="block mb-2 text-sm font-medium">Seed</p>
+            <div className="flex gap-4 items-center">
+              <input
+                type="number"
+                value={seed}
+                min={0}
+                max={999999999}
+                onChange={(e) => setSeed(Number(e.target.value))}
+                className="w-full  p-2 border rounded"
+              />
+              <button
+                onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+              >
+                Randomize
+              </button>
+            </div>
+          </div>
 
           <div className="flex flex-col gap-2 items-start w-full">
             <p>Choose model</p>
@@ -257,35 +281,40 @@ const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => {
 
   return (
     <div className="w-full flex items-center gap-2">
-      <input
-        ref={inputRef}
-        type="file"
-        accept="image/*"
-        id={id}
-        onChange={onLoad}
-        className="hidden"
-      />
-      <label
-        htmlFor={id}
-        className="cursor-pointer bg-yellow-400 text-black px-4 py-2 rounded w-1/2 text-center"
-      >
-        {label}
-      </label>
+      <div className="flex items-center gap-2 w-1/2">
+        {hasFile ? (
+          <>
+            <span className="truncate">{filename}</span>
+            <button
+              onClick={handleRemove}
+              className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
+            >
+              <FaTimes size={16} />
+            </button>
+          </>
+        ) : (
+          <span className="text-gray-500">No file loaded</span>
+        )}
+      </div>
 
-      {hasFile ? (
-        <div className="flex items-center gap-2">
-          <span className="truncate max-w-[200px]">{filename}</span>
-          <button
-            onClick={handleRemove}
-            className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
-          >
-            <FaTimes size={16} />
-          </button>
-        </div>
-      ) : (
-        <span className="text-gray-500">No file loaded</span>
-      )}
+      <div className="w-1/2">
+        <input
+          ref={inputRef}
+          type="file"
+          accept="image/*"
+          id={id}
+          onChange={onLoad}
+          className="hidden"
+        />
+        <label
+          htmlFor={id}
+          className="cursor-pointer bg-yellow-400 text-black px-4 py-2 rounded w-full text-center block"
+        >
+          {label}
+        </label>
+      </div>
     </div>
+
   );
 };
 

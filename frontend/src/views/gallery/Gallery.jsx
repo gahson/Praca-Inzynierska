@@ -68,61 +68,69 @@ const Gallery = () => {
 
   const handleRedirect = (img, mode) => {
     localStorage.setItem("selectedImage", JSON.stringify(img));
-    navigate(`/views/generation/${mode}`);
+    navigate(`/views/workflows/${mode}`);
   };
 
   return (
 
-    <div className="min-h-screen bg-gray-100 p-10">
-      <h1 className="text-3xl font-bold mb-8">Your Gallery</h1>
+    <div className="w-full min-h-screen bg-gray-100 flex flex-col p-5 gap-5">
+      <h1 className="font-bold text-3xl">Your Gallery</h1>
       <div className="flex flex-wrap justify-center gap-5">
-        {gallery.map((img) => (
-          <div
-            key={img.id}
-            className="w-[300px] bg-white rounded-md shadow-md p-3"
-          >
-            <img
-              src={`data:image/png;base64,${img.image_base64}`}
-              alt="generated"
-              className="w-full rounded-md mb-3 "
-            />
-            <div className="flex flex-col text-sm space-y-1.5">
-              <p><b>Model:</b> {img.model}</p>
-              <p><b>Mode:</b> {img.mode}</p>
-              <p><b>Size:</b> {img.width} × {img.height}</p>
-              <p><b>Prompt:</b> {img.prompt}</p>
-              <p><b>Seed:</b> {img.seed}</p>
-              <p><b>Guidance:</b> {img.guidance_scale}</p>
-              <p><b>Created:</b> {new Date(img.created_at).toLocaleString()}</p>
-            </div>
-            <div className="flex flex-col mt-3 space-y-2">
-              <button
-                className="bg-blue-500 text-xs text-white rounded p-1"
-                onClick={() => handleRedirect(img, "text-to-image")}
-              >
-                Use in Text2Image
-              </button>
-              <button
-                className="bg-green-500 text-xs text-white rounded  p-1"
-                onClick={() => handleRedirect(img, "image-to-image")}
-              >
-                Use in Img2Img
-              </button>
-              <button
-                className="bg-purple-500 text-xs text-white rounded p-1"
-                onClick={() => handleRedirect(img, "inpainting")}
-              >
-                Use in Inpainting
-              </button>
-              <button
-                className="bg-red-500 text-xs text-white rounded  p-1"
-                onClick={() => handleDelete(img.id)}
-              >
-                Delete
-              </button>
-            </div>
+        {gallery.length == 0 ? (
+          <div className="w-full h-screen bg-gray-100 flex flex-col items-center justify-center gap-10">
+            <h1 className="text-3xl font-bold text-center m-0">
+              Loading gallery...
+            </h1>
           </div>
-        ))}
+        ) : (
+          gallery.map((img) => (
+            <div
+              key={img.id}
+              className="w-[300px] bg-white rounded-md shadow-md p-3 flex flex-col justify-between"
+            >
+              <img
+                src={`data:image/png;base64,${img.image_base64}`}
+                alt="generated"
+                className="w-full rounded-md mb-3 "
+              />
+              <div className="flex flex-col text-sm space-y-1.5">
+                <p><b>Model:</b> {img.model}</p>
+                <p><b>Mode:</b> {img.mode}</p>
+                <p><b>Size:</b> {img.width} × {img.height}</p>
+                <p><b>Prompt:</b> {img.prompt}</p>
+                <p><b>Seed:</b> {img.seed}</p>
+                <p><b>Guidance:</b> {img.guidance_scale}</p>
+                <p><b>Created:</b> {new Date(img.created_at).toLocaleString()}</p>
+              </div>
+              <div className="flex flex-col mt-3 space-y-2">
+                <button
+                  className="bg-blue-500 text-xs text-white rounded p-1"
+                  onClick={() => handleRedirect(img, "text-to-image")}
+                >
+                  Use in Text2Image
+                </button>
+                <button
+                  className="bg-green-500 text-xs text-white rounded  p-1"
+                  onClick={() => handleRedirect(img, "image-to-image")}
+                >
+                  Use in Img2Img
+                </button>
+                <button
+                  className="bg-purple-500 text-xs text-white rounded p-1"
+                  onClick={() => handleRedirect(img, "inpainting")}
+                >
+                  Use in Inpainting
+                </button>
+                <button
+                  className="bg-red-500 text-xs text-white rounded  p-1"
+                  onClick={() => handleDelete(img.id)}
+                >
+                  Delete
+                </button>
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
 

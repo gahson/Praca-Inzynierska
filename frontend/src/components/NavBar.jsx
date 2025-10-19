@@ -63,13 +63,13 @@ export default function Navbar() {
 
         {/* Auth Controls */}
         <div className="flex items-center justify-center gap-4">
-          {isAuthenticated && (
+          {/* {isAuthenticated && (
             <RouterLink to="/views/account/profile">
               <div className="text-white hover:text-gray-300 cursor-pointer">
                 <FaUser className="w-7 h-7" />
               </div>
             </RouterLink>
-          )}
+          )} */}
 
           <RouterLink
             to={isAuthenticated ? "/views/account/logout" : "/views/account/login"}

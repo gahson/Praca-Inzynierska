@@ -110,15 +110,17 @@ const TextToImage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
-      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8">
+      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8 bg-white rounded-lg shadow p-5">
         {/* Panel */}
         <div className="flex-1 flex flex-col gap-4">
+          <p className="block mb-2 text-sm font-medium">Positive prompt</p>
           <input
             value={prompt}
             onChange={(e) => updatePrompt(e.target.value)}
             placeholder="Enter prompt"
             className="w-full p-2 border rounded"
           />
+          <p className="block mb-2 text-sm font-medium">Negative prompt</p>
           <input
             value={negativePrompt}
             onChange={(e) => updateNegativePrompt(e.target.value)}
@@ -128,8 +130,29 @@ const TextToImage = () => {
 
           <SliderControl label="Width" value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
           <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
+
           <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
+          {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
+
+          <div className="flex flex-col gap-2">
+            <p className="block mb-2 text-sm font-medium">Seed</p>
+            <div className="flex gap-4 items-center">
+              <input
+                type="number"
+                value={seed}
+                min={0}
+                max={999999999}
+                onChange={(e) => setSeed(Number(e.target.value))}
+                className="w-full p-2 border rounded"
+              />
+              <button
+                onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+              >
+                Randomize
+              </button>
+            </div>
+          </div>
 
           <div className="flex flex-col gap-2">
             <p>Choose model</p>

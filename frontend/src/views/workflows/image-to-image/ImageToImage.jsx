@@ -113,94 +113,118 @@ const ImageToImage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
-      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8">
-        <div className="flex-1 flex flex-col gap-4">
-          <div className="w-full h-full border-2 border-dashed border-gray-300 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors">
-            <input
-            ref={fileInputRef}
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-              id="file-input"
-            />
-            {loadedImage == null ? (
-              <label
-                htmlFor="file-input"
-                className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
-              >
-                <FiUpload size={23} className="mb-2 text-gray-500" />
-                <p className="text-gray-700">Drag and drop files here</p>
-                <p className="text-gray-500 text-sm">.png, .jpg up to 5MB</p>
-              </label>
-            ) : (
-              <div className="relative w-full h-full">
-                <img
-                  src={loadedImage}
-                  alt="Preview"
-                  className="w-full h-full object-contain rounded-md"
-                />
-                <button
-                  className="absolute top-2 right-2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 transition"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    e.preventDefault();
-                    setLoadedImage(null);
-                    if (fileInputRef.current) fileInputRef.current.value = null;
-                  }}
+      <div className="w-full max-w-[1800px] bg-white rounded-lg shadow p-5">
+        <div className="flex flex-col xl:flex-row gap-8">
+          <div className="flex-1 flex flex-col">
+            <div className="w-full h-full border-2 border-dashed border-gray-400 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                id="file-input"
+              />
+              {loadedImage == null ? (
+                <label
+                  htmlFor="file-input"
+                  className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
                 >
-                  <LuX />
-                </button>
+                  <FiUpload size={23} className="mb-2 text-gray-500" />
+                  <p className="text-gray-700">Drag and drop files here</p>
+                  <p className="text-gray-500 text-sm">.png, .jpg up to 5MB</p>
+                </label>
+              ) : (
+                <div className="relative w-full h-full">
+                  <img
+                    src={loadedImage}
+                    alt="Preview"
+                    className="w-full h-full object-contain rounded-md"
+                  />
+                  <button
+                    className="absolute top-2 right-2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      setLoadedImage(null);
+                      if (fileInputRef.current) fileInputRef.current.value = null;
+                    }}
+                  >
+                    <LuX />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
+                <div className="rounded-full bg-gray-300 h-12 w-12"></div>
+                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
               </div>
+            ) : (
+              image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
             )}
           </div>
         </div>
 
-        <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
-              <div className="rounded-full bg-gray-300 h-12 w-12"></div>
-              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+        <div className="w-full max-w-[1800px] flex flex-col gap-4 mt-8">
+          <p className="block text-sm font-medium">Positive prompt</p>
+          <input
+            value={prompt}
+            onChange={(e) => updatePrompt(e.target.value)}
+            placeholder="Enter prompt"
+            className="w-full p-2 border rounded"
+          />
+          <p className="block text-sm font-medium">Negative prompt</p>
+          <input
+            value={negativePrompt}
+            onChange={(e) => updateNegativePrompt(e.target.value)}
+            placeholder="Enter negative prompt (optional)"
+            className="w-full p-2 border rounded"
+          />
+
+          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+          {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
+
+          <div className="flex flex-col gap-2">
+            <p className="block mb-2 text-sm font-medium">Seed</p>
+            <div className="flex gap-4 items-center">
+              <input
+                type="number"
+                value={seed}
+                min={0}
+                max={999999999}
+                onChange={(e) => setSeed(Number(e.target.value))}
+                className="w-full  p-2 border rounded"
+              />
+              <button
+                onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+              >
+                Randomize
+              </button>
             </div>
-          ) : (
-            image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
-          )}
-        </div>
-      </div>
-
-      <div className="w-full max-w-[1800px] flex flex-col gap-4 mt-8">
-        <input
-          value={prompt}
-          onChange={(e) => updatePrompt(e.target.value)}
-          placeholder="Enter prompt"
-          className="w-full p-2 border rounded"
-        />
-        <input
-          value={negativePrompt}
-          onChange={(e) => updateNegativePrompt(e.target.value)}
-          placeholder="Enter negative prompt (optional)"
-          className="w-full p-2 border rounded"
-        />
-
-        <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-        <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
-
-        <div className="flex flex-col gap-2">
-          <p>Choose model</p>
-          <div className="flex gap-4 flex-wrap">
-            <button
-              onClick={() => setModel("1.5")}
-              className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-            >
-              control net
-            </button>
           </div>
-        </div>
 
-        <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
-          Generate
-        </button>
+          <div className="flex flex-col gap-2">
+            <p>Choose model</p>
+            <div className="flex gap-4 flex-wrap">
+              <button
+                onClick={() => setModel("1.5")}
+                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                control net
+              </button>
+            </div>
+          </div>
+
+          <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+            Generate
+          </button>
+        </div>
       </div>
     </div>
   );
