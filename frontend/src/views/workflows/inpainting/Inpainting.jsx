@@ -1,6 +1,7 @@
 import axios from "axios";
+import { LuX } from "react-icons/lu";
+import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
-import { FaTimes } from "react-icons/fa";
 
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
@@ -10,7 +11,6 @@ import CanvasPreview from "./Canvas";
 const Inpainting = () => {
   const [image, updateImage] = useState();
   const [loadedImage, setLoadedImage] = useState(null);
-  const [loadedImageFilename, setLoadedImageFilename] = useState("");
   const [maskData, setMaskData] = useState(null);
   const [prompt, updatePrompt] = useState("");
   const [negativePrompt, updateNegativePrompt] = useState("");
@@ -21,7 +21,7 @@ const Inpainting = () => {
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
 
-  const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -36,7 +36,6 @@ const Inpainting = () => {
             const validatedHeight = Math.round(img.height / 8) * 8;
             setImageDimensions({ width: validatedWidth, height: validatedHeight });
             setLoadedImage(`data:image/png;base64,${data.image_base64}`);
-            setLoadedImageFilename("from_gallery.png");
             updatePrompt(data.prompt || "");
             updateNegativePrompt(data.negative_prompt || "");
             setGuidance(data.guidance_scale || 7.0);
@@ -52,10 +51,9 @@ const Inpainting = () => {
     }
   }, []);
 
-  const loadImage = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
     if (!file) return;
-    setLoadedImageFilename(file.name);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -66,18 +64,19 @@ const Inpainting = () => {
         const validatedHeight = Math.round(img.height / 8) * 8;
         setImageDimensions({ width: validatedWidth, height: validatedHeight });
         setLoadedImage(reader.result);
-        setMaskEditorOpen(true);
+        setMaskData(null);
       };
     };
     reader.readAsDataURL(file);
   };
 
   const unloadImage = () => {
-    setLoadedImageFilename("");
     setLoadedImage(null);
     setMaskData(null);
     setImageDimensions({ width: 512, height: 512 });
     setMaskEditorOpen(false);
+    updateImage(null);
+    if (fileInputRef.current) fileInputRef.current.value = null;
   };
 
   const generate = async () => {
@@ -88,6 +87,8 @@ const Inpainting = () => {
         title: "Not logged in",
         description: "You must be logged in to generate images.",
         status: "warning",
+        duration: 3000,
+        isClosable: true,
       });
       return;
     }
@@ -97,6 +98,8 @@ const Inpainting = () => {
         title: "Missing image",
         description: "You must load an image.",
         status: "error",
+        duration: 3000,
+        isClosable: true,
       });
       return;
     }
@@ -106,6 +109,8 @@ const Inpainting = () => {
         title: "Missing mask",
         description: "You must draw a mask on the image.",
         status: "error",
+        duration: 3000,
+        isClosable: true,
       });
       return;
     }
@@ -131,33 +136,111 @@ const Inpainting = () => {
       );
 
       updateImage(response.data.image);
-      setLoadedImage(null);
     } catch (error) {
       console.error("Error:", error.response?.data?.detail || error.message);
       toaster.create({
         title: "Generation failed",
         description: error.response?.data?.detail || "Could not generate image.",
         status: "error",
+        duration: 3000,
+        isClosable: true,
       });
     } finally {
       updateLoading(false);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
-      <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8  bg-white rounded-lg shadow p-5">
-        {/* Panel */}
-        <div className="flex-1 flex flex-col gap-4">
-          <FileInput
-            id="upload-image"
-            label="Load Image"
-            filename={loadedImageFilename}
-            hasFile={!!loadedImage}
-            onLoad={loadImage}
-            onRemove={unloadImage}
-          />
+  const openMaskEditor = () => {
+    if (!loadedImage) {
+      toaster.create({
+        title: "No image loaded",
+        description: "Please load an image first.",
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      return;
+    }
+    setMaskEditorOpen(true);
+  };
 
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
+      <div className="w-full max-w-[1800px] bg-white rounded-lg shadow p-5">
+        <div className="flex flex-col xl:flex-row gap-8">
+          <div className="flex-1 flex flex-col">
+            <div className="w-full h-full border-2 border-dashed border-gray-400 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+                className="hidden"
+                id="file-input"
+              />
+              {loadedImage == null ? (
+                <label
+                  htmlFor="file-input"
+                  className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
+                >
+                  <FiUpload size={23} className="mb-2 text-gray-500" />
+                  <p className="text-gray-700">Drag and drop files here</p>
+                  <p className="text-gray-500 text-sm">.png, .jpg up to 5MB</p>
+                </label>
+              ) : (
+                <div className="relative w-full h-full">
+                  <CanvasPreview
+                    original={loadedImage}
+                    mask={maskData}
+                    width={imageDimensions.width}
+                    height={imageDimensions.height}
+                  />
+                  <button
+                    className="absolute top-2 right-2 bg-gray-700 text-white rounded-full p-2 hover:bg-gray-800 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      unloadImage();
+                    }}
+                  >
+                    <LuX />
+                  </button>
+                  <button
+                    className="absolute bottom-2 right-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      openMaskEditor();
+                    }}
+                  >
+                    {maskData ? "Edit Mask" : "Draw Mask"}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
+            {loading ? (
+              <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
+                <div className="rounded-full bg-gray-300 h-12 w-12"></div>
+                <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                <div className="h-4 bg-gray-300 rounded w-1/2"></div>
+              </div>
+            ) : (
+              <>
+                {image ? (
+                  <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+                ) : (
+                  <div className="flex flex-col items-center justify-center text-gray-500">
+                    <p>Generated image will appear here</p>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </div>
+        <div className="w-full max-w-[1800px] flex flex-col gap-4 mt-8">
           <p className="block text-sm font-medium">Positive prompt</p>
           <input
             value={prompt}
@@ -174,7 +257,6 @@ const Inpainting = () => {
           />
 
           <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-          {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
 
           <div className="flex flex-col gap-2">
             <p className="block mb-2 text-sm font-medium">Seed</p>
@@ -185,18 +267,18 @@ const Inpainting = () => {
                 min={0}
                 max={999999999}
                 onChange={(e) => setSeed(Number(e.target.value))}
-                className="w-full  p-2 border rounded"
+                className="w-full p-2 border rounded"
               />
               <button
                 onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
-                className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+                className="bg-yellow-400 text-black py-2 rounded px-4"
               >
                 Randomize
               </button>
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 items-start w-full">
+          <div className="flex flex-col gap-2">
             <p>Choose model</p>
             <div className="flex gap-4 flex-wrap">
               <button
@@ -220,37 +302,18 @@ const Inpainting = () => {
             </div>
           </div>
 
-
-          <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
-            Generate
-          </button>
-        </div>
-
-        {/* Image Preview */}
-        <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
-          {loading ? (
-            <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
-              <div className="rounded-full bg-gray-300 h-12 w-12"></div>
-              <div className="h-4 bg-gray-300 rounded w-3/4"></div>
-              <div className="h-4 bg-gray-300 rounded w-1/2"></div>
-            </div>
+          {loadedImage && maskData ? (
+            <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+              Generate
+            </button>
           ) : (
-            <>
-              {loadedImage ? (
-                <CanvasPreview
-                  original={loadedImage}
-                  mask={maskData}
-                  width={imageDimensions.width}
-                  height={imageDimensions.height}
-                />
-              ) : (
-                image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
-              )}
-            </>
+            <button onClick={generate} disabled={true} className="mt-auto w-full bg-gray-400 text-black py-2 rounded cursor-not-allowed">
+              Generate
+            </button>
           )}
+
         </div>
       </div>
-
       {maskEditorOpen && (
         <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center">
           <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center bg-black/90" />
@@ -266,55 +329,6 @@ const Inpainting = () => {
         </div>
       )}
     </div>
-  );
-};
-
-const FileInput = ({ id, label, filename, hasFile, onLoad, onRemove }) => {
-  const inputRef = useRef(null);
-
-  const handleRemove = () => {
-    if (inputRef.current) {
-      inputRef.current.value = "";
-    }
-    onRemove();
-  };
-
-  return (
-    <div className="w-full flex items-center gap-2">
-      <div className="flex items-center gap-2 w-1/2">
-        {hasFile ? (
-          <>
-            <span className="truncate">{filename}</span>
-            <button
-              onClick={handleRemove}
-              className="bg-red-500 text-white px-2 py-1 rounded flex items-center justify-center"
-            >
-              <FaTimes size={16} />
-            </button>
-          </>
-        ) : (
-          <span className="text-gray-500">No file loaded</span>
-        )}
-      </div>
-
-      <div className="w-1/2">
-        <input
-          ref={inputRef}
-          type="file"
-          accept="image/*"
-          id={id}
-          onChange={onLoad}
-          className="hidden"
-        />
-        <label
-          htmlFor={id}
-          className="cursor-pointer bg-yellow-400 text-black px-4 py-2 rounded w-full text-center block"
-        >
-          {label}
-        </label>
-      </div>
-    </div>
-
   );
 };
 
