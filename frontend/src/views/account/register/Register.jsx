@@ -15,6 +15,7 @@ const Register = () => {
     last_name: "",
     email: "",
     password: "",
+    role: "user",
   });
   const [loading, setLoading] = useState(false);
 

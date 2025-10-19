@@ -18,10 +18,40 @@ const TextToImage = () => {
 
   const [searchParams] = useSearchParams();
   const urlPrompt = searchParams.get("prompt");
+  const urlNegativePrompt = searchParams.get("negativePrompt");
+  const urlWidth = searchParams.get("width");
+  const urlHeight = searchParams.get("height");
+  const urlGuidance = searchParams.get("guidance");
+  const urlSeed = searchParams.get("seed");
+  const urlModel = searchParams.get("model");
 
   useEffect(() => {
     if (urlPrompt) updatePrompt(urlPrompt);
   }, [urlPrompt]);
+
+  useEffect(() => {
+    if (urlNegativePrompt) updateNegativePrompt(urlNegativePrompt);
+  }, [urlNegativePrompt]);
+
+  useEffect(() => {
+    if (urlWidth) setWidth(urlWidth);
+  }, [urlWidth]);
+
+  useEffect(() => {
+    if (urlHeight) setHeight(urlHeight);
+  }, [urlHeight]);
+
+  useEffect(() => {
+    if (urlGuidance) setGuidance(urlGuidance);
+  }, [urlGuidance]);
+
+  useEffect(() => {
+    if (urlSeed) setSeed(urlSeed);
+  }, [urlSeed]);
+
+  useEffect(() => {
+    if (urlModel) setModel(urlModel);
+  }, [urlModel]);
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -82,60 +112,60 @@ const TextToImage = () => {
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
       <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8">
         {/* Panel */}
-          <div className="flex-1 flex flex-col gap-4">
-            <input
-              value={prompt}
-              onChange={(e) => updatePrompt(e.target.value)}
-              placeholder="Enter prompt"
-              className="w-full p-2 border rounded"
-            />
-            <input
-              value={negativePrompt}
-              onChange={(e) => updateNegativePrompt(e.target.value)}
-              placeholder="Enter negative prompt (optional)"
-              className="w-full p-2 border rounded"
-            />
+        <div className="flex-1 flex flex-col gap-4">
+          <input
+            value={prompt}
+            onChange={(e) => updatePrompt(e.target.value)}
+            placeholder="Enter prompt"
+            className="w-full p-2 border rounded"
+          />
+          <input
+            value={negativePrompt}
+            onChange={(e) => updateNegativePrompt(e.target.value)}
+            placeholder="Enter negative prompt (optional)"
+            className="w-full p-2 border rounded"
+          />
 
-            <SliderControl label="Width" value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
-            <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
-            <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-            <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
+          <SliderControl label="Width" value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
+          <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
+          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+          <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} />
 
-            <div className="flex flex-col gap-2">
-              <p>Choose model</p>
-              <div className="flex gap-4 flex-wrap">
-                <button
-            onClick={() => setModel("1.5")}
-            className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                >
-            1.5
-                </button>
-                <button
-            onClick={() => setModel("2.1")}
-            className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                >
-            2.1
-                </button>
-                <button
-            onClick={() => setModel("3.0")}
-            className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                >
-            3.0
-                </button>
-                <button
-            onClick={() => setModel("xl")}
-            className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                >
-            xl
-                </button>
-              </div>
+          <div className="flex flex-col gap-2">
+            <p>Choose model</p>
+            <div className="flex gap-4 flex-wrap">
+              <button
+                onClick={() => setModel("1.5")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                1.5
+              </button>
+              <button
+                onClick={() => setModel("2.1")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                2.1
+              </button>
+              <button
+                onClick={() => setModel("3.0")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                3.0
+              </button>
+              <button
+                onClick={() => setModel("xl")}
+                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+              >
+                xl
+              </button>
             </div>
-
-            <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
-              Generate
-            </button>
           </div>
-          {/* Obrazek */}
+
+          <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+            Generate
+          </button>
+        </div>
+        {/* Obrazek */}
         <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
           {loading ? (
             <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
