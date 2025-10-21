@@ -8,7 +8,7 @@ gallery_router = APIRouter()
 @gallery_router.get("/")
 async def get_gallery(current_user: dict = Depends(get_current_user)):
     user_id = str(current_user["_id"])
-    images = await db.generated_images.find({"user_id": ObjectId(user_id)}).to_list(length=100)
+    images = await db.generated_images.find({"user_id": ObjectId(user_id)}).to_list(length=9999)
 
     return [
         {

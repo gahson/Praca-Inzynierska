@@ -204,12 +204,7 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
     image = string_to_image(inpainting.image)
     mask = string_to_image(inpainting.mask_image)
     
-    r, g, b, a = mask.split()
-    new_alpha = Image.eval(r, lambda px: 0 if px == 255 else 255)
-    mask = Image.new("RGBA", mask.size, (255, 255, 255, 255))
-    mask.putalpha(new_alpha)
-
-    mask = mask.resize((image.width, image.height), Image.NEAREST)
+    mask = mask.crop((0, 0, image.width, image.height))
     
     if image.size != mask.size:
         raise HTTPException(status_code=404, detail="Image size and mask size don't match!")
@@ -218,6 +213,9 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
     
     image_name = f'{uuid.uuid4()}.png'
     mask_name = f'{uuid.uuid4()}.png'
+    
+    # image.save('img.png')
+    # mask.save('mask.png')
     
     image.save(os.path.join('input_images', image_name))
     mask.save(os.path.join('input_images', mask_name))

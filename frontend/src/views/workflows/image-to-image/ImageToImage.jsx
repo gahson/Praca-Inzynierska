@@ -196,12 +196,12 @@ const ImageToImage = () => {
                 type="number"
                 value={seed}
                 min={0}
-                max={999999999}
+                max={999999999999999}
                 onChange={(e) => setSeed(Number(e.target.value))}
                 className="w-full  p-2 border rounded"
               />
               <button
-                onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
                 className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
               >
                 Randomize

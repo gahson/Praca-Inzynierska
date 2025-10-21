@@ -15,7 +15,7 @@ const Inpainting = () => {
   const [prompt, updatePrompt] = useState("");
   const [negativePrompt, updateNegativePrompt] = useState("");
   const [loading, updateLoading] = useState(false);
-  const [guidance, setGuidance] = useState(7.0);
+  const [guidance, setGuidance] = useState(25.0);
   const [seed, setSeed] = useState(0);
   const [model, setModel] = useState("2.0-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
@@ -220,7 +220,7 @@ const Inpainting = () => {
             </div>
           </div>
 
-          <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
+        <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden relative">
             {loading ? (
               <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
                 <div className="rounded-full bg-gray-300 h-12 w-12"></div>
@@ -230,7 +230,23 @@ const Inpainting = () => {
             ) : (
               <>
                 {image ? (
-                  <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+                  <>
+                    <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+                    <button
+                      className="absolute bottom-2 right-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
+                      onClick={() => {
+                        const img = new Image();
+                        img.src = `data:image/png;base64,${image}`;
+                        img.onload = () => {
+                          setImageDimensions({ width: img.width, height: img.height });
+                          setLoadedImage(`data:image/png;base64,${image}`);
+                          setMaskData(null);
+                        };
+                      }}
+                    >
+                      Use as Input
+                    </button>
+                  </>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-gray-500">
                     <p>Generated image will appear here</p>
@@ -265,12 +281,12 @@ const Inpainting = () => {
                 type="number"
                 value={seed}
                 min={0}
-                max={999999999}
+                max={999999999999999}
                 onChange={(e) => setSeed(Number(e.target.value))}
                 className="w-full p-2 border rounded"
               />
               <button
-                onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
                 className="bg-yellow-400 text-black py-2 rounded px-4"
               >
                 Randomize

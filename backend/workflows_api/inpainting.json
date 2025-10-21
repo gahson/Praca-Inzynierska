@@ -1,10 +1,10 @@
 {
   "3": {
     "inputs": {
-      "seed": 808369199502636,
-      "steps": 20,
-      "cfg": 8,
-      "sampler_name": "uni_pc_bh2",
+      "seed": 971425048210121,
+      "steps": 12,
+      "cfg": 25,
+      "sampler_name": "euler",
       "scheduler": "normal",
       "denoise": 1,
       "model": [
@@ -20,7 +20,7 @@
         0
       ],
       "latent_image": [
-        "26",
+        "51",
         0
       ]
     },
@@ -31,7 +31,7 @@
   },
   "6": {
     "inputs": {
-      "text": "teacup on pink tablecloth, Anime style",
+      "text": "Skyscraper",
       "clip": [
         "29",
         1
@@ -44,7 +44,7 @@
   },
   "7": {
     "inputs": {
-      "text": "watermark, text\n",
+      "text": "blurry, text, bad quality",
       "clip": [
         "29",
         1
@@ -86,37 +86,16 @@
   },
   "20": {
     "inputs": {
-      "image": "example.png"
+      "image": "05a0b1b9-dbbf-4de2-8986-577a6297799d.png"
     },
     "class_type": "LoadImage",
     "_meta": {
       "title": "Load Image"
     }
   },
-  "26": {
-    "inputs": {
-      "grow_mask_by": 6,
-      "pixels": [
-        "33",
-        0
-      ],
-      "vae": [
-        "29",
-        2
-      ],
-      "mask": [
-        "37",
-        0
-      ]
-    },
-    "class_type": "VAEEncodeForInpaint",
-    "_meta": {
-      "title": "VAE Encode (for Inpainting)"
-    }
-  },
   "29": {
     "inputs": {
-      "ckpt_name": "512-inpainting-ema.safetensors"
+      "ckpt_name": "stable-diffusion-2-0-inpainting.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -139,12 +118,96 @@
   },
   "37": {
     "inputs": {
-      "image": "example.png",
-      "channel": "alpha"
+      "image": "91dfca41-8ddc-45d8-96ef-a46b853f5c5a.png",
+      "channel": "red"
     },
     "class_type": "LoadImageMask",
     "_meta": {
       "title": "Load Image (as Mask)"
+    }
+  },
+  "40": {
+    "inputs": {
+      "mask": [
+        "37",
+        0
+      ]
+    },
+    "class_type": "MaskToImage",
+    "_meta": {
+      "title": "Convert Mask to Image"
+    }
+  },
+  "47": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "megapixels": 0.25,
+      "image": [
+        "40",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Scale Image to Total Pixels"
+    }
+  },
+  "51": {
+    "inputs": {
+      "grow_mask_by": 6,
+      "pixels": [
+        "33",
+        0
+      ],
+      "vae": [
+        "29",
+        2
+      ],
+      "mask": [
+        "54",
+        0
+      ]
+    },
+    "class_type": "VAEEncodeForInpaint",
+    "_meta": {
+      "title": "VAE Encode (for Inpainting)"
+    }
+  },
+  "52": {
+    "inputs": {
+      "images": [
+        "33",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "53": {
+    "inputs": {
+      "images": [
+        "47",
+        0
+      ]
+    },
+    "class_type": "PreviewImage",
+    "_meta": {
+      "title": "Preview Image"
+    }
+  },
+  "54": {
+    "inputs": {
+      "channel": "red",
+      "image": [
+        "47",
+        0
+      ]
+    },
+    "class_type": "ImageToMask",
+    "_meta": {
+      "title": "Convert Image to Mask"
     }
   }
 }

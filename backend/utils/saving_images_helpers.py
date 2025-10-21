@@ -14,7 +14,7 @@ def image_to_string(image):
 
 def string_to_image(base64_str):
     image_data = base64.b64decode(base64_str)
-    return Image.open(BytesIO(image_data))
+    return Image.open(BytesIO(image_data)).convert("RGB")
 
 async def save_image_record(user_id: str, image_base64: str, metadata: dict):
     record = {
