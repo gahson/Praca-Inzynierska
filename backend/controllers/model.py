@@ -14,7 +14,7 @@ from huggingface_hub import login
 
 from utils.auth_helpers import get_current_user
 from utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
-from schemas.generation import TextToImageRequest, Img2ImgRequest, Inpainting
+from schemas.generation import TextToImageRequest, Img2ImgRequest, ControlNetRequest, Inpainting
 
 models= APIRouter()
 
@@ -26,6 +26,7 @@ model_versions = {
     '3.0' : 'stable-diffusion-3-medium.safetensors',
     'xl' : 'stable-diffusion-xl.safetensors',
     'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
+    'controlnet' : 'dreamCreationVirtual3DECommerce_v10.safetensors',
 }
 
 def get_image(prompt_json):
@@ -180,6 +181,57 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
             "width": image_width,
             "height": image_height,
             "seed": img2ImgRequest.seed
+        }
+    )
+
+    return JSONResponse(content={"image": image_base64})
+    
+
+@models.post('/generate/control-net')
+async def control_net(controlNetRequest: ControlNetRequest, current_user: dict = Depends(get_current_user)):
+    if controlNetRequest.model_version not in model_versions:
+        raise HTTPException(status_code=404, detail='Model version does not exist.')
+    
+    img2img_path = os.path.join('workflows_api', 'controlnet.json')
+    
+    if not os.path.exists(img2img_path):
+        raise HTTPException(status_code=404, detail='File not found')
+    
+    prompt_json = {}
+    
+    with open(img2img_path, 'r') as f:
+        prompt_json = json.load(f)
+        
+    image = string_to_image(controlNetRequest.image)
+    image_width, image_height = image.size
+    image_name = f'{uuid.uuid4()}.png'
+    image.save(os.path.join('input_images', image_name))
+        
+    prompt_json['14']['inputs']['ckpt_name'] = model_versions[controlNetRequest.model_version]
+    
+    prompt_json['11']['inputs']['image'] = image_name
+    
+    prompt_json['3']['inputs']['seed'] = controlNetRequest.seed
+    prompt_json['3']['inputs']['steps'] = 30
+    prompt_json['3']['inputs']['cfg'] = controlNetRequest.guidance_scale
+    
+    prompt_json['6']['inputs']['text'] = controlNetRequest.prompt
+    prompt_json['7']['inputs']['text'] = controlNetRequest.negative_prompt    
+    
+    image_base64 = get_image(prompt_json)
+
+    await save_image_record(
+        user_id=str(current_user["_id"]),
+        image_base64=image_base64,
+        metadata={
+            "model": controlNetRequest.model_version,
+            "mode": "controlnet",
+            "prompt": controlNetRequest.prompt,
+            "negative_prompt": controlNetRequest.negative_prompt,
+            "guidance_scale": controlNetRequest.guidance_scale,
+            "width": image_width,
+            "height": image_height,
+            "seed": controlNetRequest.seed
         }
     )
 

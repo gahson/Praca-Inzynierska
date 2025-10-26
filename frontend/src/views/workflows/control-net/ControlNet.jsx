@@ -6,7 +6,7 @@ import { useState, useEffect, useRef } from "react";
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
 
-const ImageToImage = () => {
+const ControlNet = () => {
   const [image, updateImage] = useState();
   const [loadedImage, setLoadedImage] = useState(null);
 
@@ -15,7 +15,7 @@ const ImageToImage = () => {
   const [loading, updateLoading] = useState(false);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
-  const [model, setModel] = useState("1.5");
+  const [model, setModel] = useState("controlnet");
 
   const fileInputRef = useRef(null);
 
@@ -68,7 +68,7 @@ const ImageToImage = () => {
 
     try {
       const response = await axios.post(
-        `http://${location.hostname}:5555/model/generate/image-to-image`,
+        `http://${location.hostname}:5555/model/generate/control-net`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],
@@ -114,7 +114,7 @@ const ImageToImage = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-[1800px] bg-white rounded-lg shadow p-5">
-        <h1 className="font-bold text-3xl mb-5">Image to image</h1>
+        <h1 className="font-bold text-3xl mb-5">Control Net</h1>
         <div className="flex flex-col xl:flex-row gap-8">
           <div className="flex-1 flex flex-col">
             <div className="w-full h-full border-2 border-dashed border-gray-400 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">
@@ -214,28 +214,10 @@ const ImageToImage = () => {
             <p>Choose model</p>
             <div className="flex gap-4 flex-wrap">
               <button
-                onClick={() => setModel("1.5")}
-                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                onClick={() => setModel("controlnet")}
+                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "controlnet" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
               >
-                1.5
-              </button>
-              <button
-                onClick={() => setModel("2.1")}
-                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                2.1
-              </button>
-              <button
-                onClick={() => setModel("3.0")}
-                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                3.0
-              </button>
-              <button
-                onClick={() => setModel("xl")}
-                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                XL
+                Control Net
               </button>
             </div>
           </div>
@@ -256,4 +238,4 @@ const ImageToImage = () => {
   );
 };
 
-export default ImageToImage;
+export default ControlNet;

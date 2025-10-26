@@ -16,7 +16,7 @@ const Inpainting = () => {
   const [negativePrompt, updateNegativePrompt] = useState("");
   const [loading, updateLoading] = useState(false);
   const [guidance, setGuidance] = useState(25.0);
-  const [seed, setSeed] = useState(0);
+  const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("2.0-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
@@ -167,6 +167,7 @@ const Inpainting = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-[1800px] bg-white rounded-lg shadow p-5">
+        <h1 className="font-bold text-3xl mb-5">Inpainting</h1>
         <div className="flex flex-col xl:flex-row gap-8">
           <div className="flex-1 flex flex-col">
             <div className="w-full h-full border-2 border-dashed border-gray-400 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">

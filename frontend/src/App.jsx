@@ -12,7 +12,8 @@ import Workflows from "./views/workflows/Workflows";
 import TextToImage from "./views/workflows/text-to-image/TextToImage";
 import ImageToImage from "./views/workflows/image-to-image/ImageToImage";
 import Inpainting from "./views/workflows/inpainting/Inpainting";
-import BoundingBoxes from "./views/workflows/bounding-boxes/BoundingBoxes";
+import ControlNet from "./views/workflows/control-net/ControlNet";
+// import BoundingBoxes from "./views/workflows/bounding-boxes/BoundingBoxes";
 import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
 import Login from "./views/account/login/Login";
@@ -38,7 +39,8 @@ const App = () => (
         <Route path="/views/workflows/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
         <Route path="/views/workflows/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
         <Route path="/views/workflows/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
-        <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} />
+        <Route path="/views/workflows/control-net" element={<PrivateRoute><ControlNet /></PrivateRoute>} />
+        {/* <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} /> */}
         <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />
         <Route path="/views/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
         <Route path="/views/account/logout" element={<PrivateRoute><Logout /></PrivateRoute>} />

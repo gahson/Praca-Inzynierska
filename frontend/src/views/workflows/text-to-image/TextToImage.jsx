@@ -13,7 +13,7 @@ const TextToImage = () => {
   const [width, setWidth] = useState(1024);
   const [height, setHeight] = useState(1024);
   const [guidance, setGuidance] = useState(7.0);
-  const [seed, setSeed] = useState(0);
+  const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("1.5");
 
   const [searchParams] = useSearchParams();
@@ -113,6 +113,7 @@ const TextToImage = () => {
       <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8 bg-white rounded-lg shadow p-5">
         {/* Panel */}
         <div className="flex-1 flex flex-col gap-4">
+          <h1 className="font-bold text-3xl mb-5">Text to image</h1>
           <p className="block mb-2 text-sm font-medium">Positive prompt</p>
           <input
             value={prompt}
