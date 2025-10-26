@@ -16,7 +16,7 @@
         262
       ],
       "flags": {},
-      "order": 12,
+      "order": 10,
       "mode": 0,
       "inputs": [
         {
@@ -154,7 +154,7 @@
         46
       ],
       "flags": {},
-      "order": 13,
+      "order": 11,
       "mode": 0,
       "inputs": [
         {
@@ -181,7 +181,8 @@
         "cnr_id": "comfy-core",
         "ver": "0.3.59",
         "Node name for S&R": "VAEDecode"
-      }
+      },
+      "widgets_values": []
     },
     {
       "id": 9,
@@ -195,7 +196,7 @@
         270
       ],
       "flags": {},
-      "order": 14,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -327,8 +328,7 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            31,
-            34
+            31
           ]
         }
       ],
@@ -411,7 +411,8 @@
         "cnr_id": "comfy-core",
         "ver": "0.3.59",
         "Node name for S&R": "MaskToImage"
-      }
+      },
+      "widgets_values": []
     },
     {
       "id": 47,
@@ -425,7 +426,7 @@
         82
       ],
       "flags": {},
-      "order": 8,
+      "order": 7,
       "mode": 0,
       "inputs": [
         {
@@ -439,7 +440,6 @@
           "name": "IMAGE",
           "type": "IMAGE",
           "links": [
-            35,
             36
           ]
         }
@@ -466,7 +466,7 @@
         98
       ],
       "flags": {},
-      "order": 11,
+      "order": 9,
       "mode": 0,
       "inputs": [
         {
@@ -504,64 +504,6 @@
       ]
     },
     {
-      "id": 52,
-      "type": "PreviewImage",
-      "pos": [
-        970,
-        130
-      ],
-      "size": [
-        140,
-        246
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 34
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.59",
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
-    },
-    {
-      "id": 53,
-      "type": "PreviewImage",
-      "pos": [
-        1340,
-        130
-      ],
-      "size": [
-        140,
-        246
-      ],
-      "flags": {},
-      "order": 9,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "images",
-          "type": "IMAGE",
-          "link": 35
-        }
-      ],
-      "outputs": [],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.59",
-        "Node name for S&R": "PreviewImage"
-      },
-      "widgets_values": []
-    },
-    {
       "id": 54,
       "type": "ImageToMask",
       "pos": [
@@ -573,7 +515,7 @@
         58
       ],
       "flags": {},
-      "order": 10,
+      "order": 8,
       "mode": 0,
       "inputs": [
         {
@@ -723,22 +665,6 @@
       "MASK"
     ],
     [
-      34,
-      33,
-      0,
-      52,
-      0,
-      "IMAGE"
-    ],
-    [
-      35,
-      47,
-      0,
-      53,
-      0,
-      "IMAGE"
-    ],
-    [
       36,
       47,
       0,
@@ -751,10 +677,10 @@
   "config": {},
   "extra": {
     "ds": {
-      "scale": 1.486436280241438,
+      "scale": 1.08347059433884,
       "offset": [
-        739.6609432713298,
-        -8.70641695869272
+        452.0945584087326,
+        168.0299338878254
       ]
     },
     "frontendVersion": "1.26.13"

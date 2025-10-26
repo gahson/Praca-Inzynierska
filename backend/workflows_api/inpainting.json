@@ -1,8 +1,8 @@
 {
   "3": {
     "inputs": {
-      "seed": 971425048210121,
-      "steps": 12,
+      "seed": 486305890,
+      "steps": 15,
       "cfg": 25,
       "sampler_name": "euler",
       "scheduler": "normal",
@@ -31,7 +31,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Skyscraper",
+      "text": "Viking fleet",
       "clip": [
         "29",
         1
@@ -44,7 +44,7 @@
   },
   "7": {
     "inputs": {
-      "text": "blurry, text, bad quality",
+      "text": "",
       "clip": [
         "29",
         1
@@ -86,7 +86,7 @@
   },
   "20": {
     "inputs": {
-      "image": "05a0b1b9-dbbf-4de2-8986-577a6297799d.png"
+      "image": "77706e6a-8b0d-413f-ad3a-604fb721619e.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -118,7 +118,7 @@
   },
   "37": {
     "inputs": {
-      "image": "91dfca41-8ddc-45d8-96ef-a46b853f5c5a.png",
+      "image": "c5d14ec3-55b8-4aab-b103-4a4d666197d3.png",
       "channel": "red"
     },
     "class_type": "LoadImageMask",
@@ -171,30 +171,6 @@
     "class_type": "VAEEncodeForInpaint",
     "_meta": {
       "title": "VAE Encode (for Inpainting)"
-    }
-  },
-  "52": {
-    "inputs": {
-      "images": [
-        "33",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
-    }
-  },
-  "53": {
-    "inputs": {
-      "images": [
-        "47",
-        0
-      ]
-    },
-    "class_type": "PreviewImage",
-    "_meta": {
-      "title": "Preview Image"
     }
   },
   "54": {

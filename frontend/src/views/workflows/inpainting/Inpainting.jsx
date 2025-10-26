@@ -21,6 +21,8 @@ const Inpainting = () => {
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
 
+  const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -134,7 +136,6 @@ const Inpainting = () => {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
-
       updateImage(response.data.image);
     } catch (error) {
       console.error("Error:", error.response?.data?.detail || error.message);
@@ -221,7 +222,7 @@ const Inpainting = () => {
             </div>
           </div>
 
-        <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden relative">
+          <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden relative">
             {loading ? (
               <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
                 <div className="rounded-full bg-gray-300 h-12 w-12"></div>
@@ -273,51 +274,71 @@ const Inpainting = () => {
             className="w-full p-2 border rounded"
           />
 
-          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+          {showAdvancedParameters ? (
+            <>
+              <button
+                onClick={() => setShowAdvancedParameters(false)}
+                className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm font-medium"
+              >
+                Hide advanced parameters ▲
+              </button>
 
-          <div className="flex flex-col gap-2">
-            <p className="block mb-2 text-sm font-medium">Seed</p>
-            <div className="flex gap-4 items-center">
-              <input
-                type="number"
-                value={seed}
-                min={0}
-                max={999999999999999}
-                onChange={(e) => setSeed(Number(e.target.value))}
-                className="w-full p-2 border rounded"
-              />
-              <button
-                onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
-                className="bg-yellow-400 text-black py-2 rounded px-4"
-              >
-                Randomize
-              </button>
-            </div>
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <p>Choose model</p>
-            <div className="flex gap-4 flex-wrap">
-              <button
-                onClick={() => setModel("1.5-inpainting")}
-                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "1.5-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                1.5-inpainting
-              </button>
-              <button
-                onClick={() => setModel("2.0-inpainting")}
-                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "2.0-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                2.0-inpainting
-              </button>
-              <button
-                onClick={() => setModel("xl-inpainting")}
-                className={`rounded-2xl border-2 px-4 py-2 transition ${model === "xl-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                xl-inpainting
-              </button>
-            </div>
-          </div>
+              <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+
+              <div className="flex flex-col gap-2">
+                <p className="block mb-2 text-sm font-medium">Seed</p>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="number"
+                    value={seed}
+                    min={0}
+                    max={999999999999999}
+                    onChange={(e) => setSeed(Number(e.target.value))}
+                    className="w-full p-2 border rounded"
+                  />
+                  <button
+                    onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
+                    className="bg-yellow-400 text-black py-2 rounded px-4"
+                  >
+                    Randomize
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p>Choose model</p>
+                <div className="flex gap-4 flex-wrap">
+                  <button
+                    onClick={() => setModel("1.5-inpainting")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${model === "1.5-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    1.5-inpainting
+                  </button>
+                  <button
+                    onClick={() => setModel("2.0-inpainting")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${model === "2.0-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    2.0-inpainting
+                  </button>
+                  <button
+                    onClick={() => setModel("xl-inpainting")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${model === "xl-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    xl-inpainting
+                  </button>
+                </div>
+              </div>
+
+            </>
+          ) : (
+            <button
+              onClick={() => setShowAdvancedParameters(true)}
+              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm font-medium"
+            >
+              Show advanced parameters ▼
+            </button>
+          )}
 
           {loadedImage && maskData ? (
             <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">

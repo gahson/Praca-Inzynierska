@@ -64,6 +64,8 @@ def get_image(prompt_json):
     if not outputs:
         raise HTTPException(status_code=404, detail='No outputs found in workflow response')
     
+    print(outputs, flush=True)
+    
     # Find the first SaveImage node output
     filename = None
     for node_id, node_output in outputs.items():
@@ -155,7 +157,7 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
     image_width, image_height = image.size
     image_name = f'{uuid.uuid4()}.png'
     image.save(os.path.join('input_images', image_name))
-        
+    
     prompt_json['14']['inputs']['ckpt_name'] = model_versions[img2ImgRequest.model_version]
     
     prompt_json['10']['inputs']['image'] = image_name
@@ -284,7 +286,7 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
     prompt_json['37']['inputs']['image'] = mask_name
     
     image_base64 = get_image(prompt_json)
-
+    
     try:
         await save_image_record(
             user_id=str(current_user["_id"]),

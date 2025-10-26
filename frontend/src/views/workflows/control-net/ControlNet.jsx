@@ -17,6 +17,8 @@ const ControlNet = () => {
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("controlnet");
 
+  const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
+
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -187,40 +189,59 @@ const ControlNet = () => {
             className="w-full p-2 border rounded"
           />
 
-          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-          {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
-
-          <div className="flex flex-col gap-2">
-            <p className="block mb-2 text-sm font-medium">Seed</p>
-            <div className="flex gap-4 items-center">
-              <input
-                type="number"
-                value={seed}
-                min={0}
-                max={999999999999999}
-                onChange={(e) => setSeed(Number(e.target.value))}
-                className="w-full  p-2 border rounded"
-              />
+          {showAdvancedParameters ? (
+            <>
               <button
-                onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
-                className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+                onClick={() => setShowAdvancedParameters(false)}
+                className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm font-medium"
               >
-                Randomize
+                Hide advanced parameters ▲
               </button>
-            </div>
-          </div>
 
-          <div className="flex flex-col gap-2">
-            <p>Choose model</p>
-            <div className="flex gap-4 flex-wrap">
-              <button
-                onClick={() => setModel("controlnet")}
-                className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "controlnet" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                Control Net
-              </button>
-            </div>
-          </div>
+              <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+              {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
+
+              <div className="flex flex-col gap-2">
+                <p className="block mb-2 text-sm font-medium">Seed</p>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="number"
+                    value={seed}
+                    min={0}
+                    max={999999999999999}
+                    onChange={(e) => setSeed(Number(e.target.value))}
+                    className="w-full  p-2 border rounded"
+                  />
+                  <button
+                    onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
+                    className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+                  >
+                    Randomize
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p>Choose model</p>
+                <div className="flex gap-4 flex-wrap">
+                  <button
+                    onClick={() => setModel("controlnet")}
+                    className={`rounded-2xl border-2 px-4 py-2 w-32 transition ${model === "controlnet" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    Control Net
+                  </button>
+                </div>
+              </div>
+
+            </>
+          ) : (
+            <button
+              onClick={() => setShowAdvancedParameters(true)}
+              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm font-medium"
+            >
+              Show advanced parameters ▼
+            </button>
+          )}
 
           {loadedImage ? (
             <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">

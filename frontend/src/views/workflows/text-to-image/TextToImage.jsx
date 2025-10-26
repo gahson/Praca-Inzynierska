@@ -25,6 +25,8 @@ const TextToImage = () => {
   const urlSeed = searchParams.get("seed");
   const urlModel = searchParams.get("model");
 
+  const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
+
   useEffect(() => {
     if (urlPrompt) updatePrompt(urlPrompt);
   }, [urlPrompt]);
@@ -129,61 +131,79 @@ const TextToImage = () => {
             className="w-full p-2 border rounded"
           />
 
-          <SliderControl label="Width" value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
-          <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
+          {showAdvancedParameters ? (
+            <>
+              <button
+                onClick={() => setShowAdvancedParameters(false)}
+                className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm font-medium"
+              >
+                Hide advanced parameters ▲
+              </button>
 
-          <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-          {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
 
-          <div className="flex flex-col gap-2">
-            <p className="block mb-2 text-sm font-medium">Seed</p>
-            <div className="flex gap-4 items-center">
-              <input
-                type="number"
-                value={seed}
-                min={0}
-                max={999999999}
-                onChange={(e) => setSeed(Number(e.target.value))}
-                className="w-full p-2 border rounded"
-              />
-              <button
-                onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
-                className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
-              >
-                Randomize
-              </button>
-            </div>
-          </div>
+              <SliderControl label="Width" value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
+              <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
 
-          <div className="flex flex-col gap-2">
-            <p>Choose model</p>
-            <div className="flex gap-4 flex-wrap">
-              <button
-                onClick={() => setModel("1.5")}
-                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                1.5
-              </button>
-              <button
-                onClick={() => setModel("2.1")}
-                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                2.1
-              </button>
-              <button
-                onClick={() => setModel("3.0")}
-                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                3.0
-              </button>
-              <button
-                onClick={() => setModel("xl")}
-                className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-              >
-                xl
-              </button>
-            </div>
-          </div>
+              <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+
+              <div className="flex flex-col gap-2">
+                <p className="block mb-2 text-sm font-medium">Seed</p>
+                <div className="flex gap-4 items-center">
+                  <input
+                    type="number"
+                    value={seed}
+                    min={0}
+                    max={999999999}
+                    onChange={(e) => setSeed(Number(e.target.value))}
+                    className="w-full p-2 border rounded"
+                  />
+                  <button
+                    onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                    className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+                  >
+                    Randomize
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p>Choose model</p>
+                <div className="flex gap-4 flex-wrap">
+                  <button
+                    onClick={() => setModel("1.5")}
+                    className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "1.5" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    1.5
+                  </button>
+                  <button
+                    onClick={() => setModel("2.1")}
+                    className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "2.1" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    2.1
+                  </button>
+                  <button
+                    onClick={() => setModel("3.0")}
+                    className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "3.0" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    3.0
+                  </button>
+                  <button
+                    onClick={() => setModel("xl")}
+                    className={`rounded-2xl border-2 px-4 py-2 w-24 transition ${model === "xl" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    xl
+                  </button>
+                </div>
+              </div>
+            </>
+          ) : (
+            <button
+              onClick={() => setShowAdvancedParameters(true)}
+              className="bg-gray-200 hover:bg-gray-300 px-4 py-2 rounded text-sm font-medium"
+            >
+              Show advanced parameters ▼
+            </button>
+          )}
 
           <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
             Generate
