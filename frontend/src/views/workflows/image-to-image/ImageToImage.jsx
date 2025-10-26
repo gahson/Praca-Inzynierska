@@ -261,9 +261,16 @@ const ImageToImage = () => {
 
 
           {loadedImage ? (
-            <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
-              Generate
-            </button>
+            loading ? (
+              <button onClick={generate} disabled={true} className="mt-auto w-full bg-gray-400 text-black py-2 rounded cursor-not-allowed" >
+                Generating...
+              </button>
+            )
+              : (
+                <button onClick={generate} disabled={false} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+                  Generate
+                </button>
+              )
           ) : (
             <button onClick={generate} disabled={true} className="mt-auto w-full bg-gray-400 text-black py-2 rounded cursor-not-allowed">
               Generate

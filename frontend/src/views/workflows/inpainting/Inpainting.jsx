@@ -341,9 +341,16 @@ const Inpainting = () => {
           )}
 
           {loadedImage && maskData ? (
-            <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
-              Generate
-            </button>
+            loading ? (
+              <button onClick={generate} disabled={true} className="mt-auto w-full bg-gray-400 text-black py-2 rounded cursor-not-allowed" >
+                Generating...
+              </button>
+            )
+              : (
+                <button onClick={generate} disabled={false} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+                  Generate
+                </button>
+              )
           ) : (
             <button onClick={generate} disabled={true} className="mt-auto w-full bg-gray-400 text-black py-2 rounded cursor-not-allowed">
               Generate
@@ -352,21 +359,23 @@ const Inpainting = () => {
 
         </div>
       </div>
-      {maskEditorOpen && (
-        <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center">
-          <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center bg-black/90" />
-          <div className="relative z-[9999] flex justify-center items-center">
-            <InpaintingCanvas
-              imageSrc={loadedImage}
-              onMaskUpdate={setMaskData}
-              width={imageDimensions.width}
-              height={imageDimensions.height}
-              setMaskEditorOpenRef={setMaskEditorOpen}
-            />
+      {
+        maskEditorOpen && (
+          <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center">
+            <div className="fixed top-0 left-0 w-screen h-screen z-[9999] flex justify-center items-center bg-black/90" />
+            <div className="relative z-[9999] flex justify-center items-center">
+              <InpaintingCanvas
+                imageSrc={loadedImage}
+                onMaskUpdate={setMaskData}
+                width={imageDimensions.width}
+                height={imageDimensions.height}
+                setMaskEditorOpenRef={setMaskEditorOpen}
+              />
+            </div>
           </div>
-        </div>
-      )}
-    </div>
+        )
+      }
+    </div >
   );
 };
 

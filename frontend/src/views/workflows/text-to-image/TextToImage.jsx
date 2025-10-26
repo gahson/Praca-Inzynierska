@@ -205,9 +205,17 @@ const TextToImage = () => {
             </button>
           )}
 
-          <button onClick={generate} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
-            Generate
-          </button>
+          {loading ? (
+            <button onClick={generate} disabled={true} className="mt-auto w-full bg-gray-400 text-black py-2 rounded cursor-not-allowed">
+              Generating...
+            </button>
+          )
+            : (
+              <button onClick={generate} disabled={false} className="mt-auto w-full bg-yellow-400 text-black py-2 rounded">
+                Generate
+              </button>
+            )}
+
         </div>
         {/* Obrazek */}
         <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
@@ -222,7 +230,7 @@ const TextToImage = () => {
           )}
         </div>
       </div>
-    </div>
+    </div >
   );
 };
 
