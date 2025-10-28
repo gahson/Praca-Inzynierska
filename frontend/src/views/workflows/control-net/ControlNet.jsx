@@ -13,6 +13,8 @@ const ControlNet = () => {
   const [prompt, updatePrompt] = useState("");
   const [negativePrompt, updateNegativePrompt] = useState("");
   const [loading, updateLoading] = useState(false);
+  const [cannyLowThreshold, setCannyLowThreshold] = useState(0.1);
+  const [cannyHighThreshold, setCannyHighThreshold] = useState(0.9);
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("controlnet");
@@ -31,6 +33,8 @@ const ControlNet = () => {
           updatePrompt(data.prompt || "");
           updateNegativePrompt(data.negative_prompt || "");
           setGuidance(data.guidance_scale || 7);
+          setCannyLowThreshold(data.cannyLowThreshold || 0.1);
+          setCannyHighThreshold(data.cannyHighThreshold || 0.9);
           setSeed(data.seed || 0);
         }
       } catch (e) {
@@ -74,10 +78,12 @@ const ControlNet = () => {
         {
           model_version: model,
           image: loadedImage.split(",")[1],
-          prompt,
+          prompt: prompt,
           negative_prompt: negativePrompt,
           guidance_scale: guidance,
-          seed,
+          cannyLowThreshold: cannyLowThreshold,
+          cannyHighThreshold: cannyHighThreshold,
+          seed: seed,
         },
         {
           headers: {
@@ -199,7 +205,8 @@ const ControlNet = () => {
               </button>
 
               <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
-              {/* <SliderControl label="Seed" value={seed} min={0} max={10000} step={1} onChange={(v) => setSeed(v[0])} /> */}
+              <SliderControl label="Canny low threshold" value={cannyLowThreshold} min={0} max={1.0} step={0.01} onChange={(v) => setCannyLowThreshold(v[0])} />
+              <SliderControl label="Canny high threshold" value={cannyHighThreshold} min={0} max={1.0} step={0.01} onChange={(v) => setCannyHighThreshold(v[0])} />
 
               <div className="flex flex-col gap-2">
                 <p className="block mb-2 text-sm font-medium">Seed</p>

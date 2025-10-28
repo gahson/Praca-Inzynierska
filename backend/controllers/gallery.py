@@ -19,6 +19,8 @@ async def get_gallery(current_user: dict = Depends(get_current_user)):
             "prompt": img.get("prompt"),
             "negative_prompt": img.get("negative_prompt"),
             "guidance_scale": img.get("guidance_scale"),
+            "canny_low_threshold": img.get("canny_low_threshold"),
+            "canny_high_threshold": img.get("canny_high_threshold"),
             "seed": img.get("seed"),
             "width": img.get("width"),
             "height": img.get("height"),

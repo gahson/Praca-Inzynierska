@@ -29,6 +29,17 @@ model_versions = {
     'controlnet' : 'dreamCreationVirtual3DECommerce_v10.safetensors',
 }
 
+model_version_to_input_size = {
+    '1.5' : (512,512),
+    '1.5-inpainting' : (512,512),
+    '2.0-inpainting' : (512,512),
+    '2.1' : (768,768),
+    '3.0' : (1024,1024),
+    'xl' : (1024,1024),
+    'xl-inpainting' : (1024,1024),
+    'controlnet' : (512,512),
+}
+
 def get_image(prompt_json):
     queue_payload = {'prompt': prompt_json}
 
@@ -64,7 +75,7 @@ def get_image(prompt_json):
     if not outputs:
         raise HTTPException(status_code=404, detail='No outputs found in workflow response')
     
-    print(outputs, flush=True)
+    # print(outputs, flush=True)
     
     # Find the first SaveImage node output
     filename = None
@@ -160,6 +171,9 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
     
     prompt_json['14']['inputs']['ckpt_name'] = model_versions[img2ImgRequest.model_version]
     
+    prompt_json['20']['inputs']['target_width'] = model_version_to_input_size[img2ImgRequest.model_version][0]
+    prompt_json['20']['inputs']['target_height'] = model_version_to_input_size[img2ImgRequest.model_version][1]
+    
     prompt_json['10']['inputs']['image'] = image_name
     
     prompt_json['3']['inputs']['seed'] = img2ImgRequest.seed
@@ -211,6 +225,15 @@ async def control_net(controlNetRequest: ControlNetRequest, current_user: dict =
         
     prompt_json['14']['inputs']['ckpt_name'] = model_versions[controlNetRequest.model_version]
     
+    prompt_json['5']['inputs']['width'] = model_version_to_input_size[controlNetRequest.model_version][0]
+    prompt_json['5']['inputs']['height'] = model_version_to_input_size[controlNetRequest.model_version][1]
+    
+    prompt_json['33']['inputs']['target_width'] = model_version_to_input_size[controlNetRequest.model_version][0]
+    prompt_json['33']['inputs']['target_height'] = model_version_to_input_size[controlNetRequest.model_version][1]
+    
+    prompt_json['35']['inputs']['low_threshold'] = controlNetRequest.cannyLowThreshold
+    prompt_json['35']['inputs']['high_threshold'] = controlNetRequest.cannyHighThreshold
+    
     prompt_json['11']['inputs']['image'] = image_name
     
     prompt_json['3']['inputs']['seed'] = controlNetRequest.seed
@@ -231,6 +254,8 @@ async def control_net(controlNetRequest: ControlNetRequest, current_user: dict =
             "prompt": controlNetRequest.prompt,
             "negative_prompt": controlNetRequest.negative_prompt,
             "guidance_scale": controlNetRequest.guidance_scale,
+            "canny_low_threshold": controlNetRequest.cannyLowThreshold,
+            "canny_high_threshold": controlNetRequest.cannyHighThreshold,
             "width": image_width,
             "height": image_height,
             "seed": controlNetRequest.seed
@@ -273,8 +298,16 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
     
     image.save(os.path.join('input_images', image_name))
     mask.save(os.path.join('input_images', mask_name))
+    
+    #model_version_to_input_size
 
     prompt_json['29']['inputs']['ckpt_name'] = model_versions[inpainting.model_version]
+    
+    prompt_json['58']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
+    prompt_json['58']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
+    
+    prompt_json['60']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
+    prompt_json['60']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
     
     prompt_json['3']['inputs']['seed'] = inpainting.seed
     prompt_json['3']['inputs']['cfg'] = inpainting.guidance_scale

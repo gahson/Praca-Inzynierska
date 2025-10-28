@@ -24,6 +24,8 @@ class ControlNetRequest(BaseModel):
     prompt: str
     negative_prompt: str
     guidance_scale: float
+    cannyLowThreshold: float
+    cannyHighThreshold: float
     seed: int
     image: str
 

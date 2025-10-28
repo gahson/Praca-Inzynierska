@@ -100,6 +100,16 @@ const Gallery = () => {
                 <p><b>Prompt:</b> {img.prompt}</p>
                 <p><b>Seed:</b> {img.seed}</p>
                 <p><b>Guidance:</b> {img.guidance_scale}</p>
+                {img.model == "controlnet" ? (
+                  <>
+                  <p><b>Canny low threshold:</b> {img.canny_low_threshold}</p>
+                  <p><b>Canny high threshold:</b> {img.canny_high_threshold}</p>
+                  </>
+                ) : (
+                  <>
+                  </>
+                )}
+                
                 <p><b>Created:</b> {new Date(img.created_at).toLocaleString()}</p>
               </div>
               <div className="flex flex-col mt-3 space-y-2">

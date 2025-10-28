@@ -1,26 +1,26 @@
 {
   "3": {
     "inputs": {
-      "seed": 808369199502636,
+      "seed": 541997594552856,
       "steps": 20,
-      "cfg": 8,
-      "sampler_name": "uni_pc_bh2",
+      "cfg": 6,
+      "sampler_name": "euler",
       "scheduler": "normal",
       "denoise": 1,
       "model": [
-        "29",
+        "14",
         0
       ],
       "positive": [
-        "6",
+        "32",
         0
       ],
       "negative": [
-        "7",
-        0
+        "32",
+        1
       ],
       "latent_image": [
-        "26",
+        "5",
         0
       ]
     },
@@ -29,11 +29,22 @@
       "title": "KSampler"
     }
   },
+  "5": {
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    },
+    "class_type": "EmptyLatentImage",
+    "_meta": {
+      "title": "Empty Latent Image"
+    }
+  },
   "6": {
     "inputs": {
-      "text": "teacup on pink tablecloth, Anime style",
+      "text": "",
       "clip": [
-        "29",
+        "14",
         1
       ]
     },
@@ -44,9 +55,9 @@
   },
   "7": {
     "inputs": {
-      "text": "watermark, text\n",
+      "text": "",
       "clip": [
-        "29",
+        "14",
         1
       ]
     },
@@ -62,8 +73,8 @@
         0
       ],
       "vae": [
-        "29",
-        2
+        "13",
+        0
       ]
     },
     "class_type": "VAEDecode",
@@ -84,67 +95,67 @@
       "title": "Save Image"
     }
   },
-  "20": {
+  "11": {
     "inputs": {
-      "image": "example.png"
+      "image": "scribble_input.png"
     },
     "class_type": "LoadImage",
     "_meta": {
       "title": "Load Image"
     }
   },
-  "26": {
+  "12": {
     "inputs": {
-      "grow_mask_by": 6,
-      "pixels": [
-        "33",
-        0
-      ],
-      "vae": [
-        "29",
-        2
-      ],
-      "mask": [
-        "37",
-        0
-      ]
+      "control_net_name": "control_v11p_sd15_scribble_fp16.safetensors"
     },
-    "class_type": "VAEEncodeForInpaint",
+    "class_type": "ControlNetLoader",
     "_meta": {
-      "title": "VAE Encode (for Inpainting)"
+      "title": "Load ControlNet Model"
     }
   },
-  "29": {
+  "13": {
     "inputs": {
-      "ckpt_name": "512-inpainting-ema.safetensors"
+      "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors"
+    },
+    "class_type": "VAELoader",
+    "_meta": {
+      "title": "Load VAE"
+    }
+  },
+  "14": {
+    "inputs": {
+      "ckpt_name": "dreamCreationVirtual3DECommerce_v10.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
       "title": "Load Checkpoint"
     }
   },
-  "33": {
+  "32": {
     "inputs": {
-      "upscale_method": "nearest-exact",
-      "megapixels": 0.25,
+      "strength": 1,
+      "start_percent": 0,
+      "end_percent": 1,
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "control_net": [
+        "12",
+        0
+      ],
       "image": [
-        "20",
+        "11",
         0
       ]
     },
-    "class_type": "ImageScaleToTotalPixels",
+    "class_type": "ControlNetApplyAdvanced",
     "_meta": {
-      "title": "Scale Image to Total Pixels"
-    }
-  },
-  "37": {
-    "inputs": {
-      "image": "example.png",
-      "channel": "alpha"
-    },
-    "class_type": "LoadImageMask",
-    "_meta": {
-      "title": "Load Image (as Mask)"
+      "title": "Apply ControlNet"
     }
   }
 }

@@ -1,9 +1,9 @@
 {
   "3": {
     "inputs": {
-      "seed": 541997594552856,
-      "steps": 20,
-      "cfg": 6,
+      "seed": 806824809031353,
+      "steps": 30,
+      "cfg": 7,
       "sampler_name": "euler",
       "scheduler": "normal",
       "denoise": 1,
@@ -31,8 +31,8 @@
   },
   "5": {
     "inputs": {
-      "width": 1024,
-      "height": 1024,
+      "width": 512,
+      "height": 512,
       "batch_size": 1
     },
     "class_type": "EmptyLatentImage",
@@ -97,7 +97,7 @@
   },
   "11": {
     "inputs": {
-      "image": "scribble_input.png"
+      "image": "pobierz (1).png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -149,13 +149,47 @@
         0
       ],
       "image": [
-        "11",
+        "35",
         0
+      ],
+      "vae": [
+        "14",
+        2
       ]
     },
     "class_type": "ControlNetApplyAdvanced",
     "_meta": {
       "title": "Apply ControlNet"
+    }
+  },
+  "33": {
+    "inputs": {
+      "target_width": 512,
+      "target_height": 512,
+      "padding_color": "white",
+      "interpolation": "area",
+      "image": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "ResizeAndPadImage",
+    "_meta": {
+      "title": "ResizeAndPadImage"
+    }
+  },
+  "35": {
+    "inputs": {
+      "low_threshold": 0.1,
+      "high_threshold": 0.9,
+      "image": [
+        "33",
+        0
+      ]
+    },
+    "class_type": "Canny",
+    "_meta": {
+      "title": "Canny"
     }
   }
 }
