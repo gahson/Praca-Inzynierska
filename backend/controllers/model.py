@@ -40,6 +40,18 @@ model_version_to_input_size = {
     'controlnet' : (512,512),
 }
 
+model_version_to_megapixels = {
+    '1.5': 0.262,
+    '1.5-inpainting': 0.262,
+    '2.0-inpainting': 0.262,
+    '2.1': 0.589,
+    '3.0': 1.048,
+    'xl': 1.048,
+    'xl-inpainting': 1.048,
+    'controlnet': 0.262,
+}
+
+
 def get_image(prompt_json):
     queue_payload = {'prompt': prompt_json}
 
@@ -171,11 +183,19 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
     
     prompt_json['14']['inputs']['ckpt_name'] = model_versions[img2ImgRequest.model_version]
     
-    prompt_json['20']['inputs']['target_width'] = model_version_to_input_size[img2ImgRequest.model_version][0]
-    prompt_json['20']['inputs']['target_height'] = model_version_to_input_size[img2ImgRequest.model_version][1]
-    
     prompt_json['10']['inputs']['image'] = image_name
     
+    # Image resizing
+    if img2ImgRequest.scaling_mode == 'resize_and_pad':
+        prompt_json['20']['inputs']['target_width'] = model_version_to_input_size[img2ImgRequest.model_version][0]
+        prompt_json['20']['inputs']['target_height'] = model_version_to_input_size[img2ImgRequest.model_version][1]
+        prompt_json['12']['inputs']['pixels'][0]='20'
+    elif img2ImgRequest.scaling_mode == 'scale_to_megapixels':
+        prompt_json['21']['inputs']['megapixels'] = model_version_to_megapixels[img2ImgRequest.model_version]
+        prompt_json['12']['inputs']['pixels'][0]='21'
+    else:
+        prompt_json['12']['inputs']['pixels'][0]='10'
+
     prompt_json['3']['inputs']['seed'] = img2ImgRequest.seed
     prompt_json['3']['inputs']['steps'] = 30
     prompt_json['3']['inputs']['cfg'] = img2ImgRequest.guidance_scale
@@ -196,7 +216,8 @@ async def edit_image(img2ImgRequest: Img2ImgRequest, current_user: dict = Depend
             "guidance_scale": img2ImgRequest.guidance_scale,
             "width": image_width,
             "height": image_height,
-            "seed": img2ImgRequest.seed
+            "seed": img2ImgRequest.seed,
+            "scaling_mode": img2ImgRequest.scaling_mode,
         }
     )
 
@@ -225,16 +246,21 @@ async def control_net(controlNetRequest: ControlNetRequest, current_user: dict =
         
     prompt_json['14']['inputs']['ckpt_name'] = model_versions[controlNetRequest.model_version]
     
-    prompt_json['5']['inputs']['width'] = model_version_to_input_size[controlNetRequest.model_version][0]
-    prompt_json['5']['inputs']['height'] = model_version_to_input_size[controlNetRequest.model_version][1]
+    prompt_json['11']['inputs']['image'] = image_name
     
-    prompt_json['33']['inputs']['target_width'] = model_version_to_input_size[controlNetRequest.model_version][0]
-    prompt_json['33']['inputs']['target_height'] = model_version_to_input_size[controlNetRequest.model_version][1]
+    # Image resizing
+    if controlNetRequest.scaling_mode == 'resize_and_pad':
+        prompt_json['33']['inputs']['target_width'] = model_version_to_input_size[controlNetRequest.model_version][0]
+        prompt_json['33']['inputs']['target_height'] = model_version_to_input_size[controlNetRequest.model_version][1]
+        prompt_json['35']['inputs']['image'][0]='33'
+    elif controlNetRequest.scaling_mode == 'scale_to_megapixels':
+        prompt_json['37']['inputs']['megapixels'] = model_version_to_megapixels[controlNetRequest.model_version]
+        prompt_json['35']['inputs']['image'][0]='37'
+    else:
+        prompt_json['35']['inputs']['image'][0]='11'
     
     prompt_json['35']['inputs']['low_threshold'] = controlNetRequest.cannyLowThreshold
     prompt_json['35']['inputs']['high_threshold'] = controlNetRequest.cannyHighThreshold
-    
-    prompt_json['11']['inputs']['image'] = image_name
     
     prompt_json['3']['inputs']['seed'] = controlNetRequest.seed
     prompt_json['3']['inputs']['steps'] = 30
@@ -258,7 +284,8 @@ async def control_net(controlNetRequest: ControlNetRequest, current_user: dict =
             "canny_high_threshold": controlNetRequest.cannyHighThreshold,
             "width": image_width,
             "height": image_height,
-            "seed": controlNetRequest.seed
+            "seed": controlNetRequest.seed,
+            "scaling_mode": controlNetRequest.scaling_mode,
         }
     )
 
@@ -298,25 +325,43 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
     
     image.save(os.path.join('input_images', image_name))
     mask.save(os.path.join('input_images', mask_name))
-    
-    #model_version_to_input_size
 
     prompt_json['29']['inputs']['ckpt_name'] = model_versions[inpainting.model_version]
     
-    prompt_json['58']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
-    prompt_json['58']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
+    prompt_json['20']['inputs']['image'] = image_name
+    prompt_json['37']['inputs']['image'] = mask_name
     
-    prompt_json['60']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
-    prompt_json['60']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
+    # Image resizing
+    if inpainting.scaling_mode == 'resize_and_pad':
+        # Image
+        prompt_json['58']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
+        prompt_json['58']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
+        prompt_json['51']['inputs']['pixels'][0]='58'
+        
+        # Mask
+        prompt_json['60']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
+        prompt_json['60']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
+        prompt_json['62']['inputs']['image'][0]='60'
+    elif inpainting.scaling_mode == 'scale_to_megapixels':
+        # Image
+        prompt_json['63']['inputs']['megapixels'] = model_version_to_megapixels[inpainting.model_version]
+        prompt_json['51']['inputs']['pixels'][0]='63'
+        
+        # Mask
+        prompt_json['64']['inputs']['megapixels'] = model_version_to_megapixels[inpainting.model_version]
+        prompt_json['62']['inputs']['image'][0]='64'
+    else:
+        # Image
+        prompt_json['51']['inputs']['pixels'][0]='20'
+        
+        # Mask
+        prompt_json['51']['inputs']['mask'][0]='37'
     
     prompt_json['3']['inputs']['seed'] = inpainting.seed
     prompt_json['3']['inputs']['cfg'] = inpainting.guidance_scale
     
     prompt_json['6']['inputs']['text'] = inpainting.prompt
     prompt_json['7']['inputs']['text'] = inpainting.negative_prompt
-    
-    prompt_json['20']['inputs']['image'] = image_name
-    prompt_json['37']['inputs']['image'] = mask_name
     
     image_base64 = get_image(prompt_json)
     
@@ -332,7 +377,8 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
                 "guidance_scale": inpainting.guidance_scale,
                 "seed": inpainting.seed,
                 "width": image_width,
-                "height": image_height
+                "height": image_height,
+                "scaling_mode": inpainting.scaling_mode,
             }
         )
         print("Image record saved successfully")
@@ -367,9 +413,19 @@ async def image_outpainting(outpainting: Outpainting, current_user: dict = Depen
     image.save(os.path.join('input_images', image_name))
 
     prompt_json['29']['inputs']['ckpt_name'] = model_versions[outpainting.model_version]
-    
-    prompt_json['40']['inputs']['target_width'] = model_version_to_input_size[outpainting.model_version][0]
-    prompt_json['40']['inputs']['target_height'] = model_version_to_input_size[outpainting.model_version][1]
+
+    prompt_json['20']['inputs']['image'] = image_name
+
+    # Image resizing
+    if outpainting.scaling_mode == 'resize_and_pad':
+        prompt_json['40']['inputs']['target_width'] = model_version_to_input_size[outpainting.model_version][0]
+        prompt_json['40']['inputs']['target_height'] = model_version_to_input_size[outpainting.model_version][1]
+        prompt_json['30']['inputs']['image'][0] = '40'
+    elif outpainting.scaling_mode == 'scale_to_megapixels':
+        prompt_json['41']['inputs']['megapixels'] = model_version_to_megapixels[outpainting.model_version]
+        prompt_json['30']['inputs']['image'][0] = '41'
+    else:
+        prompt_json['30']['inputs']['image'][0] = '20'
     
     prompt_json['3']['inputs']['seed'] = outpainting.seed
     prompt_json['3']['inputs']['cfg'] = outpainting.guidance_scale
@@ -381,8 +437,6 @@ async def image_outpainting(outpainting: Outpainting, current_user: dict = Depen
     
     prompt_json['6']['inputs']['text'] = outpainting.prompt
     prompt_json['7']['inputs']['text'] = outpainting.negative_prompt
-    
-    prompt_json['20']['inputs']['image'] = image_name
     
     image_base64 = get_image(prompt_json)
     
@@ -402,7 +456,8 @@ async def image_outpainting(outpainting: Outpainting, current_user: dict = Depen
                 'pad_top': outpainting.pad_top,
                 'pad_bottom': outpainting.pad_bottom,
                 "width": image_width,
-                "height": image_height
+                "height": image_height,
+                "scaling_mode": outpainting.scaling_mode,
             }
         )
         print("Image record saved successfully")

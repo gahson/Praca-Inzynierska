@@ -1,8 +1,8 @@
 {
   "id": "00000000-0000-0000-0000-000000000000",
   "revision": 0,
-  "last_node_id": 36,
-  "last_link_id": 35,
+  "last_node_id": 39,
+  "last_link_id": 41,
   "nodes": [
     {
       "id": 3,
@@ -16,7 +16,7 @@
         262
       ],
       "flags": {},
-      "order": 10,
+      "order": 12,
       "mode": 0,
       "inputs": [
         {
@@ -65,41 +65,6 @@
       ]
     },
     {
-      "id": 5,
-      "type": "EmptyLatentImage",
-      "pos": [
-        100,
-        130
-      ],
-      "size": [
-        270,
-        106
-      ],
-      "flags": {},
-      "order": 0,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "LATENT",
-          "type": "LATENT",
-          "links": [
-            18
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.59",
-        "Node name for S&R": "EmptyLatentImage"
-      },
-      "widgets_values": [
-        512,
-        512,
-        1
-      ]
-    },
-    {
       "id": 7,
       "type": "CLIPTextEncode",
       "pos": [
@@ -111,7 +76,7 @@
         200
       ],
       "flags": {},
-      "order": 6,
+      "order": 5,
       "mode": 0,
       "inputs": [
         {
@@ -150,7 +115,7 @@
         46
       ],
       "flags": {},
-      "order": 11,
+      "order": 13,
       "mode": 0,
       "inputs": [
         {
@@ -192,7 +157,7 @@
         270
       ],
       "flags": {},
-      "order": 12,
+      "order": 14,
       "mode": 0,
       "inputs": [
         {
@@ -222,7 +187,7 @@
         58
       ],
       "flags": {},
-      "order": 1,
+      "order": 0,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -255,7 +220,7 @@
         58
       ],
       "flags": {},
-      "order": 2,
+      "order": 1,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -274,48 +239,6 @@
       },
       "widgets_values": [
         "vae-ft-mse-840000-ema-pruned.safetensors"
-      ]
-    },
-    {
-      "id": 33,
-      "type": "ResizeAndPadImage",
-      "pos": [
-        196.31576538085938,
-        244.03514099121094
-      ],
-      "size": [
-        270,
-        130
-      ],
-      "flags": {},
-      "order": 7,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 31
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            32
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.59",
-        "Node name for S&R": "ResizeAndPadImage"
-      },
-      "widgets_values": [
-        512,
-        512,
-        "white",
-        "area"
       ]
     },
     {
@@ -399,7 +322,7 @@
         98
       ],
       "flags": {},
-      "order": 3,
+      "order": 2,
       "mode": 0,
       "inputs": [],
       "outputs": [
@@ -436,85 +359,6 @@
       ]
     },
     {
-      "id": 11,
-      "type": "LoadImage",
-      "pos": [
-        -80.1755142211914,
-        366
-      ],
-      "size": [
-        270,
-        314
-      ],
-      "flags": {},
-      "order": 4,
-      "mode": 0,
-      "inputs": [],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            31
-          ]
-        },
-        {
-          "name": "MASK",
-          "type": "MASK",
-          "links": null
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.59",
-        "Node name for S&R": "LoadImage"
-      },
-      "widgets_values": [
-        "pobierz (1).png",
-        "image"
-      ]
-    },
-    {
-      "id": 35,
-      "type": "Canny",
-      "pos": [
-        547.8291625976562,
-        216.7552490234375
-      ],
-      "size": [
-        270,
-        82
-      ],
-      "flags": {},
-      "order": 8,
-      "mode": 0,
-      "inputs": [
-        {
-          "name": "image",
-          "type": "IMAGE",
-          "link": 32
-        }
-      ],
-      "outputs": [
-        {
-          "name": "IMAGE",
-          "type": "IMAGE",
-          "links": [
-            33
-          ]
-        }
-      ],
-      "properties": {
-        "cnr_id": "comfy-core",
-        "ver": "0.3.59",
-        "Node name for S&R": "Canny"
-      },
-      "widgets_values": [
-        0.1,
-        0.9
-      ]
-    },
-    {
       "id": 6,
       "type": "CLIPTextEncode",
       "pos": [
@@ -526,7 +370,7 @@
         200
       ],
       "flags": {},
-      "order": 5,
+      "order": 4,
       "mode": 0,
       "inputs": [
         {
@@ -552,6 +396,277 @@
       "widgets_values": [
         ""
       ]
+    },
+    {
+      "id": 33,
+      "type": "ResizeAndPadImage",
+      "pos": [
+        118.77188873291016,
+        279.3860168457031
+      ],
+      "size": [
+        270,
+        130
+      ],
+      "flags": {},
+      "order": 6,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 31
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            32
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "ResizeAndPadImage"
+      },
+      "widgets_values": [
+        512,
+        512,
+        "white",
+        "area"
+      ]
+    },
+    {
+      "id": 11,
+      "type": "LoadImage",
+      "pos": [
+        -282.0177001953125,
+        332.9298400878906
+      ],
+      "size": [
+        270,
+        314
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            31,
+            36
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": null
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "pobierz (1).png",
+        "image"
+      ]
+    },
+    {
+      "id": 37,
+      "type": "ImageScaleToTotalPixels",
+      "pos": [
+        119.05681610107422,
+        123.24649047851562
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 7,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 36
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": []
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "ImageScaleToTotalPixels"
+      },
+      "widgets_values": [
+        "nearest-exact",
+        1
+      ]
+    },
+    {
+      "id": 35,
+      "type": "Canny",
+      "pos": [
+        521.6011352539062,
+        214.47454833984375
+      ],
+      "size": [
+        270,
+        82
+      ],
+      "flags": {},
+      "order": 8,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 32
+        }
+      ],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            33,
+            38
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "Canny"
+      },
+      "widgets_values": [
+        0.1,
+        0.9
+      ]
+    },
+    {
+      "id": 5,
+      "type": "EmptyLatentImage",
+      "pos": [
+        834.3865356445312,
+        -37.63167190551758
+      ],
+      "size": [
+        270,
+        106
+      ],
+      "flags": {},
+      "order": 11,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "widget": {
+            "name": "width"
+          },
+          "link": 39
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "widget": {
+            "name": "height"
+          },
+          "link": 40
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "widget": {
+            "name": "batch_size"
+          },
+          "link": 41
+        }
+      ],
+      "outputs": [
+        {
+          "name": "LATENT",
+          "type": "LATENT",
+          "links": [
+            18
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "EmptyLatentImage"
+      },
+      "widgets_values": [
+        512,
+        512,
+        1
+      ]
+    },
+    {
+      "id": 39,
+      "type": "GetImageSize",
+      "pos": [
+        636.7763061523438,
+        -11.315001487731934
+      ],
+      "size": [
+        140,
+        66
+      ],
+      "flags": {},
+      "order": 10,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 38
+        }
+      ],
+      "outputs": [
+        {
+          "name": "width",
+          "type": "INT",
+          "links": [
+            39
+          ]
+        },
+        {
+          "name": "height",
+          "type": "INT",
+          "links": [
+            40
+          ]
+        },
+        {
+          "name": "batch_size",
+          "type": "INT",
+          "links": [
+            41
+          ]
+        }
+      ],
+      "properties": {
+        "cnr_id": "comfy-core",
+        "ver": "0.3.59",
+        "Node name for S&R": "GetImageSize"
+      }
     }
   ],
   "links": [
@@ -682,6 +797,46 @@
       32,
       4,
       "VAE"
+    ],
+    [
+      36,
+      11,
+      0,
+      37,
+      0,
+      "IMAGE"
+    ],
+    [
+      38,
+      35,
+      0,
+      39,
+      0,
+      "IMAGE"
+    ],
+    [
+      39,
+      39,
+      0,
+      5,
+      0,
+      "INT"
+    ],
+    [
+      40,
+      39,
+      1,
+      5,
+      1,
+      "INT"
+    ],
+    [
+      41,
+      39,
+      2,
+      5,
+      2,
+      "INT"
     ]
   ],
   "groups": [],
@@ -690,8 +845,8 @@
     "ds": {
       "scale": 0.8769226950000043,
       "offset": [
-        477.3469249209416,
-        132.19224741728934
+        259.53981251635366,
+        136.75365291267337
       ]
     },
     "frontendVersion": "1.26.13"

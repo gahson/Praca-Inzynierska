@@ -29,6 +29,7 @@ async def get_gallery(current_user: dict = Depends(get_current_user)):
             "width": img.get("width"),
             "height": img.get("height"),
             "created_at": img.get("created_at"),
+            "scaling_mode": img.get("scaling_mode"),
         }
         for img in images
     ]

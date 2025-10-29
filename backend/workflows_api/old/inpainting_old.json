@@ -1,7 +1,7 @@
 {
   "3": {
     "inputs": {
-      "seed": 486305890,
+      "seed": 940299076065474,
       "steps": 15,
       "cfg": 25,
       "sampler_name": "euler",
@@ -31,7 +31,7 @@
   },
   "6": {
     "inputs": {
-      "text": "Viking fleet",
+      "text": "",
       "clip": [
         "29",
         1
@@ -86,7 +86,7 @@
   },
   "20": {
     "inputs": {
-      "image": "77706e6a-8b0d-413f-ad3a-604fb721619e.png"
+      "image": "asakusa-sakura-03.jpg"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -100,20 +100,6 @@
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
       "title": "Load Checkpoint"
-    }
-  },
-  "33": {
-    "inputs": {
-      "upscale_method": "nearest-exact",
-      "megapixels": 0.25,
-      "image": [
-        "20",
-        0
-      ]
-    },
-    "class_type": "ImageScaleToTotalPixels",
-    "_meta": {
-      "title": "Scale Image to Total Pixels"
     }
   },
   "37": {
@@ -138,25 +124,11 @@
       "title": "Convert Mask to Image"
     }
   },
-  "47": {
-    "inputs": {
-      "upscale_method": "nearest-exact",
-      "megapixels": 0.25,
-      "image": [
-        "40",
-        0
-      ]
-    },
-    "class_type": "ImageScaleToTotalPixels",
-    "_meta": {
-      "title": "Scale Image to Total Pixels"
-    }
-  },
   "51": {
     "inputs": {
       "grow_mask_by": 6,
       "pixels": [
-        "33",
+        "58",
         0
       ],
       "vae": [
@@ -164,7 +136,7 @@
         2
       ],
       "mask": [
-        "54",
+        "62",
         0
       ]
     },
@@ -173,11 +145,43 @@
       "title": "VAE Encode (for Inpainting)"
     }
   },
-  "54": {
+  "58": {
+    "inputs": {
+      "target_width": 512,
+      "target_height": 512,
+      "padding_color": "black",
+      "interpolation": "area",
+      "image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "ResizeAndPadImage",
+    "_meta": {
+      "title": "ResizeAndPadImage"
+    }
+  },
+  "60": {
+    "inputs": {
+      "target_width": 512,
+      "target_height": 512,
+      "padding_color": "black",
+      "interpolation": "area",
+      "image": [
+        "40",
+        0
+      ]
+    },
+    "class_type": "ResizeAndPadImage",
+    "_meta": {
+      "title": "ResizeAndPadImage"
+    }
+  },
+  "62": {
     "inputs": {
       "channel": "red",
       "image": [
-        "47",
+        "60",
         0
       ]
     },

@@ -31,9 +31,18 @@
   },
   "5": {
     "inputs": {
-      "width": 512,
-      "height": 512,
-      "batch_size": 1
+      "width": [
+        "39",
+        0
+      ],
+      "height": [
+        "39",
+        1
+      ],
+      "batch_size": [
+        "39",
+        2
+      ]
     },
     "class_type": "EmptyLatentImage",
     "_meta": {
@@ -190,6 +199,32 @@
     "class_type": "Canny",
     "_meta": {
       "title": "Canny"
+    }
+  },
+  "37": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "megapixels": 1,
+      "image": [
+        "11",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Scale Image to Total Pixels"
+    }
+  },
+  "39": {
+    "inputs": {
+      "image": [
+        "35",
+        0
+      ]
+    },
+    "class_type": "GetImageSize",
+    "_meta": {
+      "title": "Get Image Size"
     }
   }
 }

@@ -17,6 +17,7 @@ class Img2ImgRequest(BaseModel):
     guidance_scale: float
     seed: int
     image: str
+    scaling_mode: str
 
 
 class ControlNetRequest(BaseModel):
@@ -28,6 +29,7 @@ class ControlNetRequest(BaseModel):
     cannyHighThreshold: float
     seed: int
     image: str
+    scaling_mode: str
 
 
 class Inpainting(BaseModel):
@@ -38,6 +40,7 @@ class Inpainting(BaseModel):
     seed: int
     image: str
     mask_image: str
+    scaling_mode: str
     
 
 class Outpainting(BaseModel):
@@ -51,3 +54,4 @@ class Outpainting(BaseModel):
     pad_top: int
     pad_bottom: int
     image: str
+    scaling_mode: str

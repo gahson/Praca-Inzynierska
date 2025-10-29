@@ -18,6 +18,8 @@ const ControlNet = () => {
   const [guidance, setGuidance] = useState(7.0);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("controlnet");
+  const [scalingMode, setScalingMode] = useState("scale_to_megapixels");
+
 
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
@@ -84,6 +86,7 @@ const ControlNet = () => {
           cannyLowThreshold: cannyLowThreshold,
           cannyHighThreshold: cannyHighThreshold,
           seed: seed,
+          scaling_mode: scalingMode,
         },
         {
           headers: {
@@ -224,6 +227,30 @@ const ControlNet = () => {
                     className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
                   >
                     Randomize
+                  </button>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-2">
+                <p>Choose image scaling mode</p>
+                <div className="flex gap-4 flex-wrap">
+                  <button
+                    onClick={() => setScalingMode("resize_and_pad")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${scalingMode === "resize_and_pad" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    Resize and pad
+                  </button>
+                  <button
+                    onClick={() => setScalingMode("scale_to_megapixels")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${scalingMode === "scale_to_megapixels" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    Scale to megapixels
+                  </button>
+                  <button
+                    onClick={() => setScalingMode("none")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${scalingMode === "none" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    None
                   </button>
                 </div>
               </div>

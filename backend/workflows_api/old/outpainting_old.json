@@ -1,26 +1,26 @@
 {
   "3": {
     "inputs": {
-      "seed": 806824809031353,
-      "steps": 30,
+      "seed": 569316524113939,
+      "steps": 20,
       "cfg": 7,
-      "sampler_name": "euler",
-      "scheduler": "normal",
+      "sampler_name": "dpmpp_2m",
+      "scheduler": "karras",
       "denoise": 1,
       "model": [
-        "14",
+        "29",
         0
       ],
       "positive": [
-        "32",
+        "6",
         0
       ],
       "negative": [
-        "32",
-        1
+        "7",
+        0
       ],
       "latent_image": [
-        "5",
+        "26",
         0
       ]
     },
@@ -29,22 +29,11 @@
       "title": "KSampler"
     }
   },
-  "5": {
-    "inputs": {
-      "width": 512,
-      "height": 512,
-      "batch_size": 1
-    },
-    "class_type": "EmptyLatentImage",
-    "_meta": {
-      "title": "Empty Latent Image"
-    }
-  },
   "6": {
     "inputs": {
       "text": "",
       "clip": [
-        "14",
+        "29",
         1
       ]
     },
@@ -57,7 +46,7 @@
     "inputs": {
       "text": "",
       "clip": [
-        "14",
+        "29",
         1
       ]
     },
@@ -73,8 +62,8 @@
         0
       ],
       "vae": [
-        "13",
-        0
+        "29",
+        2
       ]
     },
     "class_type": "VAEDecode",
@@ -95,101 +84,76 @@
       "title": "Save Image"
     }
   },
-  "11": {
+  "20": {
     "inputs": {
-      "image": "pobierz (1).png"
+      "image": ""
     },
     "class_type": "LoadImage",
     "_meta": {
       "title": "Load Image"
     }
   },
-  "12": {
+  "26": {
     "inputs": {
-      "control_net_name": "control_v11p_sd15_scribble_fp16.safetensors"
+      "grow_mask_by": 10,
+      "pixels": [
+        "30",
+        0
+      ],
+      "vae": [
+        "29",
+        2
+      ],
+      "mask": [
+        "30",
+        1
+      ]
     },
-    "class_type": "ControlNetLoader",
+    "class_type": "VAEEncodeForInpaint",
     "_meta": {
-      "title": "Load ControlNet Model"
+      "title": "VAE Encode (for Inpainting)"
     }
   },
-  "13": {
+  "29": {
     "inputs": {
-      "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors"
-    },
-    "class_type": "VAELoader",
-    "_meta": {
-      "title": "Load VAE"
-    }
-  },
-  "14": {
-    "inputs": {
-      "ckpt_name": "dreamCreationVirtual3DECommerce_v10.safetensors"
+      "ckpt_name": "sd-v1-5-inpainting.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
       "title": "Load Checkpoint"
     }
   },
-  "32": {
+  "30": {
     "inputs": {
-      "strength": 1,
-      "start_percent": 0,
-      "end_percent": 1,
-      "positive": [
-        "6",
-        0
-      ],
-      "negative": [
-        "7",
-        0
-      ],
-      "control_net": [
-        "12",
-        0
-      ],
+      "left": 128,
+      "top": 128,
+      "right": 128,
+      "bottom": 128,
+      "feathering": 10,
       "image": [
-        "35",
+        "40",
         0
-      ],
-      "vae": [
-        "14",
-        2
       ]
     },
-    "class_type": "ControlNetApplyAdvanced",
+    "class_type": "ImagePadForOutpaint",
     "_meta": {
-      "title": "Apply ControlNet"
+      "title": "Pad Image for Outpainting"
     }
   },
-  "33": {
+  "40": {
     "inputs": {
       "target_width": 512,
       "target_height": 512,
       "padding_color": "black",
       "interpolation": "area",
       "image": [
-        "11",
+        "20",
         0
       ]
     },
     "class_type": "ResizeAndPadImage",
     "_meta": {
       "title": "ResizeAndPadImage"
-    }
-  },
-  "35": {
-    "inputs": {
-      "low_threshold": 0.1,
-      "high_threshold": 0.9,
-      "image": [
-        "33",
-        0
-      ]
-    },
-    "class_type": "Canny",
-    "_meta": {
-      "title": "Canny"
     }
   }
 }

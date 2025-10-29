@@ -133,5 +133,19 @@
     "_meta": {
       "title": "ResizeAndPadImage"
     }
+  },
+  "21": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "megapixels": 1,
+      "image": [
+        "10",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Scale Image to Total Pixels"
+    }
   }
 }

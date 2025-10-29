@@ -97,6 +97,7 @@ const Gallery = () => {
                 <p><b>Model:</b> {img.model}</p>
                 <p><b>Mode:</b> {img.mode}</p>
                 <p><b>Size:</b> {img.width} × {img.height}</p>
+                <p><b>Scaling mode:</b> {img.scaling_mode}</p>
                 <p><b>Prompt:</b> {img.prompt}</p>
                 <p><b>Seed:</b> {img.seed}</p>
                 <p><b>Guidance:</b> {img.guidance_scale}</p>

@@ -1,7 +1,7 @@
 {
   "3": {
     "inputs": {
-      "seed": 280823642470253,
+      "seed": 339609527932006,
       "steps": 20,
       "cfg": 8,
       "sampler_name": "dpmpp_2m",
@@ -31,7 +31,7 @@
   },
   "6": {
     "inputs": {
-      "text": "photograph of victorian woman with wings, sky clouds, meadow grass\n",
+      "text": "",
       "clip": [
         "14",
         1
@@ -44,7 +44,7 @@
   },
   "7": {
     "inputs": {
-      "text": "watermark, text\n",
+      "text": "",
       "clip": [
         "14",
         1
@@ -96,7 +96,7 @@
   "12": {
     "inputs": {
       "pixels": [
-        "18",
+        "20",
         0
       ],
       "vae": [
@@ -118,18 +118,20 @@
       "title": "Load Checkpoint"
     }
   },
-  "18": {
+  "20": {
     "inputs": {
-      "upscale_method": "nearest-exact",
-      "megapixels": 0.25,
+      "target_width": 512,
+      "target_height": 512,
+      "padding_color": "black",
+      "interpolation": "area",
       "image": [
         "10",
         0
       ]
     },
-    "class_type": "ImageScaleToTotalPixels",
+    "class_type": "ResizeAndPadImage",
     "_meta": {
-      "title": "Scale Image to Total Pixels"
+      "title": "ResizeAndPadImage"
     }
   }
 }

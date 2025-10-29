@@ -86,7 +86,7 @@
   },
   "20": {
     "inputs": {
-      "image": ""
+      "image": "pobierz (1).png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -144,7 +144,7 @@
     "inputs": {
       "target_width": 512,
       "target_height": 512,
-      "padding_color": "white",
+      "padding_color": "black",
       "interpolation": "area",
       "image": [
         "20",
@@ -154,6 +154,20 @@
     "class_type": "ResizeAndPadImage",
     "_meta": {
       "title": "ResizeAndPadImage"
+    }
+  },
+  "41": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "megapixels": 1,
+      "image": [
+        "20",
+        0
+      ]
+    },
+    "class_type": "ImageScaleToTotalPixels",
+    "_meta": {
+      "title": "Scale Image to Total Pixels"
     }
   }
 }
