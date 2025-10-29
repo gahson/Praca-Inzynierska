@@ -12,6 +12,7 @@ import Workflows from "./views/workflows/Workflows";
 import TextToImage from "./views/workflows/text-to-image/TextToImage";
 import ImageToImage from "./views/workflows/image-to-image/ImageToImage";
 import Inpainting from "./views/workflows/inpainting/Inpainting";
+import Outpainting from "./views/workflows/Outpainting/Outpainting";
 import ControlNet from "./views/workflows/control-net/ControlNet";
 // import BoundingBoxes from "./views/workflows/bounding-boxes/BoundingBoxes";
 import Prompts from "./views/prompts/Prompts";
@@ -40,6 +41,7 @@ const App = () => (
         <Route path="/views/workflows/text-to-image" element={<PrivateRoute><TextToImage /></PrivateRoute>} />
         <Route path="/views/workflows/image-to-image" element={<PrivateRoute><ImageToImage /></PrivateRoute>} />
         <Route path="/views/workflows/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
+        <Route path="/views/workflows/outpainting" element={<PrivateRoute><Outpainting /></PrivateRoute>} />
         <Route path="/views/workflows/control-net" element={<PrivateRoute><ControlNet /></PrivateRoute>} />
         {/* <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} /> */}
         <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />

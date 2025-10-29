@@ -93,20 +93,29 @@ const Gallery = () => {
                 alt="generated"
                 className="w-full rounded-md mb-3 "
               />
-              <div className="flex flex-col text-sm space-y-1.5">
+              <div className="flex flex-col text-sm space-y-1.5 items-start flex-grow">
                 <p><b>Model:</b> {img.model}</p>
                 <p><b>Mode:</b> {img.mode}</p>
                 <p><b>Size:</b> {img.width} × {img.height}</p>
                 <p><b>Prompt:</b> {img.prompt}</p>
                 <p><b>Seed:</b> {img.seed}</p>
                 <p><b>Guidance:</b> {img.guidance_scale}</p>
-                {img.model == "controlnet" ? (
+                
+                {img.mode == "controlnet" && (
                   <>
                   <p><b>Canny low threshold:</b> {img.canny_low_threshold}</p>
                   <p><b>Canny high threshold:</b> {img.canny_high_threshold}</p>
                   </>
-                ) : (
+                )}
+
+                {console.log(img)}
+                
+                {img.mode == "outpainting" && (
                   <>
+                  <p><b>Padding:</b> {img.pad_left}</p>
+                  <p><b>Pad right:</b> {img.pad_right}</p>
+                  <p><b>Pad top:</b> {img.pad_top}</p>
+                  <p><b>Pad bottom:</b> {img.pad_bottom}</p>
                   </>
                 )}
                 
@@ -130,6 +139,18 @@ const Gallery = () => {
                   onClick={() => handleRedirect(img, "inpainting")}
                 >
                   Use in Inpainting
+                </button>
+                <button
+                  className="bg-yellow-500 text-xs text-white rounded p-1"
+                  onClick={() => handleRedirect(img, "control-net")}
+                >
+                  Use in Control Net
+                </button>
+                <button
+                  className="bg-orange-500 text-xs text-white rounded p-1"
+                  onClick={() => handleRedirect(img, "outpainting")}
+                >
+                  Use in Outpainting
                 </button>
                 <button
                   className="bg-red-500 text-xs text-white rounded  p-1"

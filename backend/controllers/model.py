@@ -14,7 +14,7 @@ from huggingface_hub import login
 
 from utils.auth_helpers import get_current_user
 from utils.saving_images_helpers import image_to_string, string_to_image, save_image_record
-from schemas.generation import TextToImageRequest, Img2ImgRequest, ControlNetRequest, Inpainting
+from schemas.generation import TextToImageRequest, Img2ImgRequest, ControlNetRequest, Inpainting, Outpainting
 
 models= APIRouter()
 
@@ -331,6 +331,76 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
                 "negative_prompt": inpainting.negative_prompt,
                 "guidance_scale": inpainting.guidance_scale,
                 "seed": inpainting.seed,
+                "width": image_width,
+                "height": image_height
+            }
+        )
+        print("Image record saved successfully")
+    except Exception as e:
+        print("Error saving image record:", e)
+        raise HTTPException(status_code=500, detail=f"Failed to save image record: {e}")
+
+    return JSONResponse(content={"image": image_base64})
+
+
+@models.post('/generate/outpainting')
+async def image_outpainting(outpainting: Outpainting, current_user: dict = Depends(get_current_user)):
+    if outpainting.model_version not in model_versions:
+        raise HTTPException(status_code=404, detail='Model version does not exist.')
+    
+    outpainting_path = os.path.join('workflows_api', 'outpainting.json')
+    
+    if not os.path.exists(outpainting_path):
+        raise HTTPException(status_code=404, detail='File not found')
+    
+    prompt_json = {}
+    
+    with open(outpainting_path, 'r') as f:
+        prompt_json = json.load(f)
+        
+    image = string_to_image(outpainting.image)
+    
+    image_width, image_height = image.size
+    
+    image_name = f'{uuid.uuid4()}.png'
+    
+    image.save(os.path.join('input_images', image_name))
+
+    prompt_json['29']['inputs']['ckpt_name'] = model_versions[outpainting.model_version]
+    
+    prompt_json['40']['inputs']['target_width'] = model_version_to_input_size[outpainting.model_version][0]
+    prompt_json['40']['inputs']['target_height'] = model_version_to_input_size[outpainting.model_version][1]
+    
+    prompt_json['3']['inputs']['seed'] = outpainting.seed
+    prompt_json['3']['inputs']['cfg'] = outpainting.guidance_scale
+    
+    prompt_json['30']['inputs']['left'] = outpainting.pad_left
+    prompt_json['30']['inputs']['right'] = outpainting.pad_right
+    prompt_json['30']['inputs']['top'] = outpainting.pad_top
+    prompt_json['30']['inputs']['bottom'] = outpainting.pad_bottom
+    
+    prompt_json['6']['inputs']['text'] = outpainting.prompt
+    prompt_json['7']['inputs']['text'] = outpainting.negative_prompt
+    
+    prompt_json['20']['inputs']['image'] = image_name
+    
+    image_base64 = get_image(prompt_json)
+    
+    try:
+        await save_image_record(
+            user_id=str(current_user["_id"]),
+            image_base64=image_base64,
+            metadata={
+                "model": outpainting.model_version,
+                "mode": "outpainting",
+                "prompt": outpainting.prompt,
+                "negative_prompt": outpainting.negative_prompt,
+                "guidance_scale": outpainting.guidance_scale,
+                "seed": outpainting.seed,
+                'pad_right': outpainting.pad_right,
+                'pad_left': outpainting.pad_left,
+                'pad_top': outpainting.pad_top,
+                'pad_bottom': outpainting.pad_bottom,
                 "width": image_width,
                 "height": image_height
             }
