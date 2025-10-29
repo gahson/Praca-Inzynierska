@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
+import RedirectButtons from "../../../components/WorkflowRedirect";
 
 const ControlNet = () => {
   const [image, updateImage] = useState();
@@ -19,7 +20,6 @@ const ControlNet = () => {
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("controlnet");
   const [scalingMode, setScalingMode] = useState("scale_to_megapixels");
-
 
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
@@ -38,6 +38,7 @@ const ControlNet = () => {
           setCannyLowThreshold(data.cannyLowThreshold || 0.1);
           setCannyHighThreshold(data.cannyHighThreshold || 0.9);
           setSeed(data.seed || 0);
+          setScalingMode(data.scaling_mode || "resize_and_pad");
         }
       } catch (e) {
         console.error("Invalid stored image data", e);
@@ -76,7 +77,7 @@ const ControlNet = () => {
 
     try {
       const response = await axios.post(
-        `http://${location.hostname}:5555/model/generate/control-net`,
+        `http://${window.location.hostname}:5555/model/generate/control-net`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],
@@ -169,7 +170,7 @@ const ControlNet = () => {
             </div>
           </div>
 
-          <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden">
+          <div className="flex-1 aspect-square flex items-center justify-center bg-gray-200 rounded-md overflow-hidden relative">
             {loading ? (
               <div className="flex flex-col items-center justify-center gap-2 animate-pulse w-full h-full">
                 <div className="rounded-full bg-gray-300 h-12 w-12"></div>
@@ -177,7 +178,21 @@ const ControlNet = () => {
                 <div className="h-4 bg-gray-300 rounded w-1/2"></div>
               </div>
             ) : (
-              image && <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+              image ? (
+                <>
+                  <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+
+                  <RedirectButtons
+                    image={image}
+                    setLoadedImage={setLoadedImage}
+                    updateImage={updateImage}
+                  />
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-gray-500">
+                  <p>Generated image will appear here</p>
+                </div>
+              )
             )}
           </div>
         </div>

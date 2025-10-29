@@ -3,10 +3,11 @@ import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
 
+import CanvasPreview from "./Canvas";
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
 import InpaintingCanvas from "../../../components/InpaintingCanvas";
-import CanvasPreview from "./Canvas";
+import RedirectButtons from "../../../components/WorkflowRedirect";
 
 const Inpainting = () => {
   const [image, updateImage] = useState();
@@ -44,6 +45,7 @@ const Inpainting = () => {
             setGuidance(data.guidance_scale || 7.0);
             setSeed(data.seed || 0);
             setMaskEditorOpen(true);
+            setScalingMode(data.scaling_mode || "resize_and_pad");
           };
         }
       } catch (err) {
@@ -122,7 +124,7 @@ const Inpainting = () => {
 
     try {
       const response = await axios.post(
-        `http://${location.hostname}:5555/model/generate/inpainting`,
+        `http://${window.location.hostname}:5555/model/generate/inpainting`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],
@@ -236,20 +238,12 @@ const Inpainting = () => {
                 {image ? (
                   <>
                     <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
-                    <button
-                      className="absolute bottom-2 right-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
-                      onClick={() => {
-                        const img = new Image();
-                        img.src = `data:image/png;base64,${image}`;
-                        img.onload = () => {
-                          setImageDimensions({ width: img.width, height: img.height });
-                          setLoadedImage(`data:image/png;base64,${image}`);
-                          setMaskData(null);
-                        };
-                      }}
-                    >
-                      Use as Input
-                    </button>
+
+                    <RedirectButtons
+                      image={image}
+                      setLoadedImage={setLoadedImage}
+                      updateImage={updateImage}
+                    />
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-gray-500">

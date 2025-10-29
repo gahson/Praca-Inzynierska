@@ -175,7 +175,7 @@
     "inputs": {
       "target_width": 512,
       "target_height": 512,
-      "padding_color": "white",
+      "padding_color": "black",
       "interpolation": "area",
       "image": [
         "11",

@@ -5,6 +5,7 @@ import { useState, useEffect, useRef } from "react";
 
 import { toaster } from "../../../components/ui/toaster";
 import SliderControl from "../../../components/SliderControl";
+import RedirectButtons from "../../../components/WorkflowRedirect";
 
 const Outpainting = () => {
   const [image, updateImage] = useState();
@@ -37,6 +38,11 @@ const Outpainting = () => {
           updateNegativePrompt(data.negative_prompt || "");
           setGuidance(data.guidance_scale || 7);
           setSeed(data.seed || 0);
+          setPadLeft(data.pad_left || 64);
+          setPadRight(data.pad_right || 64);
+          setPadTop(data.pad_top || 64);
+          setPadBottom(data.pad_bottom || 64);
+          setScalingMode(data.scaling_mode || "resize_and_pad");
         }
       } catch (e) {
         console.error("Invalid stored image data", e);
@@ -75,7 +81,7 @@ const Outpainting = () => {
 
     try {
       const response = await axios.post(
-        `http://${location.hostname}:5555/model/generate/outpainting`,
+        `http://${window.location.hostname}:5555/model/generate/outpainting`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],
@@ -182,18 +188,12 @@ const Outpainting = () => {
                 {image ? (
                   <>
                     <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
-                    <button
-                      className="absolute bottom-2 right-2 bg-yellow-400 text-black px-4 py-2 rounded hover:bg-yellow-500 transition"
-                      onClick={() => {
-                        const img = new Image();
-                        img.src = `data:image/png;base64,${image}`;
-                        img.onload = () => {
-                          setLoadedImage(`data:image/png;base64,${image}`);
-                        };
-                      }}
-                    >
-                      Use as Input
-                    </button>
+
+                    <RedirectButtons
+                      image={image}
+                      setLoadedImage={setLoadedImage}
+                      updateImage={updateImage}
+                    />
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center text-gray-500">
