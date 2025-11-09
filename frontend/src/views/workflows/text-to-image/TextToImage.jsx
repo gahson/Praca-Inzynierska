@@ -1,4 +1,5 @@
 import axios from "axios";
+import { LuInfo } from "react-icons/lu";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
@@ -116,14 +117,30 @@ const TextToImage = () => {
         {/* Panel */}
         <div className="flex-1 flex flex-col gap-4">
           <h1 className="font-bold text-3xl mb-5">Text to image</h1>
-          <p className="block mb-2 text-sm font-medium">Positive prompt</p>
+          <div className="flex items-center gap-2">
+            <p className="block text-sm font-medium">Positive prompt</p>
+            <div className="relative group">
+              <LuInfo className="text-gray-500 cursor-help" size={16} />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
+                Provide a natural-language description of what the image should contain.
+              </div>
+            </div>
+          </div>
           <input
             value={prompt}
             onChange={(e) => updatePrompt(e.target.value)}
             placeholder="Enter prompt"
             className="w-full p-2 border rounded"
           />
-          <p className="block mb-2 text-sm font-medium">Negative prompt</p>
+          <div className="flex items-center gap-2">
+            <p className="block text-sm font-medium">Negative prompt</p>
+            <div className="relative group">
+              <LuInfo className="text-gray-500 cursor-help" size={16} />
+              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
+                Provide a natural-language description of what the image should not contain.
+              </div>
+            </div>
+          </div>
           <input
             value={negativePrompt}
             onChange={(e) => updateNegativePrompt(e.target.value)}
@@ -141,13 +158,21 @@ const TextToImage = () => {
               </button>
 
 
-              <SliderControl label="Width" value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
-              <SliderControl label="Height" value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
+              <SliderControl label="Width" description="Width of the generated image." value={width} min={64} max={1024} step={64} onChange={(v) => setWidth(v[0])} />
+              <SliderControl label="Height" description="Height of the generated image." value={height} min={64} max={1024} step={64} onChange={(v) => setHeight(v[0])} />
 
-              <SliderControl label="Guidance scale" value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
+              <SliderControl label="Guidance scale" description="Controls how strictly the model follows the prompt. The recommended value is 7 or 8." value={guidance} min={0} max={25} step={0.1} onChange={(v) => setGuidance(v[0])} />
 
               <div className="flex flex-col gap-2">
-                <p className="block mb-2 text-sm font-medium">Seed</p>
+                <div className="flex items-center gap-2">
+                  <p className="block text-sm font-medium">Seed</p>
+                  <div className="relative group">
+                    <LuInfo className="text-gray-500 cursor-help" size={16} />
+                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
+                      Controls the randomness in image generation. Keeping it fixed while adjusting other parameters will produce very similar images.
+                    </div>
+                  </div>
+                </div>
                 <div className="flex gap-4 items-center">
                   <input
                     type="number"
@@ -167,7 +192,15 @@ const TextToImage = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <p>Choose model</p>
+                <div className="flex items-center gap-2">
+                  <p className="block text-sm font-medium">Choose model</p>
+                  <div className="relative group">
+                    <LuInfo className="text-gray-500 cursor-help" size={16} />
+                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
+                      Choose the Stable Diffusion model version. Generally, a higher version means better quality but longer generation times.
+                    </div>
+                  </div>
+                </div>
                 <div className="flex gap-4 flex-wrap">
                   <button
                     onClick={() => setModel("1.5")}
