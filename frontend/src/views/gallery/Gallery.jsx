@@ -7,22 +7,31 @@ import { toaster } from "../../components/ui/toaster"
 
 const Gallery = () => {
   const [gallery, setGallery] = useState([]);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(16);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const fetchGallery = async () => {
     const token = localStorage.getItem("token");
+    setLoading(true);
 
     try {
       const res = await axios.get(`http://${location.hostname}:5555/gallery`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
+        params: {
+          page: page,
+          page_size: pageSize,
+        },
       });
 
-      // Sort newest first
-      setGallery(
-        res.data.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
-      );
+      setGallery(res.data.images);
+      setPage(res.data.page);
+      setPageSize(res.data.page_size);
+      setTotalPages(res.data.total_pages);
     } catch {
       toaster.create({
         title: "Error",
@@ -31,12 +40,23 @@ const Gallery = () => {
         duration: 3000,
         isClosable: true,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchGallery();
-  }, []);
+  }, [page]);
+
+  const handlePageChange = (nextPage) => {
+    if (nextPage < 0)
+      setPage(0);
+    else if (nextPage > totalPages)
+      setPage(totalPages);
+    else
+      setPage(nextPage);
+  }
 
   const handleDelete = async (imageId) => {
     const token = localStorage.getItem("token");
@@ -101,25 +121,25 @@ const Gallery = () => {
                 <p><b>Prompt:</b> {img.prompt}</p>
                 <p><b>Seed:</b> {img.seed}</p>
                 <p><b>Guidance:</b> {img.guidance_scale}</p>
-                
+
                 {img.mode == "controlnet" && (
                   <>
-                  <p><b>Canny low threshold:</b> {img.canny_low_threshold}</p>
-                  <p><b>Canny high threshold:</b> {img.canny_high_threshold}</p>
+                    <p><b>Canny low threshold:</b> {img.canny_low_threshold}</p>
+                    <p><b>Canny high threshold:</b> {img.canny_high_threshold}</p>
                   </>
                 )}
 
                 {console.log(img)}
-                
+
                 {img.mode == "outpainting" && (
                   <>
-                  <p><b>Padding:</b> {img.pad_left}</p>
-                  <p><b>Pad right:</b> {img.pad_right}</p>
-                  <p><b>Pad top:</b> {img.pad_top}</p>
-                  <p><b>Pad bottom:</b> {img.pad_bottom}</p>
+                    <p><b>Padding:</b> {img.pad_left}</p>
+                    <p><b>Pad right:</b> {img.pad_right}</p>
+                    <p><b>Pad top:</b> {img.pad_top}</p>
+                    <p><b>Pad bottom:</b> {img.pad_bottom}</p>
                   </>
                 )}
-                
+
                 <p><b>Created:</b> {new Date(img.created_at).toLocaleString()}</p>
               </div>
               <div className="flex flex-col mt-3 space-y-2">
@@ -164,6 +184,40 @@ const Gallery = () => {
           ))
         )}
       </div>
+
+      <div className="flex justify-center items-center gap-4 mt-5">
+        <button
+          className="bg-gray-300 rounded px-3 py-1 disabled:opacity-50"
+          onClick={() => handlePageChange(page - 1)}
+          disabled={page === 1 || loading}
+        >
+          Previous
+        </button>
+
+        <span>Page </span>
+        <select
+          value={page}
+          onChange={(e) => handlePageChange(Number(e.target.value))}
+          className="border rounded px-2 py-1 max-h-40 overflow-y-auto disabled:opacity-50"
+          disabled={loading}
+        >
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+            <option key={p} value={p}>
+              {p}
+            </option>
+          ))}
+        </select>
+        <span> of {totalPages}</span>
+
+        <button
+          className="bg-gray-300 rounded px-3 py-1 disabled:opacity-50"
+          onClick={() => handlePageChange(page + 1)}
+          disabled={page === totalPages || loading}
+        >
+          Next
+        </button>
+      </div>
+
     </div>
 
   );
