@@ -61,8 +61,6 @@ services:
     deploy:
       resources:
         reservations:
-          cpus: '1'
-          memory: 2G
           devices:
             - driver: nvidia
               count: all

@@ -246,7 +246,7 @@ async def control_net(controlNetRequest: ControlNetRequest, current_user: dict =
         
     prompt_json['14']['inputs']['ckpt_name'] = model_versions[controlNetRequest.model_version]
     
-    prompt_json['11']['inputs']['image'] = image_name
+    prompt_json['40']['inputs']['image'] = image_name
     
     # Image resizing
     if controlNetRequest.scaling_mode == 'resize_and_pad':

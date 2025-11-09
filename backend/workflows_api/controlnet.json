@@ -1,7 +1,7 @@
 {
   "3": {
     "inputs": {
-      "seed": 806824809031353,
+      "seed": 777330973723360,
       "steps": 30,
       "cfg": 7,
       "sampler_name": "euler",
@@ -64,7 +64,7 @@
   },
   "7": {
     "inputs": {
-      "text": "",
+      "text": "dinosaur",
       "clip": [
         "14",
         1
@@ -82,8 +82,8 @@
         0
       ],
       "vae": [
-        "13",
-        0
+        "14",
+        2
       ]
     },
     "class_type": "VAEDecode",
@@ -104,15 +104,6 @@
       "title": "Save Image"
     }
   },
-  "11": {
-    "inputs": {
-      "image": "pobierz (1).png"
-    },
-    "class_type": "LoadImage",
-    "_meta": {
-      "title": "Load Image"
-    }
-  },
   "12": {
     "inputs": {
       "control_net_name": "control_v11p_sd15_scribble_fp16.safetensors"
@@ -120,15 +111,6 @@
     "class_type": "ControlNetLoader",
     "_meta": {
       "title": "Load ControlNet Model"
-    }
-  },
-  "13": {
-    "inputs": {
-      "vae_name": "vae-ft-mse-840000-ema-pruned.safetensors"
-    },
-    "class_type": "VAELoader",
-    "_meta": {
-      "title": "Load VAE"
     }
   },
   "14": {
@@ -178,7 +160,7 @@
       "padding_color": "black",
       "interpolation": "area",
       "image": [
-        "11",
+        "40",
         0
       ]
     },
@@ -206,7 +188,7 @@
       "upscale_method": "nearest-exact",
       "megapixels": 1,
       "image": [
-        "11",
+        "40",
         0
       ]
     },
@@ -225,6 +207,15 @@
     "class_type": "GetImageSize",
     "_meta": {
       "title": "Get Image Size"
+    }
+  },
+  "40": {
+    "inputs": {
+      "image": "cat2-1024x676.jpg"
+    },
+    "class_type": "LoadImage",
+    "_meta": {
+      "title": "Load Image"
     }
   }
 }
