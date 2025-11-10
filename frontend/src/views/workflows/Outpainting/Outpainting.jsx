@@ -1,10 +1,10 @@
 import axios from "axios";
 import { LuX } from "react-icons/lu";
-import { LuInfo } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
 
 import { toaster } from "../../../components/ui/toaster";
+import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
 import RedirectButtons from "../../../components/WorkflowRedirect";
 
@@ -207,30 +207,21 @@ const Outpainting = () => {
         </div>
 
         <div className="w-full max-w-[1800px] flex flex-col gap-4 mt-8">
-          <div className="flex items-center gap-2">
-            <p className="block text-sm font-medium">Positive prompt</p>
-            <div className="relative group">
-              <LuInfo className="text-gray-500 cursor-help" size={16} />
-              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                Provide a natural-language description of what the image should contain.
-              </div>
-            </div>
-          </div>
+          <TextTooltip
+            text="Positive prompt"
+            tooltip="Provide a natural-language description of what the image should contain."
+          />
           <input
             value={prompt}
             onChange={(e) => updatePrompt(e.target.value)}
             placeholder="Enter prompt"
             className="w-full p-2 border rounded"
           />
-          <div className="flex items-center gap-2">
-            <p className="block text-sm font-medium">Negative prompt</p>
-            <div className="relative group">
-              <LuInfo className="text-gray-500 cursor-help" size={16} />
-              <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                Provide a natural-language description of what the image should not contain.
-              </div>
-            </div>
-          </div>
+
+          <TextTooltip
+            text="Negative prompt"
+            tooltip="Provide a natural-language description of what the image should not contain."
+          />
           <input
             value={negativePrompt}
             onChange={(e) => updateNegativePrompt(e.target.value)}
@@ -255,15 +246,10 @@ const Outpainting = () => {
 
 
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <p className="block text-sm font-medium">Seed</p>
-                  <div className="relative group">
-                    <LuInfo className="text-gray-500 cursor-help" size={16} />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                      Controls the randomness in image generation. Keeping it fixed while adjusting other parameters will produce very similar images.
-                    </div>
-                  </div>
-                </div>
+                <TextTooltip
+                  text="Seed"
+                  tooltip="Controls the randomness in image generation. Keeping it fixed while adjusting other parameters will produce very similar images."
+                />
                 <div className="flex gap-4 items-center">
                   <input
                     type="number"
@@ -283,15 +269,10 @@ const Outpainting = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <p className="block text-sm font-medium">Choose image scaling mode</p>
-                  <div className="relative group">
-                    <LuInfo className="text-gray-500 cursor-help" size={16} />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                      The image should be rescaled before being passed to the generative model to match the resolution it was trained on, ensuring the best results.
-                    </div>
-                  </div>
-                </div>
+                <TextTooltip
+                  text="Choose image scaling mode"
+                  tooltip="The image should be rescaled before being passed to the generative model to match the resolution it was trained on, ensuring the best results."
+                />
                 <div className="flex gap-4 flex-wrap">
                   <button
                     onClick={() => setScalingMode("resize_and_pad")}
@@ -315,15 +296,10 @@ const Outpainting = () => {
               </div>
 
               <div className="flex flex-col gap-2">
-                <div className="flex items-center gap-2">
-                  <p className="block text-sm font-medium">Choose model</p>
-                  <div className="relative group">
-                    <LuInfo className="text-gray-500 cursor-help" size={16} />
-                    <div className="absolute left-0 bottom-full mb-2 hidden group-hover:block w-64 p-2 bg-gray-800 text-white text-xs rounded shadow-lg z-10">
-                      Choose the Stable Diffusion model version. Generally, a higher version means better quality but longer generation times.
-                    </div>
-                  </div>
-                </div>
+                <TextTooltip
+                  text="Choose model"
+                  tooltip="Choose the Stable Diffusion model version. Generally, a higher version means better quality but longer generation times."
+                />
                 <div className="flex gap-4 flex-wrap">
                   <button
                     onClick={() => setModel("1.5-inpainting")}
