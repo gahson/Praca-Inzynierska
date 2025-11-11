@@ -2,10 +2,11 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 
+import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
-import RottaInputController from "../../../components/Rotta";
 import SliderControl from "../../../components/SliderControl";
+import VisualPrompting from "../../../components/VisualPrompting";
 
 const TextToImage = () => {
   const [image, updateImage] = useState();
@@ -28,7 +29,6 @@ const TextToImage = () => {
   const urlModel = searchParams.get("model");
 
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
-  const [isArchitectModeOn, setIsArchitectModeOn] = useState(false);
 
   useEffect(() => {
     if (urlPrompt) updatePrompt(urlPrompt);
@@ -120,65 +120,7 @@ const TextToImage = () => {
         <div className="flex-1 flex flex-col gap-4 h-[60vh] overflow-y-auto">
           <h1 className="font-bold text-3xl mb-5">Text to image</h1>
 
-          <div className="flex items-center space-x-3">
-            <span className="font-medium">Architect mode</span>
-            <div
-              onClick={() => {
-                const newValue = !isArchitectModeOn;
-
-                if (newValue) {
-                  const proceed = window.confirm(
-                    `You are about to turn on Architect Mode. Your positive and negative prompts will be erased! Continue?`
-                  );
-                  if (proceed) setIsArchitectModeOn(newValue);
-                }else{
-                  const proceed = window.confirm(
-                    `You are about to turn off Architect Mode. Your choices will be translated into textual positive and negative prompts. Continue?`
-                  );
-                  if (proceed) setIsArchitectModeOn(newValue);
-                }
-
-              }}
-              className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ${isArchitectModeOn ? "bg-green-500" : "bg-gray-400"}`}
-            >
-              <div
-                className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-200 ${isArchitectModeOn ? "translate-x-6" : "translate-x-0"}`}
-              ></div>
-            </div>
-          </div>
-          {isArchitectModeOn ? (
-
-            <RottaInputController
-              positivePromptSetter={updatePrompt}
-              negativePromptSetter={updateNegativePrompt}
-            />
-
-          ) : (
-            <>
-
-              <TextTooltip
-                text="Positive prompt"
-                tooltip="Provide a natural-language description of what the image should contain."
-              />
-              <input
-                value={prompt}
-                onChange={(e) => updatePrompt(e.target.value)}
-                placeholder="Enter prompt"
-                className="w-full p-2 border rounded"
-              />
-
-              <TextTooltip
-                text="Negative prompt"
-                tooltip="Provide a natural-language description of what the image should not contain."
-              />
-              <input
-                value={negativePrompt}
-                onChange={(e) => updateNegativePrompt(e.target.value)}
-                placeholder="Enter negative prompt (optional)"
-                className="w-full p-2 border rounded"
-              />
-            </>
-          )}
+          <Prompts positivePrompt={prompt} setPositivePrompt={updatePrompt} negativePrompt={negativePrompt} setNegativePrompt={updateNegativePrompt} />
 
           {showAdvancedParameters ? (
             <>

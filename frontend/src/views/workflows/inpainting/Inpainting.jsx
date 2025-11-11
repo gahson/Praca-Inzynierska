@@ -4,6 +4,7 @@ import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
 
 import CanvasPreview from "./Canvas";
+import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
@@ -256,27 +257,7 @@ const Inpainting = () => {
           </div>
         </div>
         <div className="w-full max-w-[1800px] flex flex-col gap-4 mt-8">
-          <TextTooltip
-            text="Positive prompt"
-            tooltip="Provide a natural-language description of what the image should contain."
-          />
-          <input
-            value={prompt}
-            onChange={(e) => updatePrompt(e.target.value)}
-            placeholder="Enter prompt"
-            className="w-full p-2 border rounded"
-          />
-
-          <TextTooltip
-            text="Negative prompt"
-            tooltip="Provide a natural-language description of what the image should not contain."
-          />
-          <input
-            value={negativePrompt}
-            onChange={(e) => updateNegativePrompt(e.target.value)}
-            placeholder="Enter negative prompt (optional)"
-            className="w-full p-2 border rounded"
-          />
+          <Prompts positivePrompt={prompt} setPositivePrompt={updatePrompt} negativePrompt={negativePrompt} setNegativePrompt={updateNegativePrompt} />
 
           {showAdvancedParameters ? (
             <>

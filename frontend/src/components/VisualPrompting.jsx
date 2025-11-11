@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { GiCastle } from "react-icons/gi";
 
-import { MdTableRestaurant, MdHeadphones, MdOutlineWeb, MdOutlineColorLens } from "react-icons/md";
-
-import { 
-    MdBed, 
-    MdChair, 
-    MdKitchen, 
-    MdBathtub, 
+import {
+    MdTableRestaurant,
+    MdHeadphones,
+    MdBed,
+    MdChair,
+    MdKitchen,
+    MdBathtub,
     MdPrecisionManufacturing,
     MdAccessible,
     MdVisibilityOff,
@@ -16,53 +15,183 @@ import {
     MdZoomInMap,
     MdWbSunny,
     MdAcUnit,
-    MdWbIncandescent,
     MdPalette,
     MdLandscape,
+    MdCameraRoll,
+    MdWhatshot,
+    MdLightbulb,
+    MdBrightnessLow,
+    MdBrightnessHigh,
+    MdElderly,
+    MdChildFriendly,
+    MdInvertColorsOff,
+    MdWarningAmber,
+    MdRoofing,
+    MdRestaurant,
+    MdWork,
+    MdChildCare,
+    MdHotel,
+    MdLocalLaundryService,
+    MdDoorFront,
+    MdGarage,
+    MdBrush,
+    MdLocalLibrary,
+    MdFitnessCenter,
+    MdSensorWindow,
+    MdDesk,
+    MdBook,
 } from "react-icons/md";
+
+import {
+    GiGearHammer,
+    GiRetroController,
+    GiFlowerPot,
+    GiOlive,
+    GiAncientColumns,
+    GiCog,
+    GiClothes,
+    GiGamepad,
+    GiWoodenCrate,
+    GiCastle,
+    GiPianoKeys,
+    GiCookingPot,
+    GiFireplace, 
+    GiCupcake
+} from "react-icons/gi";
+
+import {
+    TbConeFilled,
+    TbCone2Filled,
+    TbSquare
+} from "react-icons/tb";
+
+import {
+    FaArrowUp,
+    FaArrowDown,
+    FaMagnifyingGlass,
+} from "react-icons/fa6";
+
+
+import { 
+    FaTv,
+    FaCouch, 
+    FaShower, 
+    FaToriiGate 
+} from "react-icons/fa";
+
+import { 
+    RiMovie2AiFill,
+    RiPlantFill 
+} from "react-icons/ri";
+
+import { BiCloset } from "react-icons/bi";
+
+import { BsLampFill } from "react-icons/bs";
+
+import { HiHomeModern } from "react-icons/hi2";
+
+import { IoDiamond } from "react-icons/io5";
+
+import { PiLampPendantFill } from "react-icons/pi";
+
 
 import TextTooltip from "./TextTooltip";
 
-const RottaInputController = ({ positivePromptSetter, negativePromptSetter }) => {
+const VisualPrompting = ({ positivePromptSetter, negativePromptSetter }) => {
     const roomButtons = [
         { id: 1, icon: MdBed, prompt: "Bedroom" },
         { id: 2, icon: MdChair, prompt: "Living Room" },
         { id: 3, icon: MdKitchen, prompt: "Kitchen" },
         { id: 4, icon: MdBathtub, prompt: "Bathroom" },
+        { id: 5, icon: MdRestaurant, prompt: "Dining Room" },
+        { id: 6, icon: MdWork, prompt: "Home Office" },
+        { id: 7, icon: MdChildCare, prompt: "Kids Room" },
+        { id: 8, icon: MdHotel, prompt: "Guest Room" },
+        { id: 9, icon: GiClothes, prompt: "Dressing Room" },
+        { id: 10, icon: MdLocalLaundryService, prompt: "Laundry Room" },
+        { id: 11, icon: MdDoorFront, prompt: "Hallway" },
+        { id: 12, icon: MdGarage, prompt: "Garage" },
+        { id: 13, icon: GiWoodenCrate, prompt: "Basement" },
+        { id: 14, icon: MdRoofing, prompt: "Attic" },
+        { id: 15, icon: GiGamepad, prompt: "Gaming Room" },
+        { id: 16, icon: MdBrush, prompt: "Creative Studio" },
+        { id: 17, icon: MdLocalLibrary, prompt: "Library" },
+        { id: 18, icon: MdFitnessCenter, prompt: "Home Gym" },
     ];
 
     const contentButtons = [
-        { id: 1, icon: MdChair, prompt: "armchair" },
-        { id: 2, icon: MdTableRestaurant, prompt: "table" }
+        { id: 1, icon: MdChair, prompt: "Armchair" },
+        { id: 2, icon: MdTableRestaurant, prompt: "Table" },
+        { id: 3, icon: MdBed, prompt: "Bed" },
+        { id: 4, icon: FaCouch, prompt: "Couch" },
+        { id: 5, icon: MdBathtub, prompt: "Bathtub" },
+        { id: 6, icon: MdDesk, prompt: "Desk" },
+        { id: 7, icon: BiCloset, prompt: "Closet" },
+        { id: 8, icon: PiLampPendantFill, prompt: "Lamp" },
+        { id: 9, icon: MdBook, prompt: "Bookshelf" },
+        { id: 10, icon: GiPianoKeys, prompt: "Piano" },
+        { id: 11, icon: GiCookingPot, prompt: "Cooking utensils" },
+        { id: 12, icon: RiPlantFill, prompt: "Plants" },
+        { id: 13, icon: GiFireplace, prompt: "Fireplace" },
+        { id: 14, icon: GiCupcake, prompt: "Food" },
+        { id: 15, icon: FaTv, prompt: "TV" },
+        { id: 17, icon: FaShower, prompt: "Shower" },
+        { id: 18, icon: MdSensorWindow, prompt: "Window" },
     ];
 
     const styleButtons = [
-        { id: 1, icon: GiCastle, prompt: "Medieval style interior" },
-        { id: 2, icon: MdHeadphones, prompt: "LoFi style interior" },
-        { id: 3, icon: MdOutlineWeb, prompt: "Modern style interior" },
-        { id: 4, icon: MdPrecisionManufacturing, prompt: "Futuristic style interior" },
+        { id: 1, icon: GiAncientColumns, prompt: "Ancient style interior" },
+        { id: 2, icon: GiCastle, prompt: "Medieval style interior" },
+        { id: 3, icon: GiGearHammer, prompt: "Industrial style interior" },
+        { id: 4, icon: HiHomeModern, prompt: "Modern style interior" },
+        { id: 5, icon: MdPrecisionManufacturing, prompt: "Futuristic style interior" },
+        { id: 6, icon: GiCog, prompt: "Steampunk style interior" },
+        { id: 7, icon: TbSquare, prompt: "Minimalistic style interior" },
+        { id: 8, icon: IoDiamond, prompt: "Art déco style interior" },
+        { id: 9, icon: GiFlowerPot, prompt: "Boho style interior" },
+        { id: 10, icon: GiRetroController, prompt: "Retro style interior" },
+        { id: 11, icon: MdHeadphones, prompt: "LoFi style interior" },
+        { id: 12, icon: GiOlive, prompt: "Mediterranean style interior" },
+        { id: 13, icon: FaToriiGate, prompt: "Japanese style interior" },
+
     ];
 
     const accessibilityButtons = [
-        { id: 1, icon: MdAccessible , prompt: "Wheelchair friendly interior design" },
+        { id: 1, icon: MdAccessible, prompt: "Wheelchair friendly interior design" },
         { id: 2, icon: MdVisibilityOff, prompt: "Blind friendly interior design" },
+        { id: 3, icon: MdInvertColorsOff, prompt: "Color blind friendly" },
+        { id: 4, icon: MdElderly, prompt: "Elderly friendly interior design" },
+        { id: 5, icon: MdChildFriendly, prompt: "Child safe interior design" },
+        { id: 6, icon: MdWarningAmber, prompt: "Safety railings" },
     ];
 
     const compositionButtons = [
-        { id: 1, icon: MdZoomOutMap , prompt: "Wide angle view" },
+        { id: 1, icon: MdZoomOutMap, prompt: "Wide angle view" },
         { id: 2, icon: MdZoomInMap, prompt: "Close up view" },
         { id: 3, icon: MdPanoramaHorizontal, prompt: "Panoramic view" },
+        { id: 4, icon: FaArrowDown, prompt: "Bird's-eye view" },
+        { id: 5, icon: FaArrowUp, prompt: "Worm's-eye view" },
+        { id: 6, icon: FaMagnifyingGlass, prompt: "Macro view" },
     ];
 
     const lightingButtons = [
-        { id: 1, icon: MdLandscape , prompt: "Natural lighting" },
-        { id: 2, icon: MdWbIncandescent, prompt: "Ambient lighting" },
+        { id: 1, icon: MdLandscape, prompt: "Natural lighting" },
+        { id: 2, icon: MdLightbulb, prompt: "Artificial lighting" },
+        { id: 3, icon: BsLampFill, prompt: "Ambient lighting" },
+        { id: 4, icon: TbConeFilled, prompt: "Spotlight" },
+        { id: 5, icon: TbCone2Filled, prompt: "Backlight" },
+        { id: 6, icon: MdBrightnessLow, prompt: "Soft lighting" },
+        { id: 7, icon: MdBrightnessHigh, prompt: "Hard lighting" },
+        { id: 8, icon: RiMovie2AiFill, prompt: "Cinematic lighting" },
     ];
 
     const colorButtons = [
         { id: 1, icon: MdWbSunny, prompt: "Warm colors" },
-        { id: 2, icon: MdAcUnit , prompt: "Cool colors" },
+        { id: 2, icon: MdAcUnit, prompt: "Cool colors" },
         { id: 3, icon: MdPalette, prompt: "Balanced colors" },
+        { id: 4, icon: MdWhatshot, prompt: "Live colors" },
+        { id: 5, icon: MdCameraRoll, prompt: "Sepia" },
+
     ];
 
     const [activeRoom, setActiveRoom] = useState(null);
@@ -116,8 +245,6 @@ const RottaInputController = ({ positivePromptSetter, negativePromptSetter }) =>
             const prompt = accessibilityButtons.find(b => b.id === Number(id)).prompt;
             if (activeAccessibility[id]) {
                 positive.push(prompt);
-            } else if (accessibilitySelected) {
-                negative.push(prompt);
             }
         }
 
@@ -242,7 +369,7 @@ const RottaInputController = ({ positivePromptSetter, negativePromptSetter }) =>
                 "lighting"
             )}
             {renderSection(
-                "Color",
+                "Colors",
                 "Select color palette.",
                 renderSingleChoiceButtons(colorButtons, activeColor, setActiveColor),
                 "color"
@@ -251,4 +378,4 @@ const RottaInputController = ({ positivePromptSetter, negativePromptSetter }) =>
     );
 };
 
-export default RottaInputController;
+export default VisualPrompting;
