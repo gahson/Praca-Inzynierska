@@ -65,5 +65,11 @@ It is recommended to run this application on either native or wsl Ubuntu
 5. Run container in the developement mode:
     - `docker compose down && docker compose up`
 
+### How to run tests
+
+1. ``` cd frontend ```
+2. ```  sudo apt install npm ```
+3. ``` npm run test:ui ``` or ``` npm run test ```
+
 ## TODO
 - https://docs.google.com/spreadsheets/d/14Qgea61NWSY51Ych7NmncooW5y2MEWiRMU0njNSEz4M/edit?gid=0#gid=0
