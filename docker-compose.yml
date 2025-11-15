@@ -8,6 +8,7 @@ services:
      - 5173:5173
     volumes:
      - ./frontend:/frontend
+     - /frontend/node_modules
     working_dir: /frontend
     command: npm run dev -- --host
     depends_on:
