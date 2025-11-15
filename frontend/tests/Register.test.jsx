@@ -45,7 +45,22 @@ describe('Register process', () => {
         expect(register_button).toBeInTheDocument();
     })
 
-    it('should create account and log in, corret form', async () => {
+    it('should register, correct credentials', async () => {
+        renderAll(<Register />);
+
+        const user = userEvent.setup()
+
+        const first_name_field = screen.getByPlaceholderText('First Name');
+        const last_name_field = screen.getByPlaceholderText('Last Name');
+        const email_field = screen.getByPlaceholderText('Email');
+        const password_field = screen.getByPlaceholderText('Password')
+        const register_button = screen.getByRole('button');
+
+        await user.type(first_name_field, 'John');
+        await user.type(last_name_field, 'Doe');
+        await user.type(email_field, 'john.doe@example.com');
+        await user.type(password_field, 'johndoe123');
+
         axios.post
             .mockResolvedValueOnce({
                 data: {
@@ -63,19 +78,6 @@ describe('Register process', () => {
                 }
             });
 
-        const user = userEvent.setup()
-        renderAll(<Register />);
-
-        const first_name_field = screen.getByPlaceholderText('First Name');
-        const last_name_field = screen.getByPlaceholderText('Last Name');
-        const email_field = screen.getByPlaceholderText('Email');
-        const password_field = screen.getByPlaceholderText('Password')
-        const register_button = screen.getByRole('button');
-
-        await user.type(first_name_field, 'John');
-        await user.type(last_name_field, 'Doe');
-        await user.type(email_field, 'john.doe@example.com');
-        await user.type(password_field, 'johndoe123');
         await user.click(register_button);
 
         expect(axios.post).toHaveBeenNthCalledWith(
@@ -108,12 +110,13 @@ describe('Register process', () => {
 
     })
 
-    it('should not create account nor log in, incorrect form', async () => {
-        const user = userEvent.setup()
+    it('should not register, missing credentials', async () => {
         renderAll(<Register />);
 
-        const first_name_field = screen.getByPlaceholderText('First Name');
-        const last_name_field = screen.getByPlaceholderText('Last Name');
+        const user = userEvent.setup()
+
+        // const first_name_field = screen.getByPlaceholderText('First Name'); //empty
+        // const last_name_field = screen.getByPlaceholderText('Last Name'); //empty
         const email_field = screen.getByPlaceholderText('Email');
         const password_field = screen.getByPlaceholderText('Password')
         const register_button = screen.getByRole('button');
@@ -134,13 +137,12 @@ describe('Register process', () => {
             duration: 3000,
             isClosable: true,
         });
-
-        //screen.debug();
     })
 
-    it('should not create account nor log in, invalid email', async () => {
-        const user = userEvent.setup()
+    it('should not register, invalid email', async () => {
         renderAll(<Register />);
+
+        const user = userEvent.setup()
 
         const first_name_field = screen.getByPlaceholderText('First Name');
         const last_name_field = screen.getByPlaceholderText('Last Name');
@@ -166,7 +168,7 @@ describe('Register process', () => {
         });
     })
 
-    it('should not create account nor log in, existing email', async () => {
+    it('should not register, existing email', async () => {
         axios.post
             .mockRejectedValueOnce({
                 data: {
