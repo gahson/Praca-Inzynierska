@@ -1,8 +1,8 @@
 
 import '@testing-library/jest-dom/vitest';
 import userEvent from '@testing-library/user-event'
-import { render, screen, cleanup, waitFor } from '@testing-library/react';
-import { it, expect, describe, vi, afterEach, beforeEach, beforeAll } from 'vitest';
+import { render, screen, cleanup } from '@testing-library/react';
+import { it, expect, describe, vi, afterEach } from 'vitest';
 
 import axios from 'axios'
 import React from 'react';
@@ -29,7 +29,7 @@ const renderAll = (element) =>
 
 
 describe('Register process', () => {
-    it('should render correctly', async () => {
+    it('should render correctly', () => {
         renderAll(<Register />);
 
         const first_name_field = screen.getByPlaceholderText('First Name');
@@ -134,6 +134,8 @@ describe('Register process', () => {
             duration: 3000,
             isClosable: true,
         });
+
+        //screen.debug();
     })
 
     it('should not create account nor log in, invalid email', async () => {
@@ -166,7 +168,7 @@ describe('Register process', () => {
 
     it('should not create account nor log in, existing email', async () => {
         axios.post
-            .mockRejectedValueOnce ({
+            .mockRejectedValueOnce({
                 data: {
                     detail: 'Email already registered'
                 }
@@ -186,7 +188,7 @@ describe('Register process', () => {
         await user.type(email_field, 'janedoe@example.com');
         await user.type(password_field, 'janedoe123');
 
-        
+
         await user.click(register_button);
         expect(axios.post).toHaveBeenNthCalledWith(
             1,
