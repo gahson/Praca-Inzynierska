@@ -1,4 +1,5 @@
 import axios from "axios";
+import React from "react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -133,7 +134,7 @@ const Gallery = () => {
 
                 {img.mode == "outpainting" && (
                   <>
-                    <p><b>Padding:</b> {img.pad_left}</p>
+                    <p><b>Pad left:</b> {img.pad_left}</p>
                     <p><b>Pad right:</b> {img.pad_right}</p>
                     <p><b>Pad top:</b> {img.pad_top}</p>
                     <p><b>Pad bottom:</b> {img.pad_bottom}</p>
