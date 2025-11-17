@@ -1,3 +1,4 @@
+import React from "react";
 import { LuInfo } from "react-icons/lu";
 
 const SliderControl = ({ label, value, min, max, step, onChange, textColor = "text-gray-700", description = "" }) => (

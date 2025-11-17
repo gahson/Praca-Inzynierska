@@ -1,3 +1,4 @@
+import React from "react";
 import axios from "axios";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';

@@ -1,3 +1,4 @@
+import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -6,7 +7,6 @@ import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
-import VisualPrompting from "../../../components/VisualPrompting";
 
 const TextToImage = () => {
   const [image, updateImage] = useState();

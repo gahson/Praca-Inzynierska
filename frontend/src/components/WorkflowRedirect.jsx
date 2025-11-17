@@ -1,3 +1,4 @@
+import React from "react";
 import { FaImages, FaMagic, FaBorderAll, FaExpandArrowsAlt } from "react-icons/fa";
 import { useNavigate, useLocation } from "react-router-dom";
 
