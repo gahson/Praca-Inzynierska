@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Depends
 from database.mongo import db
-from utils.auth_helpers import get_current_user
+from utils.auth_helpers import get_current_user, hash_password
 from bson import ObjectId
 
 admin_router = APIRouter()
@@ -83,8 +83,11 @@ async def update_user(user_id: str, data: dict, current_user: dict = Depends(get
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    allowed_fields = {"first_name", "last_name", "email", "role"}
+    allowed_fields = {"first_name", "last_name", "email", "role", 'password'}
     update_data = {k: v for k, v in data.items() if k in allowed_fields and v is not None}
+
+    if "password" in update_data:
+        update_data["password"] = hash_password(update_data["password"])
 
     if not update_data:
         raise HTTPException(status_code=400, detail="No valid fields provided for update")

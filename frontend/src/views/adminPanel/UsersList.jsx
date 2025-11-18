@@ -57,9 +57,16 @@ export default function UsersList() {
 
   const handleSave = async () => {
     try {
+
+      const dataToSend = { ...formData };
+
+      if (!dataToSend.password) {
+        delete dataToSend.password;
+      }
+
       const res = await axios.patch(
         `http://${location.hostname}:5555/admin/user/${editingUser.id}`,
-        formData,
+        dataToSend,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -172,6 +179,17 @@ export default function UsersList() {
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
               </select>
+            </label>
+
+            <label className="block mb-2">
+              New password:
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full border p-2 rounded mt-1"
+              />
             </label>
 
             <div className="flex justify-end space-x-2">
