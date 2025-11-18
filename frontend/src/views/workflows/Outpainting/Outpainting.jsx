@@ -1,4 +1,5 @@
 import axios from "axios";
+import React from "react";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
