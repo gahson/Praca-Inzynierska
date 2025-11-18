@@ -9,9 +9,8 @@ import { store } from '../src/store';
 import { Provider } from "react-redux";
 import { MemoryRouter } from 'react-router-dom';
 import { toaster } from '../src/components/ui/toaster';
-import ControlNet from '../src/views/workflows/control-net/ControlNet';
+import Outpainting from '../src/views/workflows/Outpainting/Outpainting';
 
-// Mock toaster and axios
 vi.spyOn(toaster, 'create');
 vi.mock('axios');
 
@@ -20,17 +19,16 @@ afterEach(() => {
     vi.clearAllMocks();
 });
 
-
 const renderAll = (element) =>
     render(
         <Provider store={store}><MemoryRouter>{element}</MemoryRouter></Provider>
     );
 
-describe('ControlNet', () => {
+describe('Outpainting', () => {
     it('should render workflow correctly', () => {
-        renderAll(<ControlNet />);
+        renderAll(<Outpainting />);
 
-        const header = screen.getByText('Control Net');
+        const header = screen.getByText('Outpainting');
         const dragDropText = screen.getByText('Drag and drop files here');
         const imagePlaceholder = screen.getByText('Generated image will appear here');
         const advancedParamsButton = screen.getByText('Show advanced parameters ▼');
@@ -42,25 +40,28 @@ describe('ControlNet', () => {
     })
 
     it('should show advanced parameters', async () => {
-        renderAll(<ControlNet />);
+        renderAll(<Outpainting />);
 
         const toggleButton = screen.getByText('Show advanced parameters ▼');
         await userEvent.click(toggleButton);
 
         const guidance_scale = screen.getByText(/Guidance scale/i);
-        const canny_low_threshold = screen.getByText(/Canny low threshold/i);
-        const canny_high_threshold = screen.getByText(/Canny high threshold/i);
+        const pad_left = screen.getByText(/Pad left/i);
+        const pad_right = screen.getByText(/Pad right/i);
+        const pad_top = screen.getByText(/Pad top/i);
+        const pad_bottom = screen.getByText(/Pad bottom/i);
         const seed = screen.getByText(/Seed/i);
         const scaling_mode = screen.getByText(/Choose image scaling mode/i);
         const model = screen.getByText(/Choose model/i);
 
         expect(guidance_scale).toBeInTheDocument();
-        expect(canny_low_threshold).toBeInTheDocument();
-        expect(canny_high_threshold).toBeInTheDocument();
+        expect(pad_left).toBeInTheDocument();
+        expect(pad_right).toBeInTheDocument();
+        expect(pad_top).toBeInTheDocument();
+        expect(pad_bottom).toBeInTheDocument();
         expect(seed).toBeInTheDocument();
         expect(scaling_mode).toBeInTheDocument();
         expect(model).toBeInTheDocument();
-
     });
 
     it('should start image generation and display image', async () => {
@@ -70,7 +71,7 @@ describe('ControlNet', () => {
                 return null;
             });
 
-        renderAll(<ControlNet />);
+        renderAll(<Outpainting />);
 
         const file = new File(['example-file-content'], 'example-file.png', { type: 'image/png' });
         const input = document.getElementById('file-input');
@@ -89,16 +90,11 @@ describe('ControlNet', () => {
 
     it('should not start image generation, anonymous user', async () => {
         vi.spyOn(Storage.prototype, 'getItem')
-            .mockImplementation((key) => {
-                if (key === 'token') return null;
-                return null;
-            });
+            .mockImplementation((key) => null);
 
-
-        renderAll(<ControlNet />);
+        renderAll(<Outpainting />);
 
         const file = new File(['example-file-content'], 'example-file.png', { type: 'image/png' });
-
         const input = document.getElementById('file-input');
         const generateButton = await screen.findByText('Generate');
 
@@ -122,7 +118,7 @@ describe('ControlNet', () => {
                 return null;
             });
 
-        renderAll(<ControlNet />);
+        renderAll(<Outpainting />);
 
         const file = new File(['example-file-content'], 'example-file.png', { type: 'image/png' });
         const input = document.getElementById('file-input');
@@ -142,5 +138,4 @@ describe('ControlNet', () => {
             isClosable: true,
         });
     });
-
-})
+});
