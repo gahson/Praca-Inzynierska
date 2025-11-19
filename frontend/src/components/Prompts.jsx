@@ -56,7 +56,7 @@ const Prompts = ({positivePrompt, setPositivePrompt, negativePrompt, setNegative
               />
               <input
                 value={positivePrompt}
-                onChange={(e) => updatePrompt(e.target.value)}
+                onChange={(e) => setPositivePrompt(e.target.value)}
                 placeholder="Enter prompt"
                 className="w-full p-2 border rounded"
               />
@@ -67,7 +67,7 @@ const Prompts = ({positivePrompt, setPositivePrompt, negativePrompt, setNegative
               />
               <input
                 value={negativePrompt}
-                onChange={(e) => updateNegativePrompt(e.target.value)}
+                onChange={(e) => setNegativePrompt(e.target.value)}
                 placeholder="Enter negative prompt (optional)"
                 className="w-full p-2 border rounded"
               />

@@ -8,11 +8,11 @@ export default function Dashboard() {
 
   const handleGenerate = () => {
     if (!prompt.trim()) return;
-    navigate(`/views/generation/text-to-image?prompt=${encodeURIComponent(prompt)}`);
+    navigate(`/views/workflows/text-to-image?prompt=${encodeURIComponent(prompt)}`);
   };
 
   return (
-
+    
     <div className="w-full h-screen bg-gray-100 flex flex-col items-center justify-center gap-10">
       <h1 className="text-6xl font-bold text-center m-0">
        Welcome to the world of AInterior...
