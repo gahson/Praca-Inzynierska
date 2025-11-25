@@ -51,6 +51,7 @@ const App = () => (
         <Route path="/views/workflows" element={<PrivateRoute><Workflows /></PrivateRoute>} />
         <Route path="/views/health" element={<Health />} />
         <Route path="/views/adminPanel" element={<AdminRoute><AdminPanel /></AdminRoute>} />
+        <Route path="/views/adminPanel/user/:id" element={<AdminRoute><UserDetails /></AdminRoute>} />
         <Route path="*" element={<Error/>} />
       </Routes>
     </BrowserRouter>
