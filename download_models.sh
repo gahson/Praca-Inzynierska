@@ -69,7 +69,7 @@ fi
 #         "https://huggingface.co/stabilityai/stable-diffusion-2-1-unclip/resolve/main/sd21-unclip-l.ckpt?download=true"
 # fi
 
-Stable Diffusion 2.1 - 6GB
+# Stable Diffusion 2.1 - 6GB
 if [ -f "stable-diffusion-2-1.ckpt" ]; then
     echo "stable-diffusion-2-1.ckpt exists"
 else
