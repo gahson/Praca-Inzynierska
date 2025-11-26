@@ -59,13 +59,23 @@ else
         "https://huggingface.co/stabilityai/stable-diffusion-2-inpainting/resolve/main/512-inpainting-ema.safetensors?download=true"
 fi
 
+# NO LONGER AVILABLE
 # Stable Diffusion 2.1 - 6GB
+# if [ -f "stable-diffusion-2-1.ckpt" ]; then
+#     echo "stable-diffusion-2-1.ckpt exists"
+# else
+#     curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+#         -o stable-diffusion-2-1.ckpt \
+#         "https://huggingface.co/stabilityai/stable-diffusion-2-1-unclip/resolve/main/sd21-unclip-l.ckpt?download=true"
+# fi
+
+Stable Diffusion 2.1 - 6GB
 if [ -f "stable-diffusion-2-1.ckpt" ]; then
     echo "stable-diffusion-2-1.ckpt exists"
 else
     curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
         -o stable-diffusion-2-1.ckpt \
-        "https://huggingface.co/stabilityai/stable-diffusion-2-1-unclip/resolve/main/sd21-unclip-l.ckpt?download=true"
+        "https://huggingface.co/sd2-community/stable-diffusion-2-1-unclip/resolve/main/sd21-unclip-l.ckpt?download=true"
 fi
 
 # Stable Diffusion 3.0 medium - 6GB
