@@ -83,7 +83,7 @@ const Workflows = () => {
           </div>
           <h3 className="text-lg font-semibold">Control Net</h3>
           <p className="text-gray-700 text-sm text-left">
-           Guided image generation using structural imput like pose, depth or edges.
+           Guided image generation using structural input like pose, depth or edges.
           </p>
         </button>
 

@@ -34,14 +34,14 @@ export default function Prompts() {
       <h1 className="font-bold text-3xl">Prompt guideliness</h1>
 
       <section className="bg-white rounded-lg shadow p-5">
-        <h2 className="font-bold text-2xl mb-4">General infromation</h2>
+        <h2 className="font-bold text-2xl mb-4">General information</h2>
         <p className="text-lg mb-2">
           Prompt construction is a sophisticated process that has evolved into its own scientific
           branch called <span className="font-semibold italic">prompt engineering</span>.
           Given the complexity of the topic, we’ve summarized the key information below and included examples. To begin, consider a few general principles:
         </p>
         <ul className="list-disc list-inside space-y-2">
-          <li>Prompts should be expressend in the natural language.</li>
+          <li>Prompts should be expressed in the natural language.</li>
           <li>It is advised to use English whenever possible.</li>
           <li>Try to formulate short phrases separated by commas instead of long sentences.</li>
           <li>Be specific to avoid ambiguity.</li>
@@ -51,7 +51,7 @@ export default function Prompts() {
       <section className="bg-white rounded-lg shadow p-5">
         <h2 className="font-bold text-2xl mb-4">Subject</h2>
         <p className="text-lg mb-5">
-          The subject of the image for e.g. person, building, vahicle, animal should be described first, followed by the situation or action it is involved in.
+          The subject of the image for e.g. person, building, vehicle, animal should be described first, followed by the situation or action it is involved in.
         </p>
         <div className="grid grid-cols-3 gap-6 justify-items-center">
           <div className="flex flex-col items-center gap-2 bg-gray-50 rounded-xl shadow-md p-4">
@@ -283,7 +283,7 @@ export default function Prompts() {
       <section className="bg-white rounded-lg shadow p-5">
         <h2 className="font-bold text-2xl mb-4">Lighting</h2>
         <p className="text-lg mb-5">
-          The composition describes how an image is framed, including the choice of angles and perspectives.
+          Lighting describes how light interacts with the scene, including shadows, highlights, and overall mood.
         </p>
         <div className="grid grid-cols-3 gap-6 justify-items-center">
           <div className="flex flex-col items-center gap-2 bg-gray-50 rounded-xl shadow-md p-4">
@@ -471,7 +471,7 @@ export default function Prompts() {
           <div className="flex flex-col items-center gap-2 bg-gray-50 rounded-xl shadow-md p-4">
             <img src={interior2} alt="Interior" className="rounded-lg w-full h-auto mb-3" />
             <p className="text-gray-700 text-sm text-center">
-              <span className="font-semibold italic">Positive prompt:</span> A modern living room, Scandinavian style, large windows with natural light, wooden floor, minimalist furniture, neutral color palette, cozy atmospher
+              <span className="font-semibold italic">Positive prompt:</span> A modern living room, Scandinavian style, large windows with natural light, wooden floor, minimalist furniture, neutral color palette, cozy atmosphere
               <br />
               <span className="font-semibold italic">Negative prompt:</span> messy objects, old furniture, low resolution, distorted proportions, extra people
             </p>
@@ -481,7 +481,7 @@ export default function Prompts() {
                 navigate(
                   `/views/workflows/text-to-image?${new URLSearchParams({
                     prompt:
-                      "A modern living room, Scandinavian style, large windows with natural light, wooden floor, minimalist furniture, neutral color palette, cozy atmospher",
+                      "A modern living room, Scandinavian style, large windows with natural light, wooden floor, minimalist furniture, neutral color palette, cozy atmosphere",
                     negativePrompt:
                       "messy objects, old furniture, low resolution, distorted proportions, extra people",
                     width: "1024",
