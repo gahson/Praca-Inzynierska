@@ -1,12 +1,13 @@
 import React from "react";
 import axios from "axios";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 
 import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
+import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const TextToImage = () => {
   const [image, updateImage] = useState();
@@ -20,6 +21,7 @@ const TextToImage = () => {
   const [model, setModel] = useState("xl");
 
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
   const urlPrompt = searchParams.get("prompt");
   const urlNegativePrompt = searchParams.get("negativePrompt");
   const urlWidth = searchParams.get("width");
@@ -99,6 +101,14 @@ const TextToImage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       updateImage(response.data.image);
+      // save to canvas if selected
+      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "text-to-image", guidance_scale: guidance, seed });
+      
+      // If came from Canvas, redirect back after a short delay
+      const fromCanvas = localStorage.getItem("currentCanvasId");
+      if (fromCanvas) {
+        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      }
     } catch (error) {
       console.error("Error:", error);
       toaster.create({

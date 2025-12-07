@@ -3,12 +3,14 @@ import axios from "axios";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
 import RedirectButtons from "../../../components/WorkflowRedirect";
+import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const ControlNet = () => {
   const [image, updateImage] = useState();
@@ -27,6 +29,7 @@ const ControlNet = () => {
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -100,6 +103,14 @@ const ControlNet = () => {
       );
 
       updateImage(response.data.image);
+      // save to currently selected canvas (if any)
+      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "controlnet", guidance_scale: guidance, seed });
+      
+      // If came from Canvas, redirect back after a short delay
+      const fromCanvas = localStorage.getItem("currentCanvasId");
+      if (fromCanvas) {
+        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      }
     } catch (error) {
       console.error("Error:", error);
       toaster.create({

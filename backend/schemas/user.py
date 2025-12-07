@@ -18,6 +18,7 @@ class UserResponse(BaseModel):
     last_name: str
     email: EmailStr
     gallery: List[str] = []
+    canvases: List[str] = []
     prompts: List[str] = []
     role: str
 

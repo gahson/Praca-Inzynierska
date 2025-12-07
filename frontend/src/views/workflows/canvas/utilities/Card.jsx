@@ -1,5 +1,3 @@
-import React from "react";
-
 import { useNavigate } from "react-router-dom";
 
 const WORKFLOW_BUTTONS = [
@@ -11,6 +9,7 @@ const WORKFLOW_BUTTONS = [
 ];
 
 export default function Card({ image, onWorkflowSelect }) {
+
   const navigate = useNavigate();
 
   const mapWorkflowToRoute = (id) => {
@@ -31,6 +30,7 @@ export default function Card({ image, onWorkflowSelect }) {
   };
 
   const handleWorkflowClick = (workflowId) => {
+    // prefer parent handler if provided (for node-level workflow selection)
     if (onWorkflowSelect) {
       onWorkflowSelect(workflowId);
       return;
@@ -52,10 +52,10 @@ export default function Card({ image, onWorkflowSelect }) {
     } catch (e) {
       // ignore storage errors
     }
+
     const route = mapWorkflowToRoute(workflowId);
     navigate(`/views/workflows/${route}`);
   };
-
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 border border-gray-200">

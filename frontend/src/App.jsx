@@ -14,6 +14,7 @@ import ImageToImage from "./views/workflows/image-to-image/ImageToImage";
 import Inpainting from "./views/workflows/inpainting/Inpainting";
 import Outpainting from "./views/workflows/Outpainting/Outpainting";
 import ControlNet from "./views/workflows/control-net/ControlNet";
+import Canvas from "./views/workflows/canvas/Canvas";
 // import BoundingBoxes from "./views/workflows/bounding-boxes/BoundingBoxes";
 import Prompts from "./views/prompts/Prompts";
 import Gallery from "./views/gallery/Gallery";
@@ -43,6 +44,7 @@ const App = () => (
         <Route path="/views/workflows/inpainting" element={<PrivateRoute><Inpainting /></PrivateRoute>} />
         <Route path="/views/workflows/outpainting" element={<PrivateRoute><Outpainting /></PrivateRoute>} />
         <Route path="/views/workflows/control-net" element={<PrivateRoute><ControlNet /></PrivateRoute>} />
+        <Route path="/views/workflows/canvas" element={<PrivateRoute><Canvas /></PrivateRoute>} />
         {/* <Route path="/views/workflows/bounding-boxes" element={<PrivateRoute><BoundingBoxes /></PrivateRoute>} /> */}
         <Route path="/views/prompts" element={<PrivateRoute><Prompts /></PrivateRoute>} />
         <Route path="/views/gallery" element={<PrivateRoute><Gallery /></PrivateRoute>} />
