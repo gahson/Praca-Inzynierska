@@ -61,6 +61,17 @@ async def get_canvas(canvas_id: str, current_user: dict = Depends(get_current_us
         "images": images
     }
 
+@canvases_router.patch("/{canvas_id}")
+async def update_canvas(canvas_id: str, req: CreateCanvasRequest, current_user: dict = Depends(get_current_user)):
+    c = await db["canvases"].find_one({"_id": ObjectId(canvas_id)})
+    if not c or c["user_id"] != current_user["_id"]:
+        raise HTTPException(status_code=404, detail="Canvas not found")
+    await db["canvases"].update_one(
+        {"_id": ObjectId(canvas_id)},
+        {"$set": {"name": req.name}}
+    )
+    return {"id": canvas_id, "name": req.name}
+
 @canvases_router.delete("/{canvas_id}")
 async def delete_canvas(canvas_id: str, current_user: dict = Depends(get_current_user)):
     c = await db["canvases"].find_one({"_id": ObjectId(canvas_id)})
