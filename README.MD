@@ -22,7 +22,7 @@ It is recommended to run this application on either native or wsl Ubuntu
 ### Preparation
 1. Install docker with this instructions https://docs.docker.com/engine/install/ubuntu/ (In case of buildix issue: https://forums.docker.com/t/tips-for-how-to-fix-my-borked-cli-plugins/144327/3)
 
-2. Install NVIDIA Container Toolkit
+2. Install NVIDIA Container Toolkit  
     a. Add NVIDIA GPG key and repository
 
         curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | \
@@ -60,19 +60,17 @@ It is recommended to run this application on either native or wsl Ubuntu
 6. Run `sudo ./download_models.sh`to download all the models (This needs to be run only once)
 
 4. Build & run (Use after making changes to the docker related files or when installing new packages/modules) FIRST RUN WILL TAKE A LONG TIME!!!:
-Option I) Developement mode:
-    - `docker compose down && docker compose up --build`
-Option II) Production mode:
-    - `docker compose down && docker compose -f docker-compose-production.yml up --build -d`
+    - Developement mode: `docker compose down && docker compose up --build`  
+    or
+    - Production mode: `docker compose down && docker compose -f docker-compose-production.yml up --build -d`
 
 5. Run:
-Option I) Developement mode:
-    - `docker compose down && docker compose up`
-Option II) Production mode:
-    - `docker compose down && docker compose -f docker-compose-production.yml up -d`
+    - Developement mode: `docker compose down && docker compose up`  
+or
+    - Production mode:`docker compose down && docker compose -f docker-compose-production.yml up -d`
 
 ### How to forward frontend via ssh:
-1. ssh -L 80:localhost:80 <username1>@<host1> <username2>@<host2>
+1. ssh -L 80:localhost:80 username1@host1 username2@host2
 
 ### How to run tests
 
