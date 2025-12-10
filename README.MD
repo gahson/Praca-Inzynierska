@@ -59,11 +59,20 @@ It is recommended to run this application on either native or wsl Ubuntu
     
 6. Run `sudo ./download_models.sh`to download all the models (This needs to be run only once)
 
-4. Build & run container in the developement mode (Use after making changes to the docker related files or when installing new packages/modules) FIRST RUN WILL TAKE A LONG TIME!!!:
+4. Build & run (Use after making changes to the docker related files or when installing new packages/modules) FIRST RUN WILL TAKE A LONG TIME!!!:
+Option I) Developement mode:
     - `docker compose down && docker compose up --build`
+Option II) Production mode:
+    - `docker compose down && docker compose -f docker-compose-production.yml up --build -d`
 
-5. Run container in the developement mode:
+5. Run:
+Option I) Developement mode:
     - `docker compose down && docker compose up`
+Option II) Production mode:
+    - `docker compose down && docker compose -f docker-compose-production.yml up -d`
+
+### How to forward frontend via ssh:
+1. ssh -L 80:localhost:80 <username1>@<host1> <username2>@<host2>
 
 ### How to run tests
 

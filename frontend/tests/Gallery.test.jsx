@@ -44,7 +44,7 @@ describe('Gallery', () => {
         await screen.findByText("Your Gallery"); //wait for call
 
         expect(axios.get).toHaveBeenCalledWith(
-            `http://${location.hostname}:5555/gallery`,
+            `/api/gallery`,
             {
                 headers: {
                     Authorization: `Bearer null`,
@@ -276,7 +276,7 @@ describe('Gallery', () => {
         await user.click(deleteButton);
 
         expect(axios.delete).toHaveBeenCalledWith(
-            `http://${location.hostname}:5555/gallery/1`,
+            `/api/gallery/1`,
             {
                 headers: {
                     Authorization: `Bearer null`,

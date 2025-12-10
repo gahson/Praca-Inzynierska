@@ -78,7 +78,7 @@ const ImageToImage = () => {
 
     try {
       const response = await axios.post(
-        `http://${window.location.hostname}:5555/model/generate/image-to-image`,
+        `/api/model/generate/image-to-image`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],

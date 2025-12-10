@@ -84,7 +84,7 @@ const Outpainting = () => {
 
     try {
       const response = await axios.post(
-        `http://${window.location.hostname}:5555/model/generate/outpainting`,
+        `/api/model/generate/outpainting`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],

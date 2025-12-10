@@ -80,7 +80,7 @@ const ControlNet = () => {
 
     try {
       const response = await axios.post(
-        `http://${window.location.hostname}:5555/model/generate/control-net`,
+        `/api/model/generate/control-net`,
         {
           model_version: model,
           image: loadedImage.split(",")[1],

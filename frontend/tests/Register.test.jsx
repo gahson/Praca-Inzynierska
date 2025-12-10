@@ -82,7 +82,7 @@ describe('Register process', () => {
 
         expect(axios.post).toHaveBeenNthCalledWith(
             1,
-            `http://${location.hostname}:5555/auth/register`,
+            `/api/auth/register`,
             {
                 first_name: 'John',
                 last_name: 'Doe',
@@ -94,7 +94,7 @@ describe('Register process', () => {
 
         expect(axios.post).toHaveBeenNthCalledWith(
             2,
-            `http://${location.hostname}:5555/auth/login`,
+            `/api/auth/login`,
             {
                 email: 'john.doe@example.com',
                 password: 'johndoe123',
@@ -194,7 +194,7 @@ describe('Register process', () => {
         await user.click(register_button);
         expect(axios.post).toHaveBeenNthCalledWith(
             1,
-            `http://${location.hostname}:5555/auth/register`,
+            `/api/auth/register`,
             {
                 first_name: 'Jane',
                 last_name: 'Doe',

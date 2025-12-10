@@ -55,9 +55,9 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await axios.post(`http://${location.hostname}:5555/auth/register`, form);
+      await axios.post(`/api/auth/register`, form);
 
-      const loginRes = await axios.post(`http://${location.hostname}:5555/auth/login`, {
+      const loginRes = await axios.post(`/api/auth/login`, {
         email,
         password,
       });

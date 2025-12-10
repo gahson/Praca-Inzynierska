@@ -94,7 +94,7 @@ const TextToImage = () => {
     updateLoading(true);
     try {
       const response = await axios.post(
-        `http://${location.hostname}:5555/model/generate/text-to-image`,
+        `/api/model/generate/text-to-image`,
         { model_version: model, prompt, negative_prompt: negativePrompt, guidance_scale: guidance, width, height, seed },
         { headers: { Authorization: `Bearer ${token}` } }
       );

@@ -18,7 +18,7 @@ export default function UsersList() {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://${location.hostname}:5555/admin/users`, {
+        const res = await axios.get(`/api/admin/users`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
@@ -65,7 +65,7 @@ export default function UsersList() {
       }
 
       const res = await axios.patch(
-        `http://${location.hostname}:5555/admin/user/${editingUser.id}`,
+        `/api/admin/user/${editingUser.id}`,
         dataToSend,
         {
           headers: {

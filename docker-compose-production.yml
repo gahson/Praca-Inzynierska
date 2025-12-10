@@ -5,7 +5,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.production
     ports:
-     - 5173:80
+     - 80:80
     working_dir: /frontend
     command: ["nginx", "-g", "daemon off;"]
     depends_on:
@@ -20,11 +20,6 @@ services:
       retries: 5
     restart:
       unless-stopped
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   backend:
     build:
@@ -54,8 +49,6 @@ services:
     deploy:
       resources:
         reservations:
-          cpus: '2'
-          memory: 2G
           devices:
             - driver: nvidia
               count: all
@@ -72,14 +65,12 @@ services:
     working_dir: /comfyui
     command: python main.py --listen 0.0.0.0
     volumes:
-       - ./models:/comfyui/models/checkpoints
+       - ./models:/comfyui/models
        - input_images:/comfyui/input
        - output_images:/comfyui/output
     deploy:
       resources:
         reservations:
-          cpus: '1'
-          memory: 2G
           devices:
             - driver: nvidia
               count: all
@@ -109,11 +100,6 @@ services:
       start_period: 10s
     restart: 
       unless-stopped
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   mongo-express:
     image: 
@@ -131,11 +117,6 @@ services:
       mongo:
         condition: service_healthy
         restart: true
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.2'
-          memory: 256M
 
 volumes:
   db_data:

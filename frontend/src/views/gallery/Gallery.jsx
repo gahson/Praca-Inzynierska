@@ -19,7 +19,7 @@ const Gallery = () => {
     setLoading(true);
 
     try {
-      const res = await axios.get(`http://${location.hostname}:5555/gallery`, {
+      const res = await axios.get(`/api/gallery/`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -63,7 +63,7 @@ const Gallery = () => {
     const token = localStorage.getItem("token");
 
     try {
-      await axios.delete(`http://${location.hostname}:5555/gallery/${imageId}`, {
+      await axios.delete(`/api/gallery/${imageId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -97,7 +97,7 @@ const Gallery = () => {
     <div className="w-full min-h-screen bg-gray-100 flex flex-col p-5 gap-5">
       <h1 className="font-bold text-3xl">Your Gallery</h1>
       <div className="flex flex-wrap justify-center gap-5">
-        {gallery.length == 0 ? (
+        {(!gallery || gallery.length == 0) ? (
           <div className="w-full h-screen bg-gray-100 flex flex-col items-center justify-center gap-10">
             <h1 className="text-3xl font-bold text-center m-0">
               Loading gallery...

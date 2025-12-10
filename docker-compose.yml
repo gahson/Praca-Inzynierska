@@ -13,11 +13,6 @@ services:
     command: npm run dev -- --host
     depends_on:
       - backend
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   backend:
     build:
@@ -38,8 +33,6 @@ services:
     deploy:
       resources:
         reservations:
-          cpus: '1'
-          memory: 2G
           devices:
             - driver: nvidia
               count: all
@@ -83,11 +76,6 @@ services:
     volumes:
       - db_data:/data/db
       - ./mongod.conf:/etc/mongo/mongod.conf:ro
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
   mongo-express:
     image: 
@@ -103,11 +91,6 @@ services:
       ME_CONFIG_BASICAUTH_PASSWORD: mongo
     depends_on:
       - mongo
-    deploy:
-      resources:
-        reservations:
-          cpus: '0.5'
-          memory: 512M
 
 volumes:
   db_data:

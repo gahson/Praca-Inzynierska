@@ -44,7 +44,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const res = await axios.post(`http://${location.hostname}:5555/auth/login`, {
+      const res = await axios.post(`/api/auth/login`, {
         email,
         password,
       });

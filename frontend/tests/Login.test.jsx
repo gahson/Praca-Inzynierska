@@ -63,7 +63,7 @@ describe('Login process', () => {
         await user.click(login_button);
 
         expect(axios.post).toHaveBeenCalledWith(
-            `http://${location.hostname}:5555/auth/login`,
+            `/api/auth/login`,
             {
                 email: 'john.doe@example.com',
                 password: 'johndoe123'
@@ -101,7 +101,7 @@ describe('Login process', () => {
         await user.click(login_button);
 
         expect(axios.post).toHaveBeenCalledWith(
-            `http://${location.hostname}:5555/auth/login`,
+            `/api/auth/login`,
             {
                 email: 'john.doe@example.com',
                 password: 'johndoe123'
