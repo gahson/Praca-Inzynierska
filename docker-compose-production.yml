@@ -20,6 +20,10 @@ services:
       retries: 5
     restart:
       unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "2g"
 
   backend:
     build:
@@ -53,9 +57,11 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+        limits:
+          memory: "2g"
     runtime: 
       nvidia
-
+        
   comfyui:
     build:
       context: ./comfyui
@@ -75,6 +81,8 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+        limits:
+          memory: "20g"
     runtime: 
       nvidia
 
@@ -100,23 +108,27 @@ services:
       start_period: 10s
     restart: 
       unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: "2g"
 
-  mongo-express:
-    image: 
-      mongo-express
-    ports:
-      - "8081:8081"
-    environment:
-      ME_CONFIG_MONGODB_ADMINUSERNAME: admin
-      ME_CONFIG_MONGODB_ADMINPASSWORD: mongo
-      ME_CONFIG_MONGODB_SERVER: mongo
-      ME_CONFIG_BASICAUTH: "true"
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: mongo
-    depends_on:
-      mongo:
-        condition: service_healthy
-        restart: true
+  # mongo-express:
+  #   image: 
+  #     mongo-express
+  #   ports:
+  #     - "8081:8081"
+  #   environment:
+  #     ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+  #     ME_CONFIG_MONGODB_ADMINPASSWORD: mongo
+  #     ME_CONFIG_MONGODB_SERVER: mongo
+  #     ME_CONFIG_BASICAUTH: "true"
+  #     ME_CONFIG_BASICAUTH_USERNAME: admin
+  #     ME_CONFIG_BASICAUTH_PASSWORD: mongo
+  #   depends_on:
+  #     mongo:
+  #       condition: service_healthy
+  #       restart: true
 
 volumes:
   db_data:
