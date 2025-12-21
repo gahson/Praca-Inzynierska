@@ -49,6 +49,14 @@ else
         "https://huggingface.co/webui/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.safetensors?download=true"
 fi
 
+# DreamShaper v8 (SD 1.5) - 2GB
+if [ -f "dreamshaper_8.safetensors.safetensors" ]; then
+    echo "dreamshaper_8.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+        -o dreamshaper_8.safetensors \
+        "https://civitai.com/api/download/models/128713?type=Model&format=SafeTensor&size=pruned&fp=fp16"
+fi
 
 # Stable Diffusion 2.0-inpainting - 5GB
 if [ -f "stable-diffusion-2-0-inpainting.safetensors" ]; then
@@ -58,6 +66,17 @@ else
         -o stable-diffusion-2-0-inpainting.safetensors \
         "https://huggingface.co/stabilityai/stable-diffusion-2-inpainting/resolve/main/512-inpainting-ema.safetensors?download=true"
 fi
+
+
+# # Stable Diffusion 2.1-inpainting - 4.9GB
+# if [ -f "512-inpainting-ema.safetensors" ]; then
+#     echo "512-inpainting-ema.safetensors exists"
+# else
+#     curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+#         -o 512-inpainting-ema.safetensors \
+#         "https://huggingface.co/Comfy-Org/stable_diffusion_2.1_repackaged/resolve/main/512-inpainting-ema.safetensors?download=true"
+# fi
+
 
 # NO LONGER AVILABLE
 # Stable Diffusion 2.1 - 6GB
@@ -105,7 +124,6 @@ else
         "https://huggingface.co/wangqyqq/sd_xl_base_1.0_inpainting_0.1.safetensors/resolve/main/sd_xl_base_1.0_inpainting_0.1.safetensors?download=true"
 fi
 
-
 # Dream Creation Virtual 3DE Commerce
 if [ -f "dreamCreationVirtual3DECommerce_v10.safetensors" ]; then
     echo "dreamCreationVirtual3DECommerce_v10.safetensors exists"
@@ -142,4 +160,4 @@ else
 fi
 
 
-echo "All models downloaded and saved in $TARGET_DIR"
+echo "All models downloaded and saved"

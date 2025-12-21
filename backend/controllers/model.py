@@ -27,6 +27,7 @@ model_versions = {
     'xl' : 'stable-diffusion-xl.safetensors',
     'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
     'controlnet' : 'dreamCreationVirtual3DECommerce_v10.safetensors',
+    'dreamshaper-v8' : 'dreamshaper_8.safetensors',
 }
 
 model_version_to_input_size = {
@@ -38,6 +39,7 @@ model_version_to_input_size = {
     'xl' : (1024,1024),
     'xl-inpainting' : (1024,1024),
     'controlnet' : (512,512),
+    'dreamshaper-v8' : (512,512),
 }
 
 model_version_to_megapixels = {
@@ -49,6 +51,7 @@ model_version_to_megapixels = {
     'xl': 1.048,
     'xl-inpainting': 1.048,
     'controlnet': 0.262,
+    'dreamshaper-v8' : 0.262,
 }
 
 
