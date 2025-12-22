@@ -21,7 +21,7 @@ const Inpainting = () => {
   const [loading, updateLoading] = useState(false);
   const [guidance, setGuidance] = useState(8);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
-  const [model, setModel] = useState("dreamshaper-v8");
+  const [model, setModel] = useState("2.0-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
   const [scalingMode, setScalingMode] = useState("scale_to_megapixels");
@@ -328,12 +328,6 @@ const Inpainting = () => {
                   tooltip="Choose the Stable Diffusion model version. Generally, a higher version means better quality but longer generation times."
                 />
                 <div className="flex gap-4 flex-wrap">
-                  <button
-                    onClick={() => setModel("dreamshaper-v8")}
-                    className={`rounded-2xl border-2 px-4 py-2 transition ${model === "dreamshaper-v8" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                  >
-                    DreamShaper-V8
-                  </button>
                   <button
                     onClick={() => setModel("1.5-inpainting")}
                     className={`rounded-2xl border-2 px-4 py-2 transition ${model === "1.5-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}

@@ -53,18 +53,28 @@ fi
 if [ -f "dreamshaper_8.safetensors.safetensors" ]; then
     echo "dreamshaper_8.safetensors exists"
 else
-    curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
+    curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" \
         -o dreamshaper_8.safetensors \
         "https://civitai.com/api/download/models/128713?type=Model&format=SafeTensor&size=pruned&fp=fp16"
 fi
 
-# Stable Diffusion 2.0-inpainting - 5GB
-if [ -f "stable-diffusion-2-0-inpainting.safetensors" ]; then
-    echo "stable-diffusion-2-0-inpainting.safetensors exists"
+# # DreamShaper XL - 6.5GB
+# if [ -f "dreamshaperXL_lightningDPMSDE.safetensors" ]; then
+#     echo "dreamshaperXL_lightningDPMSDE.safetensors exists"
+# else
+#     curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" \
+#         -o dreamshaperXL_lightningDPMSDE.safetensors \
+#         "https://civitai.com/api/download/models/354657?type=Model&format=SafeTensor&size=full&fp=fp16"
+# fi
+
+
+# Stable Diffusion 2.0-inpainting - 5.2GB
+if [ -f "512-inpainting-ema.safetensors" ]; then
+    echo "512-inpainting-ema.safetensors exists"
 else
     curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
-        -o stable-diffusion-2-0-inpainting.safetensors \
-        "https://huggingface.co/stabilityai/stable-diffusion-2-inpainting/resolve/main/512-inpainting-ema.safetensors?download=true"
+        -o 512-inpainting-ema.safetensors \
+        "https://huggingface.co/sd2-community/stable-diffusion-2-inpainting/resolve/main/512-inpainting-ema.safetensors?download=true"
 fi
 
 

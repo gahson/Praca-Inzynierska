@@ -21,13 +21,12 @@ models= APIRouter()
 model_versions = {
     '1.5' : 'stable-diffusion-1-5.safetensors',
     '1.5-inpainting' : 'sd-v1-5-inpainting.safetensors',
-    '2.0-inpainting' : 'stable-diffusion-2-0-inpainting.safetensors',
+    '2.0-inpainting' : '512-inpainting-ema.safetensors',
     '2.1' : 'stable-diffusion-2-1.ckpt',
     '3.0' : 'stable-diffusion-3-medium.safetensors',
     'xl' : 'stable-diffusion-xl.safetensors',
     'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
     'controlnet' : 'dreamCreationVirtual3DECommerce_v10.safetensors',
-    'dreamshaper-v8' : 'dreamshaper_8.safetensors',
 }
 
 model_version_to_input_size = {
@@ -39,7 +38,6 @@ model_version_to_input_size = {
     'xl' : (1024,1024),
     'xl-inpainting' : (1024,1024),
     'controlnet' : (512,512),
-    'dreamshaper-v8' : (512,512),
 }
 
 model_version_to_megapixels = {
@@ -50,8 +48,7 @@ model_version_to_megapixels = {
     '3.0': 1.048,
     'xl': 1.048,
     'xl-inpainting': 1.048,
-    'controlnet': 0.262,
-    'dreamshaper-v8' : 0.262,
+    'controlnet': 0.262
 }
 
 
