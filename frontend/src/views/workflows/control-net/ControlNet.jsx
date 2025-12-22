@@ -20,6 +20,7 @@ const ControlNet = () => {
   const [cannyLowThreshold, setCannyLowThreshold] = useState(0.1);
   const [cannyHighThreshold, setCannyHighThreshold] = useState(0.9);
   const [guidance, setGuidance] = useState(7.0);
+  const [randomizeSeed, setRandomizeSeed] = useState(true);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
   const [model, setModel] = useState("controlnet");
   const [scalingMode, setScalingMode] = useState("scale_to_megapixels");
@@ -74,6 +75,12 @@ const ControlNet = () => {
         isClosable: true,
       });
       return;
+    }
+
+    var seed_to_use = seed;
+    if (randomizeSeed) {
+      seed_to_use = Math.floor(Math.random() * 999999999);
+      setSeed(seed_to_use);
     }
 
     updateLoading(true);
@@ -216,6 +223,22 @@ const ControlNet = () => {
               <SliderControl label="Canny low threshold" description="Decides which faint lines can be counted as edges. Lower equals more lines detected, higher equals only clearer ones." value={cannyLowThreshold} min={0} max={1.0} step={0.01} onChange={(v) => setCannyLowThreshold(v[0])} />
               <SliderControl label="Canny high threshold" description="Decides which lines are strong enough to always be kept. Higher equals only very clear edges, lower equals more lines pass through." value={cannyHighThreshold} min={0} max={1.0} step={0.01} onChange={(v) => setCannyHighThreshold(v[0])} />
 
+              <div className="flex items-center space-x-3">
+                <TextTooltip
+                  text="Auto randomize seed"
+                  tooltip="Enable or disable automatic seed randomization."
+                />
+                <div
+                  onClick={() => { setRandomizeSeed(!randomizeSeed); }}
+                  className={`w-12 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors duration-200 ${randomizeSeed ? "bg-green-500" : "bg-gray-400"}`
+                  }
+                >
+                  <div
+                    className={`bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-200 ${randomizeSeed ? "translate-x-6" : "translate-x-0"}`}
+                  ></div>
+                </div>
+              </div>
+
               <div className="flex flex-col gap-2">
                 <TextTooltip
                   text="Seed"
@@ -226,13 +249,17 @@ const ControlNet = () => {
                     type="number"
                     value={seed}
                     min={0}
-                    max={999999999999999}
+                    max={999999999}
                     onChange={(e) => setSeed(Number(e.target.value))}
-                    className="w-full  p-2 border rounded"
+                    className={`w-full p-2 border rounded ${randomizeSeed ? "bg-gray-200 text-gray-500 cursor-not-allowed" : "bg-white"}`}
+                    disabled={randomizeSeed}
                   />
                   <button
-                    onClick={() => setSeed(Math.floor(Math.random() * 999999999999999))}
-                    className="bg-yellow-400 text-black py-2 rounded px-4 py-2"
+                    onClick={() => setSeed(Math.floor(Math.random() * 999999999))}
+                    className={`px-4 py-2 rounded ${randomizeSeed
+                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                      : "bg-yellow-400 text-black hover:bg-yellow-500"}`}
+                    disabled={randomizeSeed}
                   >
                     Randomize
                   </button>
