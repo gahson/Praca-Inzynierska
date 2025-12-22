@@ -107,7 +107,19 @@ const TextToImage = () => {
       );
       updateImage(response.data.image);
     } catch (error) {
+     
+      /*
+        This message is most likely to be triggered when user sends request with exact same
+        parameters as previous one. Since ComfyUI is smart it does not regenerate the image,
+        hence providing no output. BUT since the data stays the same we can ignore it, making
+        us also benefit from this by not saving redundant data to the database!
+      */
+      if(error.response?.data?.detail == "No outputs found in workflow response"){
+        return
+      }
+
       console.error("Error:", error);
+
       toaster.create({
         title: "Generation failed",
         description: error.response?.data?.detail || "Something went wrong.",
