@@ -40,7 +40,6 @@ class Inpainting(BaseModel):
     seed: int
     image: str
     mask_image: str
-    scaling_mode: str
     
 
 class Outpainting(BaseModel):

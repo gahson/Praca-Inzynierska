@@ -22,10 +22,9 @@ const Inpainting = () => {
   const [guidance, setGuidance] = useState(8);
   const [randomizeSeed, setRandomizeSeed] = useState(true);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
-  const [model, setModel] = useState("2.0-inpainting");
+  const [model, setModel] = useState("xl-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
-  const [scalingMode, setScalingMode] = useState("scale_to_megapixels");
 
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
@@ -49,7 +48,6 @@ const Inpainting = () => {
             setGuidance(data.guidance_scale || 7.0);
             setSeed(data.seed || 0);
             setMaskEditorOpen(true);
-            setScalingMode(data.scaling_mode || "resize_and_pad");
           };
         }
       } catch (err) {
@@ -143,8 +141,7 @@ const Inpainting = () => {
           negative_prompt: negativePrompt,
           guidance_scale: guidance,
           seed: seed,
-          strength: 1.0,
-          scaling_mode: scalingMode,
+          strength: 1.0
         },
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -318,33 +315,6 @@ const Inpainting = () => {
                     disabled={randomizeSeed}
                   >
                     Randomize
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <TextTooltip
-                  text="Choose image scaling mode"
-                  tooltip="The image should be rescaled before being passed to the generative model to match the resolution it was trained on, ensuring the best results."
-                />
-                <div className="flex gap-4 flex-wrap">
-                  <button
-                    onClick={() => setScalingMode("resize_and_pad")}
-                    className={`rounded-2xl border-2 px-4 py-2 transition ${scalingMode === "resize_and_pad" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                  >
-                    Resize and pad
-                  </button>
-                  <button
-                    onClick={() => setScalingMode("scale_to_megapixels")}
-                    className={`rounded-2xl border-2 px-4 py-2 transition ${scalingMode === "scale_to_megapixels" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                  >
-                    Scale to megapixels
-                  </button>
-                  <button
-                    onClick={() => setScalingMode("none")}
-                    className={`rounded-2xl border-2 px-4 py-2 transition ${scalingMode === "none" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
-                  >
-                    None
                   </button>
                 </div>
               </div>

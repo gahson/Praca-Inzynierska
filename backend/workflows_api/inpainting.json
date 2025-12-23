@@ -1,9 +1,9 @@
 {
   "3": {
     "inputs": {
-      "seed": 940299076065474,
+      "seed": 912266940990421,
       "steps": 15,
-      "cfg": 25,
+      "cfg": 8,
       "sampler_name": "euler",
       "scheduler": "normal",
       "denoise": 1,
@@ -12,16 +12,16 @@
         0
       ],
       "positive": [
-        "6",
+        "76",
         0
       ],
       "negative": [
-        "7",
-        0
+        "76",
+        1
       ],
       "latent_image": [
-        "51",
-        0
+        "76",
+        2
       ]
     },
     "class_type": "KSampler",
@@ -75,7 +75,7 @@
     "inputs": {
       "filename_prefix": "ComfyUI",
       "images": [
-        "8",
+        "68",
         0
       ]
     },
@@ -86,7 +86,7 @@
   },
   "20": {
     "inputs": {
-      "image": "asakusa-sakura-03.jpg"
+      "image": "1f360af5-63e9-4770-a400-32fb1a045ba3.png"
     },
     "class_type": "LoadImage",
     "_meta": {
@@ -95,7 +95,7 @@
   },
   "29": {
     "inputs": {
-      "ckpt_name": "stable-diffusion-2-0-inpainting.safetensors"
+      "ckpt_name": "512-inpainting-ema.safetensors"
     },
     "class_type": "CheckpointLoaderSimple",
     "_meta": {
@@ -104,7 +104,7 @@
   },
   "37": {
     "inputs": {
-      "image": "c5d14ec3-55b8-4aab-b103-4a4d666197d3.png",
+      "image": "bacbe6c5-5f13-49fe-a7cb-8b920b8fdb5b.png",
       "channel": "red"
     },
     "class_type": "LoadImageMask",
@@ -112,110 +112,17 @@
       "title": "Load Image (as Mask)"
     }
   },
-  "40": {
-    "inputs": {
-      "mask": [
-        "37",
-        0
-      ]
-    },
-    "class_type": "MaskToImage",
-    "_meta": {
-      "title": "Convert Mask to Image"
-    }
-  },
-  "51": {
-    "inputs": {
-      "grow_mask_by": 6,
-      "pixels": [
-        "58",
-        0
-      ],
-      "vae": [
-        "29",
-        2
-      ],
-      "mask": [
-        "62",
-        0
-      ]
-    },
-    "class_type": "VAEEncodeForInpaint",
-    "_meta": {
-      "title": "VAE Encode (for Inpainting)"
-    }
-  },
-  "58": {
-    "inputs": {
-      "target_width": 512,
-      "target_height": 512,
-      "padding_color": "black",
-      "interpolation": "area",
-      "image": [
-        "20",
-        0
-      ]
-    },
-    "class_type": "ResizeAndPadImage",
-    "_meta": {
-      "title": "ResizeAndPadImage"
-    }
-  },
-  "60": {
-    "inputs": {
-      "target_width": 512,
-      "target_height": 512,
-      "padding_color": "black",
-      "interpolation": "area",
-      "image": [
-        "40",
-        0
-      ]
-    },
-    "class_type": "ResizeAndPadImage",
-    "_meta": {
-      "title": "ResizeAndPadImage"
-    }
-  },
   "62": {
     "inputs": {
       "channel": "red",
       "image": [
-        "60",
+        "65",
         0
       ]
     },
     "class_type": "ImageToMask",
     "_meta": {
       "title": "Convert Image to Mask"
-    }
-  },
-  "63": {
-    "inputs": {
-      "upscale_method": "nearest-exact",
-      "megapixels": 1,
-      "image": [
-        "20",
-        0
-      ]
-    },
-    "class_type": "ImageScaleToTotalPixels",
-    "_meta": {
-      "title": "Scale Image to Total Pixels"
-    }
-  },
-  "64": {
-    "inputs": {
-      "upscale_method": "nearest-exact",
-      "megapixels": 1,
-      "image": [
-        "65",
-        0
-      ]
-    },
-    "class_type": "ImageScaleToTotalPixels",
-    "_meta": {
-      "title": "Scale Image to Total Pixels"
     }
   },
   "65": {
@@ -228,6 +135,90 @@
     "class_type": "MaskToImage",
     "_meta": {
       "title": "Convert Mask to Image"
+    }
+  },
+  "66": {
+    "inputs": {
+      "downscale_algorithm": "bilinear",
+      "upscale_algorithm": "bicubic",
+      "preresize": false,
+      "preresize_mode": "ensure minimum resolution",
+      "preresize_min_width": 1024,
+      "preresize_min_height": 1024,
+      "preresize_max_width": 16384,
+      "preresize_max_height": 16384,
+      "mask_fill_holes": true,
+      "mask_expand_pixels": 0,
+      "mask_invert": false,
+      "mask_blend_pixels": 32,
+      "mask_hipass_filter": 0.1,
+      "extend_for_outpainting": false,
+      "extend_up_factor": 1,
+      "extend_down_factor": 1,
+      "extend_left_factor": 1,
+      "extend_right_factor": 1,
+      "context_from_mask_extend_factor": 1.2,
+      "output_resize_to_target_size": true,
+      "output_target_width": 512,
+      "output_target_height": 512,
+      "output_padding": "32",
+      "image": [
+        "20",
+        0
+      ],
+      "mask": [
+        "62",
+        0
+      ]
+    },
+    "class_type": "InpaintCropImproved",
+    "_meta": {
+      "title": "✂️ Inpaint Crop (Improved)"
+    }
+  },
+  "68": {
+    "inputs": {
+      "stitcher": [
+        "66",
+        0
+      ],
+      "inpainted_image": [
+        "8",
+        0
+      ]
+    },
+    "class_type": "InpaintStitchImproved",
+    "_meta": {
+      "title": "✂️ Inpaint Stitch (Improved)"
+    }
+  },
+  "76": {
+    "inputs": {
+      "noise_mask": true,
+      "positive": [
+        "6",
+        0
+      ],
+      "negative": [
+        "7",
+        0
+      ],
+      "vae": [
+        "29",
+        2
+      ],
+      "pixels": [
+        "66",
+        1
+      ],
+      "mask": [
+        "66",
+        2
+      ]
+    },
+    "class_type": "InpaintModelConditioning",
+    "_meta": {
+      "title": "InpaintModelConditioning"
     }
   }
 }

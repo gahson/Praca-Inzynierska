@@ -11,10 +11,11 @@ WORKDIR /comfyui
 RUN git clone https://github.com/comfyanonymous/ComfyUI.git .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Installing ComfyUI Manager
+# Installing extensions
 
 WORKDIR /comfyui/custom_nodes
 RUN git clone https://github.com/ltdrdata/ComfyUI-Manager.git
+RUN git clone https://github.com/lquesada/ComfyUI-Inpaint-CropAndStitch.git
 
 # Clearing default directories to allow mounting docker volumes there
 RUN rm -rf input/

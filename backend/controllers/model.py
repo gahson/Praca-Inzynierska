@@ -331,31 +331,8 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
     prompt_json['20']['inputs']['image'] = image_name
     prompt_json['37']['inputs']['image'] = mask_name
     
-    # Image resizing
-    if inpainting.scaling_mode == 'resize_and_pad':
-        # Image
-        prompt_json['58']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
-        prompt_json['58']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
-        prompt_json['51']['inputs']['pixels'][0]='58'
-        
-        # Mask
-        prompt_json['60']['inputs']['target_width'] = model_version_to_input_size[inpainting.model_version][0]
-        prompt_json['60']['inputs']['target_height'] = model_version_to_input_size[inpainting.model_version][1]
-        prompt_json['62']['inputs']['image'][0]='60'
-    elif inpainting.scaling_mode == 'scale_to_megapixels':
-        # Image
-        prompt_json['63']['inputs']['megapixels'] = model_version_to_megapixels[inpainting.model_version]
-        prompt_json['51']['inputs']['pixels'][0]='63'
-        
-        # Mask
-        prompt_json['64']['inputs']['megapixels'] = model_version_to_megapixels[inpainting.model_version]
-        prompt_json['62']['inputs']['image'][0]='64'
-    else:
-        # Image
-        prompt_json['51']['inputs']['pixels'][0]='20'
-        
-        # Mask
-        prompt_json['51']['inputs']['mask'][0]='37'
+    prompt_json['66']['inputs']['output_target_width'] = model_version_to_input_size[inpainting.model_version][0]
+    prompt_json['66']['inputs']['output_target_height'] = model_version_to_input_size[inpainting.model_version][1]
     
     prompt_json['3']['inputs']['seed'] = inpainting.seed
     prompt_json['3']['inputs']['cfg'] = inpainting.guidance_scale
@@ -378,7 +355,6 @@ async def image_inpainting(inpainting: Inpainting, current_user: dict = Depends(
                 "seed": inpainting.seed,
                 "width": image_width,
                 "height": image_height,
-                "scaling_mode": inpainting.scaling_mode,
             }
         )
         print("Image record saved successfully")
