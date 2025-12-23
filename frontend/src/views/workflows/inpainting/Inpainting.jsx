@@ -22,7 +22,7 @@ const Inpainting = () => {
   const [guidance, setGuidance] = useState(8);
   const [randomizeSeed, setRandomizeSeed] = useState(true);
   const [seed, setSeed] = useState(Math.floor(Math.random() * 999999999999999));
-  const [model, setModel] = useState("xl-inpainting");
+  const [model, setModel] = useState("juggernaut-inpainting");
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
 
@@ -342,6 +342,12 @@ const Inpainting = () => {
                     className={`rounded-2xl border-2 px-4 py-2 transition ${model === "xl-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
                   >
                     xl-inpainting
+                  </button>
+                  <button
+                    onClick={() => setModel("juggernaut-inpainting")}
+                    className={`rounded-2xl border-2 px-4 py-2 transition ${model === "juggernaut-inpainting" ? "bg-black text-white" : "text-black bg-transparent hover:bg-gray-200"}`}
+                  >
+                    juggernaut-inpainting
                   </button>
                 </div>
               </div>

@@ -49,25 +49,6 @@ else
         "https://huggingface.co/webui/stable-diffusion-inpainting/resolve/main/sd-v1-5-inpainting.safetensors?download=true"
 fi
 
-# DreamShaper v8 (SD 1.5) - 2GB
-if [ -f "dreamshaper_8.safetensors.safetensors" ]; then
-    echo "dreamshaper_8.safetensors exists"
-else
-    curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" \
-        -o dreamshaper_8.safetensors \
-        "https://civitai.com/api/download/models/128713?type=Model&format=SafeTensor&size=pruned&fp=fp16"
-fi
-
-# # DreamShaper XL - 6.5GB
-# if [ -f "dreamshaperXL_lightningDPMSDE.safetensors" ]; then
-#     echo "dreamshaperXL_lightningDPMSDE.safetensors exists"
-# else
-#     curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" \
-#         -o dreamshaperXL_lightningDPMSDE.safetensors \
-#         "https://civitai.com/api/download/models/354657?type=Model&format=SafeTensor&size=full&fp=fp16"
-# fi
-
-
 # Stable Diffusion 2.0-inpainting - 5.2GB
 if [ -f "512-inpainting-ema.safetensors" ]; then
     echo "512-inpainting-ema.safetensors exists"
@@ -77,26 +58,14 @@ else
         "https://huggingface.co/sd2-community/stable-diffusion-2-inpainting/resolve/main/512-inpainting-ema.safetensors?download=true"
 fi
 
-
-# # Stable Diffusion 2.1-inpainting - 4.9GB
-# if [ -f "512-inpainting-ema.safetensors" ]; then
-#     echo "512-inpainting-ema.safetensors exists"
-# else
-#     curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
-#         -o 512-inpainting-ema.safetensors \
-#         "https://huggingface.co/Comfy-Org/stable_diffusion_2.1_repackaged/resolve/main/512-inpainting-ema.safetensors?download=true"
-# fi
-
-
-# NO LONGER AVILABLE
-# Stable Diffusion 2.1 - 6GB
-# if [ -f "stable-diffusion-2-1.ckpt" ]; then
-#     echo "stable-diffusion-2-1.ckpt exists"
-# else
-#     curl -L -H "Authorization: Bearer ${HF_TOKEN}" \
-#         -o stable-diffusion-2-1.ckpt \
-#         "https://huggingface.co/stabilityai/stable-diffusion-2-1-unclip/resolve/main/sd21-unclip-l.ckpt?download=true"
-# fi
+# Juggernaut XL Inpainting - 6.46GB
+if [ -f "juggernaut-inpainting.safetensors" ]; then
+    echo "juggernaut-inpainting.safetensors exists"
+else
+    curl -L -H "Authorization: Bearer ${CIVITAI_TOKEN}" \
+        -o juggernaut-inpainting.safetensors \
+        "https://civitai.com/api/download/models/965389?type=Model&format=SafeTensor&size=full&fp=fp16"
+fi
 
 # Stable Diffusion 2.1 - 6GB
 if [ -f "stable-diffusion-2-1.ckpt" ]; then

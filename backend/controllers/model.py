@@ -27,6 +27,7 @@ model_versions = {
     'xl' : 'stable-diffusion-xl.safetensors',
     'xl-inpainting' : 'sd_xl_base_1.0_inpainting_0.1.safetensors',
     'controlnet' : 'dreamCreationVirtual3DECommerce_v10.safetensors',
+    'juggernaut-inpainting' : 'juggernaut-inpainting.safetensors',
 }
 
 model_version_to_input_size = {
@@ -38,17 +39,15 @@ model_version_to_input_size = {
     'xl' : (1024,1024),
     'xl-inpainting' : (1024,1024),
     'controlnet' : (512,512),
+    'juggernaut-inpainting' : (1024,1024),
 }
 
 model_version_to_megapixels = {
     '1.5': 0.262,
-    '1.5-inpainting': 0.262,
-    '2.0-inpainting': 0.262,
     '2.1': 0.589,
     '3.0': 1.048,
     'xl': 1.048,
-    'xl-inpainting': 1.048,
-    'controlnet': 0.262
+    'controlnet': 0.262,
 }
 
 
