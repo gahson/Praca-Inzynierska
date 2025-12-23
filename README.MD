@@ -70,7 +70,7 @@ or
     - Production mode:`docker compose down && docker compose -f docker-compose-production.yml up -d`
 
 ### How to forward frontend via ssh:
-1. ssh -L 80:localhost:80 username1@host1 username2@host2
+1. ssh -L 80:localhost:80 -J <login_bastion>@bastion.ii.agh.edu.pl <login_pc>@<ip_pc>
 
 ### How to run tests
 
