@@ -1,3 +1,5 @@
+import axios from "axios";
+
 import { store } from "./store";
 import { Provider } from "react-redux";
 import { Toaster } from "react-hot-toast";
@@ -26,6 +28,16 @@ import AdminPanel from "./views/adminPanel/AdminPanel";
 import AdminRoute from "./components/AdminRoute"; 
 import UserDetails from "./views/adminPanel/UserDetails";
 import Error from "./views/error/Error";
+
+axios.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      window.location.href = "/views/account/login";
+    }
+    return Promise.reject(error);
+  }
+);
 
 const App = () => (
   <Provider store={store}>
