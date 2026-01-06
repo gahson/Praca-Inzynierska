@@ -3,8 +3,6 @@ export const saveToCanvas = async (imageBase64, metadata = {}, parentId = null) 
     const canvasId = localStorage.getItem("currentCanvasId");
     if (!canvasId) return;
 
-    const API_BASE = `http://${location.hostname}:5555`;    
-
     const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("authToken") || localStorage.getItem("jwt");
     const headers = { "Content-Type": "application/json" };
     if (token && token.length < 5000) headers["Authorization"] = `Bearer ${token}`;
@@ -19,7 +17,7 @@ export const saveToCanvas = async (imageBase64, metadata = {}, parentId = null) 
       payload.parent_id = parentId;
     }
 
-    await fetch(`${API_BASE}/canvases/${canvasId}/images`, {
+    await fetch(`/api/canvases/${canvasId}/images`, {
       method: "POST",
       headers,
       body: JSON.stringify(payload),
