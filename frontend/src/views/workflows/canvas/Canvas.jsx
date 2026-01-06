@@ -1,5 +1,4 @@
 import React, { useState, useCallback, useEffect } from "react";
-// Card removed: per-node buttons used instead
 import WorkflowNode from "./utilities/WorkflowNode";
 import WorkflowPanel from "./WorkflowPanel";
 
@@ -29,7 +28,6 @@ export default function Canvas() {
     return headers;
   };
 
-  // load workflows from backend on mount
   useEffect(() => {
     (async () => {
       try {
@@ -39,12 +37,10 @@ export default function Canvas() {
         setWorkflows(list);
         if (list && list.length > 0) {
           setCurrentWorkflowId(list[0].id);
-          // auto-select first workflow
           selectWorkflow(list[0].id);
         }
       } catch (e) {
         console.warn("Could not load canvases:", e);
-        // fallback to default
         setWorkflows([{ id: "default", name: "Default" }]);
         setCurrentWorkflowId("default");
       }
@@ -52,21 +48,6 @@ export default function Canvas() {
   }, []);
 
   const addNode = (node) => setWorkflowNodes((s) => [...s, node]);
-
-  const handleWorkflowSelect = (workflowId) => {
-    // create a placeholder node; image will be filled after generation/modify
-    const newNode = {
-      id: `node-${Date.now()}`,
-      type: "workflow",
-      label: workflowId,
-      image: null,
-      workflow: workflowId,
-      parentId: workflowNodes[workflowNodes.length - 1]?.id,
-      x: (workflowNodes[workflowNodes.length - 1]?.x || 20) + 240,
-      y: 20,
-    };
-    addNode(newNode);
-  };
 
   const createWorkflow = async (name) => {
     try {
@@ -80,7 +61,6 @@ export default function Canvas() {
       const wf = { id: data.id, name: data.name };
       setWorkflows((s) => [...s, wf]);
       setCurrentWorkflowId(wf.id);
-      // persist current canvas id for generation pages
       try { localStorage.setItem("currentCanvasId", wf.id); } catch (e) {}
       setWorkflowNodes([
         { id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 },
@@ -94,9 +74,7 @@ export default function Canvas() {
     setWorkflows((s) => s.map((w) => (w.id === id ? { ...w, name } : w)));
     try {
       await fetch(`${API_BASE}/canvases/${id}`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
-    } catch (e) {
-      // ignore
-    }
+    } catch (e) {}
   };
 
   const deleteWorkflow = async (id) => {
@@ -107,7 +85,6 @@ export default function Canvas() {
       if (currentWorkflowId === id) {
         const next = workflows.find((w) => w.id !== id) || { id: "default", name: "Default" };
         setCurrentWorkflowId(next.id);
-        // try to select next
         if (next.id) selectWorkflow(next.id);
         else setWorkflowNodes([{ id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 }]);
       }
@@ -132,7 +109,6 @@ export default function Canvas() {
   const saveWorkflow = async (id) => {
     if (!id) return;
     try {
-      // Post each node's image (except start) to the canvas
       const nodesToSave = workflowNodes.filter((n) => n.id !== "start" && n.image);
       for (const node of nodesToSave) {
         const payload = {
@@ -154,7 +130,6 @@ export default function Canvas() {
       const res = await fetch(`${API_BASE}/canvases/${id}`, { headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to fetch canvas");
       const data = await res.json();
-      // build nodes: start + images from canvas
       const nodes = [
         { id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 },
         ...((data.images || []).map((img, i) => ({
@@ -166,6 +141,8 @@ export default function Canvas() {
           parentId: i === 0 ? "start" : `node-${i - 1}`,
           x: 20 + i * 240,
           y: 20,
+          image_id: img.image_id,
+          parent_id: img.parent_id
         })))
       ];
       setWorkflowNodes(nodes);
@@ -179,45 +156,27 @@ export default function Canvas() {
     setWorkflowNodes((s) => s.map((n) => (n.id === nodeId ? { ...n, image: imageData } : n)));
   };
 
-  const handleUpload = (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const data = reader.result;
-      // set start node image
-      setWorkflowNodes((s) => s.map((n) => (n.id === "start" ? { ...n, image: data } : n)));
-    };
-    reader.readAsDataURL(file);
-  };
-
   const updateNodePosition = (nodeId, x, y) => {
     setWorkflowNodes((s) => s.map((n) => (n.id === nodeId ? { ...n, x, y } : n)));
   };
 
   const removeNode = async (nodeId) => {
-    // Find node to remove (get its image_id if exists)
     const nodeToRemove = workflowNodes.find((n) => n.id === nodeId);
     
-    // Update local state first
     setWorkflowNodes((s) => {
       const parentId = nodeToRemove?.parentId ?? null;
-      // remove node and reparent its children to the removed node's parent
       return s
         .filter((n) => n.id !== nodeId)
         .map((n) => (n.parentId === nodeId ? { ...n, parentId } : n));
     });
 
-    // If node has metadata with image_id, delete from backend
     if (nodeToRemove?.image) {
       try {
         const canvasId = currentWorkflowId;
-        // Get the image_id from canvas images array by matching the image content
         const res = await fetch(`${API_BASE}/canvases/${canvasId}`, { headers: getAuthHeaders() });
         if (!res.ok) return;
         const canvas = await res.json();
-        
-        // Find and delete the matching image
+ 
         const imageToDelete = canvas.images?.find((img) => 
           stripDataUrl(img.image_base64) === stripDataUrl(nodeToRemove.image)
         );
@@ -235,7 +194,6 @@ export default function Canvas() {
   };
 
   const simulateModify = useCallback((srcDataUrl, modifier = "tint") => {
-    // return a Promise that resolves with a new dataUrl after applying a simple effect
     return new Promise((resolve) => {
       const img = new Image();
       img.crossOrigin = "anonymous";
@@ -246,11 +204,9 @@ export default function Canvas() {
         const ctx = canvas.getContext("2d");
         ctx.drawImage(img, 0, 0);
 
-        // apply a simple tint/overlay to show modification
         ctx.fillStyle = "rgba(255,128,0,0.12)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-        // slightly shift pixels (simple effect)
         ctx.globalCompositeOperation = "difference";
         ctx.fillStyle = "rgba(30,144,255,0.05)";
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -263,45 +219,7 @@ export default function Canvas() {
     });
   }, []);
 
-  const simulateGenerate = useCallback((srcDataUrl, workflowId) => {
-    // Simulate generation without color tint: apply subtle filters per workflow
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext("2d");
-
-        // choose filter per workflow (no color overlay)
-        let filter = "none";
-        if (workflowId === "txt2img") filter = "contrast(110%) saturate(105%)";
-        else if (workflowId === "img2img") filter = "blur(0.6px) contrast(105%)";
-        else if (workflowId === "inpainting") filter = "brightness(102%) contrast(103%)";
-        else if (workflowId === "controlnet") filter = "contrast(108%) saturate(102%)";
-        else if (workflowId === "outpainting") filter = "brightness(103%) saturate(104%)";
-
-        ctx.filter = filter;
-        ctx.drawImage(img, 0, 0);
-        ctx.filter = "none";
-
-        // small vignette for depth (neutral color)
-        const g = ctx.createRadialGradient(canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) * 0.3, canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) * 0.9);
-        g.addColorStop(0, 'rgba(0,0,0,0)');
-        g.addColorStop(1, 'rgba(0,0,0,0.04)');
-        ctx.fillStyle = g;
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        resolve(canvas.toDataURL("image/png"));
-      };
-      img.onerror = () => resolve(srcDataUrl);
-      img.src = srcDataUrl;
-    });
-  }, []);
-
   const handleModify = async (nodeId) => {
-    // find node and its image; if node has no image, use last node with image
     const node = workflowNodes.find((n) => n.id === nodeId);
     let sourceImage = node?.image;
     if (!sourceImage) {
@@ -324,14 +242,13 @@ export default function Canvas() {
   };
 
   const currentImage = workflowNodes[workflowNodes.length - 1]?.image || null;
-
+  console.log(workflows)
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="w-full mx-auto h-[calc(100vh-4rem)]">
         <h1 className="font-bold text-3xl mb-8 text-gray-800">Canvas Workflow</h1>
 
         <div className="flex flex-col lg:flex-row gap-8 h-full">
-          {/* Left side - Workflow Panel */} 
           <WorkflowPanel
             workflows={workflows}
             currentWorkflowId={currentWorkflowId}
@@ -342,11 +259,59 @@ export default function Canvas() {
             onSave={(id) => saveWorkflow(id)}
           />
 
-          {/* Center - Workflow Visualization (horizontal) */}
           <div className="flex-1 bg-white rounded-lg shadow p-6 flex flex-col h-full">
             <h2 className="font-semibold text-lg text-gray-700 mb-6">Workflow Graph ({workflows.find(w=>w.id===currentWorkflowId)?.name || currentWorkflowId})</h2>
             <div className="relative flex-1 border rounded p-2 overflow-auto">
-              <div className="relative" style={{ minWidth: Math.max(800, workflowNodes.length * 260) }}>
+              <svg
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  pointerEvents: "none",
+                  zIndex: 0,
+                  minWidth: Math.max(800, workflowNodes.length * 260)
+                }}
+              >
+                <defs>
+                  <marker
+                    id="arrowhead"
+                    markerWidth="10"
+                    markerHeight="10"
+                    refX="9"
+                    refY="3"
+                    orient="auto"
+                  >
+                    <polygon points="0 0, 10 3, 0 6" fill="black" />
+                  </marker>
+                </defs>
+                {workflowNodes.map((node) => {
+                  const parentNode = workflowNodes.find((n) => n.image_id === node.parent_id);
+                  if (!parentNode) return null;
+
+                  const x1 = (parentNode.x ?? 20) + 224;
+                  const y1 = (parentNode.y ?? 20) + 80;
+                  const x2 = node.x ?? 20;
+                  const y2 = (node.y ?? 20) + 80;
+
+                  const midX = (x1 + x2) / 2;
+                  const pathData = `M ${x1} ${y1} C ${midX} ${y1}, ${midX} ${y2}, ${x2} ${y2}`;
+
+                  return (
+                    <path
+                      key={`line-${node.id}`}
+                      d={pathData}
+                      stroke="black"
+                      strokeWidth="2"
+                      fill="none"
+                      markerEnd="url(#arrowhead)"
+                    />
+                  );
+                })}
+              </svg>
+
+              <div className="relative" style={{ minWidth: Math.max(800, workflowNodes.length * 260), zIndex: 1 }}>
                 {workflowNodes.map((node, index) => (
                   <div
                     key={node.id}
@@ -354,7 +319,6 @@ export default function Canvas() {
                   >
                     <WorkflowNode
                       node={node}
-                      currentCanvasId={currentWorkflowId}
                       onImageGenerated={(id, img) => handleImageGenerated(id, img)}
                       onModify={() => handleModify(node.id)}
                       onDelete={() => removeNode(node.id)}
@@ -365,8 +329,7 @@ export default function Canvas() {
               </div>
             </div>
           </div>
-
-          {/* Right side - Current Image preview + step count */}
+                
           <div className="w-96 flex-shrink-0 flex flex-col gap-6">
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="font-semibold text-lg text-gray-700 mb-4">Current Image</h2>

@@ -1,4 +1,3 @@
-import React from "react";
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -51,7 +50,6 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
   };
 
   const handleWorkflowClick = (workflowId) => {
-    // Store current image and canvas id, then redirect to generation page
     if (!node.image) return;
     
     const imageBase64 = typeof node.image === "string" && node.image.startsWith("data:") 
@@ -65,8 +63,8 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       if (curCanvas) selectedImage.canvas_id = curCanvas;
       localStorage.setItem("selectedImage", JSON.stringify(selectedImage));
       if (curCanvas) localStorage.setItem("currentCanvasId", curCanvas);
+      if (node.image_id) localStorage.setItem("parentImageId", node.image_id);
     } catch (e) {
-      // ignore storage errors
     }
 
     const route = mapWorkflowToRoute(workflowId);
@@ -74,7 +72,6 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
   };
 
   const fileInputRef = useRef(null);
-  // Dragging state is local; report new absolute coords via onDrag(x,y)
   const handlePointerDown = (e) => {
     e.preventDefault();
     const startX = e.clientX ?? e.touches?.[0]?.clientX;
@@ -128,8 +125,6 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
     >
-
-        {/* Upload button (top-left) */}
     <button
         onClick={handleUploadClick}
         className="absolute top-2 left-2 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded"
@@ -138,7 +133,6 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
     Add
     </button>
   <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
-      {/* Delete button (top-right) */}
       <button
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
         className="absolute top-2 right-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded"
@@ -147,9 +141,20 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
         Del
       </button>
 
-      {/* Node Content */}
       <div className="space-y-2 mt-2">
-        {/* Image Preview (larger) */}
+        <div className="text-xs bg-gray-50 p-2 rounded border border-gray-200">
+          {node.image_id && (
+            <p className="text-gray-600 truncate">
+              <span className="font-semibold">ID:</span> {node.image_id}
+            </p>
+          )}
+          {node.parent_id && (
+            <p className="text-gray-600 truncate mt-1">
+              <span className="font-semibold">Parent:</span> {node.parent_id}
+            </p>
+          )}
+        </div>
+
         <div className="w-full h-32 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border border-gray-300">
           {node.image ? (
             <img
@@ -167,7 +172,6 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
           )}
         </div>
 
-        {/* Workflow Buttons */}
         <div className="grid grid-cols-1 gap-2">
           {WORKFLOW_BUTTONS.map((w) => (
             <button

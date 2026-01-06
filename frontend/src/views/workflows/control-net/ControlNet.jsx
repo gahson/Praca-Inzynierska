@@ -104,7 +104,8 @@ const ControlNet = () => {
 
       updateImage(response.data.image);
       // save to currently selected canvas (if any)
-      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "controlnet", guidance_scale: guidance, seed });
+      const parentImageId = localStorage.getItem("parentImageId");
+      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "controlnet", guidance_scale: guidance, seed }, parentImageId);
       
       // If came from Canvas, redirect back after a short delay
       const fromCanvas = localStorage.getItem("currentCanvasId");

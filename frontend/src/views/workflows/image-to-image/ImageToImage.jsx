@@ -97,10 +97,10 @@ const ImageToImage = () => {
       );
 
       updateImage(response.data.image);
-      // save to canvas if selected
-      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "image-to-image", guidance_scale: guidance, seed });
       
-      // If came from Canvas, redirect back after a short delay
+      const parentImageId = localStorage.getItem("parentImageId");
+      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "image-to-image", guidance_scale: guidance, seed }, parentImageId);
+      
       const fromCanvas = localStorage.getItem("currentCanvasId");
       if (fromCanvas) {
         setTimeout(() => navigate("/views/workflows/canvas"), 800);

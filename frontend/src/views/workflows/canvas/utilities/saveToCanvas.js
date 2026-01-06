@@ -1,7 +1,6 @@
-export const saveToCanvas = async (imageBase64, metadata = {}) => {
+export const saveToCanvas = async (imageBase64, metadata = {}, parentId = null) => {
   try {
     const canvasId = localStorage.getItem("currentCanvasId");
-    // Only save if canvas was explicitly selected (from Canvas redirect)
     if (!canvasId) return;
 
     const API_BASE = `http://${location.hostname}:5555`;    
@@ -16,6 +15,9 @@ export const saveToCanvas = async (imageBase64, metadata = {}) => {
         : imageBase64,
       metadata: typeof metadata === "object" ? Object.keys(metadata).length > 0 ? metadata : {} : {},
     };
+    if (parentId) {
+      payload.parent_id = parentId;
+    }
 
     await fetch(`${API_BASE}/canvases/${canvasId}/images`, {
       method: "POST",
@@ -23,11 +25,9 @@ export const saveToCanvas = async (imageBase64, metadata = {}) => {
       body: JSON.stringify(payload),
     });
 
-    // Clear canvas context after successful save (so next generation won't auto-save)
     try {
       localStorage.removeItem("currentCanvasId");
     } catch (e) {
-      // ignore
     }
   } catch (err) {
     console.warn("Failed to save to canvas:", err);

@@ -13,6 +13,7 @@ class CreateCanvasRequest(BaseModel):
 class AddImageRequest(BaseModel):
     image_base64: str
     metadata: dict = {}
+    parent_id: str = None  # optional: source canvas id
 
 @canvases_router.post("/")
 async def create_canvas(req: CreateCanvasRequest, current_user: dict = Depends(get_current_user)):
@@ -50,6 +51,7 @@ async def get_canvas(canvas_id: str, current_user: dict = Depends(get_current_us
         image_id = img.get("image_id")
         images.append({
             "image_id": str(image_id) if image_id else None,
+            "parent_id": img.get("parent_id"),
             "image_base64": img.get("image_base64"),
             "metadata": img.get("metadata"),
             "created_at": img.get("created_at")
@@ -88,30 +90,26 @@ async def delete_canvas(canvas_id: str, current_user: dict = Depends(get_current
 
 @canvases_router.post("/{canvas_id}/images")
 async def add_image_to_canvas(canvas_id: str, req: AddImageRequest, current_user: dict = Depends(get_current_user)):
-    # Insert into generated_images and into canvas snapshot
     user_id = str(current_user["_id"])
-    # Insert into gallery
-    images_coll = db["generated_images"]
-    image_doc = {
-        "user_id": ObjectId(user_id),
+    image_id = ObjectId()
+    
+    # push image into canvas only
+    image_data = {
+        "image_id": image_id,
         "image_base64": req.image_base64,
-        "created_at": datetime.utcnow(),
-        **(req.metadata or {})
+        "metadata": req.metadata or {},
+        "created_at": datetime.utcnow()
     }
-    res = await images_coll.insert_one(image_doc)
-    # push snapshot into canvas
+    if req.parent_id:
+        image_data["parent_id"] = req.parent_id
+    
     update_res = await db["canvases"].update_one(
         {"_id": ObjectId(canvas_id), "user_id": ObjectId(user_id)},
-        {"$push": {"images": {
-            "image_id": res.inserted_id,
-            "image_base64": req.image_base64,
-            "metadata": req.metadata or {},
-            "created_at": datetime.utcnow()
-        } } }
+        {"$push": {"images": image_data} }
     )
     if update_res.modified_count == 0:
         raise HTTPException(status_code=404, detail="Canvas not found or not owned by user")
-    return {"image_id": str(res.inserted_id)}
+    return {"image_id": str(image_id)}
 
 @canvases_router.delete("/{canvas_id}/images/{image_id}")
 async def remove_image_from_canvas(canvas_id: str, image_id: str, current_user: dict = Depends(get_current_user)):

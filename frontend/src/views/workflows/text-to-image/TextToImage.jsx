@@ -101,13 +101,21 @@ const TextToImage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       updateImage(response.data.image);
-      // save to canvas if selected
-      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "text-to-image", guidance_scale: guidance, seed });
+      try {
+        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
+        if (context && context.canvasId) {
+          const parentImageId = localStorage.getItem("parentImageId");
+          saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "text-to-image", guidance_scale: guidance, seed }, parentImageId);
+        }
+      } catch (e) {
+      }
       
-      // If came from Canvas, redirect back after a short delay
-      const fromCanvas = localStorage.getItem("currentCanvasId");
-      if (fromCanvas) {
-        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      try {
+        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
+        if (context && context.canvasId) {
+          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+        }
+      } catch (e) {
       }
     } catch (error) {
       console.error("Error:", error);
