@@ -3,12 +3,14 @@ import axios from "axios";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
 import RedirectButtons from "../../../components/WorkflowRedirect";
+import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const ImageToImage = () => {
   const [image, updateImage] = useState();
@@ -26,6 +28,7 @@ const ImageToImage = () => {
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -47,8 +50,6 @@ const ImageToImage = () => {
       }
     }
   }, []);
-
-
 
   const generate = async () => {
     const token = localStorage.getItem("token");
@@ -99,11 +100,19 @@ const ImageToImage = () => {
         {
           headers: {
             Authorization: `Bearer ${token}`,
-          },
+          }
         }
       );
 
       updateImage(response.data.image);
+      
+      const parentImageId = localStorage.getItem("parentImageId");
+      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "image-to-image", guidance_scale: guidance, seed }, parentImageId);
+      
+      const fromCanvas = localStorage.getItem("currentCanvasId");
+      if (fromCanvas) {
+        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      }
     } catch (error) {
       console.error("Error:", error);
       toaster.create({

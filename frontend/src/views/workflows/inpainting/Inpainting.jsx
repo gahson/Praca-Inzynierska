@@ -3,6 +3,7 @@ import axios from "axios";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
 import CanvasPreview from "./Canvas";
 import Prompts from "../../../components/Prompts";
@@ -11,6 +12,7 @@ import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
 import InpaintingCanvas from "../../../components/InpaintingCanvas";
 import RedirectButtons from "../../../components/WorkflowRedirect";
+import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const Inpainting = () => {
   const [image, updateImage] = useState();
@@ -29,6 +31,7 @@ const Inpainting = () => {
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
   const fileInputRef = useRef(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -148,6 +151,22 @@ const Inpainting = () => {
         }
       );
       updateImage(response.data.image);
+      try {
+        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
+        if (context && context.canvasId) {
+          const parentImageId = localStorage.getItem("parentImageId");
+          saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "inpainting", guidance_scale: guidance, seed }, parentImageId);
+        }
+      } catch (e) {
+      }
+      
+      try {
+        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
+        if (context && context.canvasId) {
+          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+        }
+      } catch (e) {
+      }
     } catch (error) {
       console.error("Error:", error.response?.data?.detail || error.message);
       toaster.create({
