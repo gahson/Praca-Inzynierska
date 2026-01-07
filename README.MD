@@ -1,23 +1,40 @@
 ### AInterior
-A team project developed for our engineering thesis. The application focuses on helping
-interior architects to use artificial intelligence models in their work.
+A team project developed for our engineering thesis. The application focuses on helping interior architects to use artificial intelligence models in their work.
+
+![Opis obrazka](images/txt2img.png)
 
 ### Features
-- Many AI model to chose
-- Highly custiomizable
-- Text to image, image to image, inpainting workflows
-- Gallery with all pictures created by user
-- Prompt gallery with all prompts written by user
+- Many Stable Diffusion model versions to choose from
+- Available workflows:
+    * Text-to-image
+    * Image-to-image
+    * ControlNet
+    * Inpainting
+    * Outpainting
+    * Canvas
+- User accounts system with gallery, to store all created pictures, and administrator panel
+- Many features to support architects:
+    * Visual Prompting - visual representation of text prompts
+    * Advanced parameter selection sheet
+    * Easy switching between workflows
+    * Prompt writing tutorial
 
 ### Techstack
-- Backend: Python + FastAPI
-- Frontend: React + Tailwindcss
-- Database: MongoDB
-- Containerization: Docker
+- Backend: [Python](https://www.python.org/) + [FastAPI](https://github.com/fastapi/fastapi)
+- Frontend: [React](https://github.com/facebook/react) + [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss)
+- Database: [MongoDB](https://github.com/mongodb/mongo?tab=readme-ov-file)
+- Image generation: [Stable Diffusion](https://github.com/CompVis/stable-diffusion), [Hugging Face API](https://huggingface.co/settings/tokens), [Civit AI API](https://civitai.com/user/account), [Comfy UI](https://github.com/Comfy-Org/ComfyUI/tree/master)
+- Containerization: [Docker](https://www.docker.com/)
 
-## How to run
+## How to deploy
 
-It is recommended to run this application on either native or wsl Ubuntu
+It is recommended to run this application on either native or wsl Ubuntu LTS 24.04.
+
+### Hardware requirements
+
+- **RAM:** 32 GB or more  
+- **GPU:** NVIDIA RTX 2080 8GB / NVIDIA RTX 4060 8GB or better
+- **Storage:** 1TB free disk space or more
 
 ### Preparation
 1. Install docker with this instructions https://docs.docker.com/engine/install/ubuntu/ (In case of buildix issue: https://forums.docker.com/t/tips-for-how-to-fix-my-borked-cli-plugins/144327/3)
@@ -69,7 +86,7 @@ It is recommended to run this application on either native or wsl Ubuntu
 or
     - Production mode:`docker compose down && docker compose -f docker-compose-production.yml up -d`
 
-### How to forward frontend via ssh:
+### How to forward frontend via ssh (For AGH University of Krakow users):
 1. ssh -L 80:localhost:80 -J <login_bastion>@bastion.ii.agh.edu.pl <login_pc>@<ip_pc>
 
 ### How to run tests
@@ -77,6 +94,3 @@ or
 1. ``` cd frontend ```
 2. ```  sudo apt install npm ```
 3. ``` npm run test:ui ``` or ``` npm run test ```
-
-## TODO
-- https://docs.google.com/spreadsheets/d/14Qgea61NWSY51Ych7NmncooW5y2MEWiRMU0njNSEz4M/edit?gid=0#gid=0
