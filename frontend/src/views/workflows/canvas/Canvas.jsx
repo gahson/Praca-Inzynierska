@@ -19,7 +19,7 @@ export default function Canvas() {
   const [workflows, setWorkflows] = useState([]);
   const [currentWorkflowId, setCurrentWorkflowId] = useState(null);
 
-  const API_BASE = `http://${location.hostname}:5555`;
+  const API_BASE = `/api`;
 
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("authToken") || localStorage.getItem("jwt");
@@ -31,7 +31,7 @@ export default function Canvas() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/canvases`, { headers: getAuthHeaders() });
+        const res = await fetch(`${API_BASE}/canvases/`, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error("Failed to load canvases");
         const list = await res.json();
         setWorkflows(list);
@@ -51,7 +51,7 @@ export default function Canvas() {
 
   const createWorkflow = async (name) => {
     try {
-      const res = await fetch(`${API_BASE}/canvases`, {
+      const res = await fetch(`${API_BASE}/canvases/`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ name }),
@@ -73,7 +73,7 @@ export default function Canvas() {
   const renameWorkflow = async (id, name) => {
     setWorkflows((s) => s.map((w) => (w.id === id ? { ...w, name } : w)));
     try {
-      await fetch(`${API_BASE}/canvases/${id}`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
+      await fetch(`${API_BASE}/canvases/${id}/`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
     } catch (e) {}
   };
 

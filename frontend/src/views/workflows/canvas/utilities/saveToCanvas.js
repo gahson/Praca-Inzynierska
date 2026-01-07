@@ -3,7 +3,7 @@ export const saveToCanvas = async (imageBase64, metadata = {}, parentId = null) 
     const canvasId = localStorage.getItem("currentCanvasId");
     if (!canvasId) return;
 
-    const API_BASE = `http://${location.hostname}:5555`;    
+    const API_BASE = `/api`;    
 
     const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("authToken") || localStorage.getItem("jwt");
     const headers = { "Content-Type": "application/json" };
