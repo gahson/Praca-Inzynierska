@@ -151,21 +151,30 @@ const Inpainting = () => {
         }
       );
       updateImage(response.data.image);
-      try {
-        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
-        if (context && context.canvasId) {
-          const parentImageId = localStorage.getItem("parentImageId");
-          saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "inpainting", guidance_scale: guidance, seed }, parentImageId);
-        }
-      } catch (e) {
-      }
+      const canvasId = localStorage.getItem("currentCanvasId");
       
-      try {
-        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
-        if (context && context.canvasId) {
+      if (canvasId) {
+        try {
+          const parentImageId = localStorage.getItem("parentImageId");
+          
+          // 2. Zapisz do grafu jako 'inpainting'
+          saveToCanvas(
+            response.data.image, 
+            { 
+              prompt, 
+              negative_prompt: negativePrompt, 
+              workflow: "inpainting", 
+              guidance_scale: guidance, 
+              seed: seed_to_use 
+            }, 
+            parentImageId
+          );
+
+          // 3. Powrót na Canvas
           setTimeout(() => navigate("/views/workflows/canvas"), 800);
+        } catch (e) {
+          console.error("Inpainting canvas redirect error:", e);
         }
-      } catch (e) {
       }
     } catch (error) {
       console.error("Error:", error.response?.data?.detail || error.message);

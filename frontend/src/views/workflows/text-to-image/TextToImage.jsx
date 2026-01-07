@@ -109,22 +109,27 @@ const TextToImage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       updateImage(response.data.image);
-      try {
-        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
-        if (context && context.canvasId) {
-          const parentImageId = localStorage.getItem("parentImageId");
-          saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "text-to-image", guidance_scale: guidance, seed }, parentImageId);
-        }
-      } catch (e) {
-      }
+    
+    // Ujednolicona logika powrotu do Canvas
+    try {
+      const canvasId = localStorage.getItem("currentCanvasId"); // Używamy klucza z Canvas.jsx
       
-      try {
-        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
-        if (context && context.canvasId) {
-          setTimeout(() => navigate("/views/workflows/canvas"), 800);
-        }
-      } catch (e) {
+      if (canvasId) {
+        const parentImageId = localStorage.getItem("parentImageId");
+        
+        // Zapis do bazy danych powiązany z płótnem
+        saveToCanvas(
+          response.data.image, 
+          { prompt, negative_prompt: negativePrompt, workflow: "text-to-image", guidance_scale: guidance, seed: seed_to_use }, 
+          parentImageId
+        );
+
+        // Powrót do widoku Canvas po krótkim opóźnieniu
+        setTimeout(() => navigate("/views/workflows/canvas"), 800);
       }
+    } catch (e) {
+      console.error("Canvas context error:", e);
+    }
     } catch (error) {
      
       /*

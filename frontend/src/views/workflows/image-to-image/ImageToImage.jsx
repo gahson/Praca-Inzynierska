@@ -105,13 +105,32 @@ const ImageToImage = () => {
       );
 
       updateImage(response.data.image);
+
+      // 1. Sprawdzamy czy mamy aktywny kontekst Canvasa
+      const canvasId = localStorage.getItem("currentCanvasId");
       
-      const parentImageId = localStorage.getItem("parentImageId");
-      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "image-to-image", guidance_scale: guidance, seed }, parentImageId);
-      
-      const fromCanvas = localStorage.getItem("currentCanvasId");
-      if (fromCanvas) {
-        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      if (canvasId) {
+        try {
+          const parentImageId = localStorage.getItem("parentImageId");
+          
+          // 2. Zapisujemy do grafu tylko, jeśli faktycznie przyszliśmy z płótna
+          saveToCanvas(
+            response.data.image, 
+            { 
+              prompt, 
+              negative_prompt: negativePrompt, 
+              workflow: "image-to-image", 
+              guidance_scale: guidance, 
+              seed: seed_to_use // upewnij się, że ta zmienna jest zdefiniowana wyżej jak w Txt2Img
+            }, 
+            parentImageId
+          );
+
+          // 3. Automatyczny powrót na płótno
+          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+        } catch (e) {
+          console.error("Canvas redirection error:", e);
+        }
       }
     } catch (error) {
       console.error("Error:", error);

@@ -110,14 +110,30 @@ const ControlNet = () => {
       );
 
       updateImage(response.data.image);
-      // save to currently selected canvas (if any)
-      const parentImageId = localStorage.getItem("parentImageId");
-      saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "controlnet", guidance_scale: guidance, seed }, parentImageId);
-      
-      // If came from Canvas, redirect back after a short delay
-      const fromCanvas = localStorage.getItem("currentCanvasId");
-      if (fromCanvas) {
-        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      const canvasId = localStorage.getItem("currentCanvasId");
+
+      if (canvasId) {
+        try {
+          const parentImageId = localStorage.getItem("parentImageId");
+          
+          
+          saveToCanvas(
+            response.data.image, 
+            { 
+              prompt, 
+              negative_prompt: negativePrompt, 
+              workflow: "controlnet", 
+              guidance_scale: guidance, 
+              seed: seed_to_use, 
+            }, 
+            parentImageId
+          );
+
+          
+          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+        } catch (e) {
+          console.error("ControlNet Canvas integration error:", e);
+        }
       }
     } catch (error) {
       console.error("Error:", error);

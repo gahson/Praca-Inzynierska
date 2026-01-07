@@ -116,21 +116,30 @@ const Outpainting = () => {
       );
 
       updateImage(response.data.image);
-      try {
-        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
-        if (context && context.canvasId) {
-          const parentImageId = localStorage.getItem("parentImageId");
-          saveToCanvas(response.data.image, { prompt, negative_prompt: negativePrompt, workflow: "outpainting", guidance_scale: guidance, seed }, parentImageId);
-        }
-      } catch (e) {
-      }
+      const canvasId = localStorage.getItem("currentCanvasId");
       
-      try {
-        const context = JSON.parse(localStorage.getItem("canvasGenerationContext") || "null");
-        if (context && context.canvasId) {
+      if (canvasId) {
+        try {
+          const parentImageId = localStorage.getItem("parentImageId");
+          
+          
+          saveToCanvas(
+            response.data.image, 
+            { 
+              prompt, 
+              negative_prompt: negativePrompt, 
+              workflow: "outpainting", 
+              guidance_scale: guidance, 
+              seed: seed_to_use 
+            }, 
+            parentImageId
+          );
+
+          
           setTimeout(() => navigate("/views/workflows/canvas"), 800);
+        } catch (e) {
+          console.error("Outpainting context error:", e);
         }
-      } catch (e) {
       }
     } catch (error) {
       console.error("Error:", error);
