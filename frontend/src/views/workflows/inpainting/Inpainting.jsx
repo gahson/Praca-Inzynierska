@@ -11,7 +11,7 @@ import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
 import InpaintingCanvas from "../../../components/InpaintingCanvas";
-import RedirectButtons from "../../../components/WorkflowRedirect";
+import RedirectButtons from "../../../components/QuickRedirectButtons";
 import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const Inpainting = () => {

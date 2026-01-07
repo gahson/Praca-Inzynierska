@@ -7,7 +7,7 @@ import Prompts from "../../../components/Prompts";
 import { toaster } from "../../../components/ui/toaster";
 import TextTooltip from "../../../components/TextTooltip";
 import SliderControl from "../../../components/SliderControl";
-import RedirectButtons from "../../../components/WorkflowRedirect";
+import RedirectButtons from "../../../components/QuickRedirectButtons";
 import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const TextToImage = () => {
