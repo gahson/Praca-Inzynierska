@@ -19,6 +19,8 @@ export default function Canvas() {
   const [workflows, setWorkflows] = useState([]);
   const [currentWorkflowId, setCurrentWorkflowId] = useState(null);
 
+  const API_BASE = `http://${location.hostname}:5555`;
+
   const getAuthHeaders = () => {
     const token = localStorage.getItem("token") || localStorage.getItem("access_token") || localStorage.getItem("authToken") || localStorage.getItem("jwt");
     const headers = { "Content-Type": "application/json" };
@@ -29,7 +31,7 @@ export default function Canvas() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch(`/api/canvases`, { headers: getAuthHeaders() });
+        const res = await fetch(`${API_BASE}/canvases`, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error("Failed to load canvases");
         const list = await res.json();
         setWorkflows(list);
@@ -49,7 +51,7 @@ export default function Canvas() {
 
   const createWorkflow = async (name) => {
     try {
-      const res = await fetch(`/api/canvases`, {
+      const res = await fetch(`${API_BASE}/canvases`, {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify({ name }),
@@ -71,13 +73,13 @@ export default function Canvas() {
   const renameWorkflow = async (id, name) => {
     setWorkflows((s) => s.map((w) => (w.id === id ? { ...w, name } : w)));
     try {
-      await fetch(`/api/canvases/${id}`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
+      await fetch(`${API_BASE}/canvases/${id}`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
     } catch (e) {}
   };
 
   const deleteWorkflow = async (id) => {
     try {
-      const res = await fetch(`/api/canvases/${id}`, { method: "DELETE", headers: getAuthHeaders() });
+      const res = await fetch(`${API_BASE}/canvases/${id}`, { method: "DELETE", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to delete canvas");
       setWorkflows((s) => s.filter((w) => w.id !== id));
       if (currentWorkflowId === id) {
@@ -113,7 +115,7 @@ export default function Canvas() {
           image_base64: stripDataUrl(node.image),
           metadata: { label: node.label, workflow: node.workflow, nodeId: node.id }
         };
-        await fetch(`/api/canvases/${id}/images`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(payload) });
+        await fetch(`${API_BASE}/canvases/${id}/images`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(payload) });
       }
       console.log("Saved workflow to server", id);
     } catch (e) {
@@ -125,7 +127,7 @@ export default function Canvas() {
     setCurrentWorkflowId(id);
     try { localStorage.setItem("currentCanvasId", id); } catch (e) {}
     try {
-      const res = await fetch(`/api/canvases/${id}`, { headers: getAuthHeaders() });
+      const res = await fetch(`${API_BASE}/canvases/${id}`, { headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to fetch canvas");
       const data = await res.json();
       const nodes = [
@@ -171,7 +173,7 @@ export default function Canvas() {
     if (nodeToRemove?.image) {
       try {
         const canvasId = currentWorkflowId;
-        const res = await fetch(`/api/canvases/${canvasId}`, { headers: getAuthHeaders() });
+        const res = await fetch(`${API_BASE}/canvases/${canvasId}`, { headers: getAuthHeaders() });
         if (!res.ok) return;
         const canvas = await res.json();
  
@@ -180,7 +182,7 @@ export default function Canvas() {
         );
         
         if (imageToDelete?.image_id) {
-          await fetch(`/api/canvases/${canvasId}/images/${imageToDelete.image_id}`, {
+          await fetch(`${API_BASE}/canvases/${canvasId}/images/${imageToDelete.image_id}`, {
             method: "DELETE",
             headers: getAuthHeaders()
           });

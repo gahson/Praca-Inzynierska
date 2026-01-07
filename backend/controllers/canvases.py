@@ -13,7 +13,7 @@ class CreateCanvasRequest(BaseModel):
 class AddImageRequest(BaseModel):
     image_base64: str
     metadata: dict = {}
-    parent_id: str = None  # optional: source canvas id
+    parent_id: str = None
 
 @canvases_router.post("/")
 async def create_canvas(req: CreateCanvasRequest, current_user: dict = Depends(get_current_user)):
@@ -26,11 +26,9 @@ async def create_canvas(req: CreateCanvasRequest, current_user: dict = Depends(g
     }
     res = await db["canvases"].insert_one(doc)
 
-    # add canvas id to user's canvases array for easy lookup
     try:
         await db.users.update_one({"_id": user_id}, {"$push": {"canvases": res.inserted_id}})
     except Exception:
-        # non-fatal if user update fails
         pass
 
     return {"id": str(res.inserted_id), "name": req.name}
@@ -38,15 +36,17 @@ async def create_canvas(req: CreateCanvasRequest, current_user: dict = Depends(g
 async def list_canvases(current_user: dict = Depends(get_current_user)):
     user_id = ObjectId(str(current_user["_id"]))
     items = await db["canvases"].find({"user_id": user_id}).to_list(None)
+    
     return [{"id": str(i["_id"]), "name": i.get("name"), "images_count": len(i.get("images", [])), "created_at": i.get("created_at")} for i in items]
 
 @canvases_router.get("/{canvas_id}")
 async def get_canvas(canvas_id: str, current_user: dict = Depends(get_current_user)):
     c = await db["canvases"].find_one({"_id": ObjectId(canvas_id)})
+
     if not c or c["user_id"] != current_user["_id"]:
         raise HTTPException(status_code=404, detail="Canvas not found")
-    # convert ObjectIds to strings inside images
     images = []
+
     for img in c.get("images", []):
         image_id = img.get("image_id")
         images.append({
@@ -66,6 +66,7 @@ async def get_canvas(canvas_id: str, current_user: dict = Depends(get_current_us
 @canvases_router.patch("/{canvas_id}")
 async def update_canvas(canvas_id: str, req: CreateCanvasRequest, current_user: dict = Depends(get_current_user)):
     c = await db["canvases"].find_one({"_id": ObjectId(canvas_id)})
+
     if not c or c["user_id"] != current_user["_id"]:
         raise HTTPException(status_code=404, detail="Canvas not found")
     await db["canvases"].update_one(
@@ -77,6 +78,7 @@ async def update_canvas(canvas_id: str, req: CreateCanvasRequest, current_user: 
 @canvases_router.delete("/{canvas_id}")
 async def delete_canvas(canvas_id: str, current_user: dict = Depends(get_current_user)):
     c = await db["canvases"].find_one({"_id": ObjectId(canvas_id)})
+
     if not c or c["user_id"] != current_user["_id"]:
         raise HTTPException(status_code=404, detail="Canvas not found")
     await db["canvases"].delete_one({"_id": ObjectId(canvas_id)})
@@ -93,7 +95,6 @@ async def add_image_to_canvas(canvas_id: str, req: AddImageRequest, current_user
     user_id = str(current_user["_id"])
     image_id = ObjectId()
     
-    # push image into canvas only
     image_data = {
         "image_id": image_id,
         "image_base64": req.image_base64,
@@ -113,7 +114,7 @@ async def add_image_to_canvas(canvas_id: str, req: AddImageRequest, current_user
 
 @canvases_router.delete("/{canvas_id}/images/{image_id}")
 async def remove_image_from_canvas(canvas_id: str, image_id: str, current_user: dict = Depends(get_current_user)):
-    # Remove image from canvas
+
     try:
         result = await db["canvases"].update_one(
             {"_id": ObjectId(canvas_id), "user_id": ObjectId(str(current_user["_id"]))},
