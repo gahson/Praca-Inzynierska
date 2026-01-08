@@ -110,13 +110,14 @@ const ControlNet = () => {
       );
 
       updateImage(response.data.image);
-      const canvasId = localStorage.getItem("currentCanvasId");
+      const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
 
-      if (canvasId) {
+      if (shouldRedirect === "true") {
         try {
           const parentImageId = localStorage.getItem("parentImageId");
-          
-          
+
+          localStorage.removeItem("shouldRedirectToCanvas");
+
           saveToCanvas(
             response.data.image, 
             { 
@@ -130,7 +131,7 @@ const ControlNet = () => {
           );
 
           
-          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+          setTimeout(() => navigate("/views/workflows/canvas"), 600);
         } catch (e) {
           console.error("ControlNet Canvas integration error:", e);
         }

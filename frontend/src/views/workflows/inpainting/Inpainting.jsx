@@ -151,13 +151,15 @@ const Inpainting = () => {
         }
       );
       updateImage(response.data.image);
-      const canvasId = localStorage.getItem("currentCanvasId");
       
-      if (canvasId) {
+      const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
+      
+      if (shouldRedirect === "true") {
         try {
           const parentImageId = localStorage.getItem("parentImageId");
+
+          localStorage.removeItem("shouldRedirectToCanvas");
           
-          // 2. Zapisz do grafu jako 'inpainting'
           saveToCanvas(
             response.data.image, 
             { 
@@ -170,8 +172,8 @@ const Inpainting = () => {
             parentImageId
           );
 
-          // 3. Powrót na Canvas
-          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+          
+          setTimeout(() => navigate("/views/workflows/canvas"), 600);
         } catch (e) {
           console.error("Inpainting canvas redirect error:", e);
         }

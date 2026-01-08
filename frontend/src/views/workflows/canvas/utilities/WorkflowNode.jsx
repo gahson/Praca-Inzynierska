@@ -60,11 +60,22 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
     
     try {
       const curCanvas = localStorage.getItem("currentCanvasId");
-      if (curCanvas) selectedImage.canvas_id = curCanvas;
+      if (curCanvas) {
+        selectedImage.canvas_id = curCanvas;
+        localStorage.setItem("currentCanvasId", curCanvas);
+        
+        // --- KLUCZOWA ZMIANA: Ustawiamy flagę powrotu ---
+        localStorage.setItem("shouldRedirectToCanvas", "true");
+        console.log("DEBUG: Flaga 'shouldRedirectToCanvas' ustawiona na true");
+      }
+      
       localStorage.setItem("selectedImage", JSON.stringify(selectedImage));
-      if (curCanvas) localStorage.setItem("currentCanvasId", curCanvas);
-      if (node.image_id) localStorage.setItem("parentImageId", node.image_id);
+      
+      if (node.image_id) {
+        localStorage.setItem("parentImageId", node.image_id);
+      }
     } catch (e) {
+      console.error("Błąd zapisu w WorkflowNode:", e);
     }
 
     const route = mapWorkflowToRoute(workflowId);

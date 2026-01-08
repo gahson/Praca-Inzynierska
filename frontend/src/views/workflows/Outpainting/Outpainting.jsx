@@ -116,27 +116,30 @@ const Outpainting = () => {
       );
 
       updateImage(response.data.image);
-      const canvasId = localStorage.getItem("currentCanvasId");
-      
-      if (canvasId) {
+
+      const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
+
+      if (shouldRedirect === "true") {
         try {
           const parentImageId = localStorage.getItem("parentImageId");
-          
-          
+
+          localStorage.removeItem("shouldRedirectToCanvas");
+
+
           saveToCanvas(
-            response.data.image, 
-            { 
-              prompt, 
-              negative_prompt: negativePrompt, 
-              workflow: "outpainting", 
-              guidance_scale: guidance, 
-              seed: seed_to_use 
-            }, 
+            response.data.image,
+            {
+              prompt,
+              negative_prompt: negativePrompt,
+              workflow: "outpainting",
+              guidance_scale: guidance,
+              seed: seed_to_use
+            },
             parentImageId
           );
 
-          
-          setTimeout(() => navigate("/views/workflows/canvas"), 800);
+
+          setTimeout(() => navigate("/views/workflows/canvas"), 600);
         } catch (e) {
           console.error("Outpainting context error:", e);
         }

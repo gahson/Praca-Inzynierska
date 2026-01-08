@@ -96,7 +96,7 @@ const TextToImage = () => {
     }
 
     var seed_to_use = seed;
-    if(randomizeSeed){
+    if (randomizeSeed) {
       seed_to_use = Math.floor(Math.random() * 999999999);
       setSeed(seed_to_use);
     }
@@ -109,36 +109,50 @@ const TextToImage = () => {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       updateImage(response.data.image);
-    
-    // Ujednolicona logika powrotu do Canvas
-    try {
-      const canvasId = localStorage.getItem("currentCanvasId"); // Używamy klucza z Canvas.jsx
-      
-      if (canvasId) {
-        const parentImageId = localStorage.getItem("parentImageId");
-        
-        // Zapis do bazy danych powiązany z płótnem
-        saveToCanvas(
-          response.data.image, 
-          { prompt, negative_prompt: negativePrompt, workflow: "text-to-image", guidance_scale: guidance, seed: seed_to_use }, 
-          parentImageId
-        );
 
-        // Powrót do widoku Canvas po krótkim opóźnieniu
-        setTimeout(() => navigate("/views/workflows/canvas"), 800);
+      const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
+
+      if (shouldRedirect === "true") {
+        try {
+          const parentImageId = localStorage.getItem("parentImageId");
+
+          // clear the flag
+          localStorage.removeItem("shouldRedirectToCanvas");
+
+
+          saveToCanvas(
+            response.data.image,
+            {
+              prompt,
+              negative_prompt: negativePrompt,
+              workflow: "text-to-image",
+              guidance_scale: guidance,
+              seed: seed_to_use
+            },
+            parentImageId
+          );
+
+
+          setTimeout(() => {
+            navigate("/views/workflows/canvas");
+          }, 600);
+
+        } catch (e) {
+
+          console.error("Txt 2 Img context error:", e);
+        }
       }
-    } catch (e) {
-      console.error("Canvas context error:", e);
-    }
+
+
     } catch (error) {
-     
+
       /*
         This message is most likely to be triggered when user sends request with exact same
         parameters as previous one. Since ComfyUI is smart it does not regenerate the image,
         hence providing no output. BUT since the data stays the same we can ignore it, making
         us also benefit from this by not saving redundant data to the database!
       */
-      if(error.response?.data?.detail == "No outputs found in workflow response"){
+      if (error.response?.data?.detail == "No outputs found in workflow response") {
         return
       }
 
@@ -286,21 +300,21 @@ const TextToImage = () => {
               <div className="h-4 bg-gray-300 rounded w-1/2"></div>
             </div>
           ) : (
-           image ? (
-                <>
-                  <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
+            image ? (
+              <>
+                <img src={`data:image/png;base64,${image}`} className="object-contain w-full h-full rounded-md shadow-lg" />
 
-                  <RedirectButtons
-                    image={image}
-                    setLoadedImage={null}
-                    updateImage={null}
-                  />
-                </>
-              ) : (
-                <div className="flex flex-col items-center justify-center text-gray-500">
-                  <p>Generated image will appear here</p>
-                </div>
-              )
+                <RedirectButtons
+                  image={image}
+                  setLoadedImage={null}
+                  updateImage={null}
+                />
+              </>
+            ) : (
+              <div className="flex flex-col items-center justify-center text-gray-500">
+                <p>Generated image will appear here</p>
+              </div>
+            )
           )}
         </div>
       </div>
