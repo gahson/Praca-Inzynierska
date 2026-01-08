@@ -47,6 +47,9 @@ model_version_to_megapixels = {
     '2.1': 0.589,
     '3.0': 1.048,
     'xl': 1.048,
+    '1.5-inpainting' :  0.262,
+    '2.0-inpainting' :  0.589,
+    'xl-inpainting' : 1.048,
     'controlnet': 0.262,
 }
 
