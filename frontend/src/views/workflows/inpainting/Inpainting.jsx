@@ -30,6 +30,9 @@ const Inpainting = () => {
 
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -125,6 +128,8 @@ const Inpainting = () => {
       return;
     }
 
+    setStartTime(performance.now());
+
     var seed_to_use = seed;
     if (randomizeSeed) {
       seed_to_use = Math.floor(Math.random() * 999999999);
@@ -151,28 +156,28 @@ const Inpainting = () => {
         }
       );
       updateImage(response.data.image);
-      
+
       const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
-      
+
       if (shouldRedirect === "true") {
         try {
           const parentImageId = localStorage.getItem("parentImageId");
 
           localStorage.removeItem("shouldRedirectToCanvas");
-          
+
           saveToCanvas(
-            response.data.image, 
-            { 
-              prompt, 
-              negative_prompt: negativePrompt, 
-              workflow: "inpainting", 
-              guidance_scale: guidance, 
-              seed: seed_to_use 
-            }, 
+            response.data.image,
+            {
+              prompt,
+              negative_prompt: negativePrompt,
+              workflow: "inpainting",
+              guidance_scale: guidance,
+              seed: seed_to_use
+            },
             parentImageId
           );
 
-          
+
           setTimeout(() => navigate("/views/workflows/canvas"), 600);
         } catch (e) {
           console.error("Inpainting canvas redirect error:", e);
@@ -189,8 +194,27 @@ const Inpainting = () => {
       });
     } finally {
       updateLoading(false);
+      setEndTime(performance.now());
     }
   };
+
+
+  useEffect(() => {
+    if (endTime) {
+      console.log('Start time: ' + startTime);
+      console.log('End time: ' + endTime);
+      console.log('Duration: ' + (endTime - startTime));
+
+      toaster.create({
+        title: "Benchmark results",
+        description: "Time: " + (endTime - startTime),
+        status: "info",
+        duration: 10000,
+        isClosable: true,
+      });
+    }
+  }, [endTime]);
+
 
   const openMaskEditor = () => {
     if (!loadedImage) {

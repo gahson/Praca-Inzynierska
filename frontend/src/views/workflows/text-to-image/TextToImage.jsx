@@ -34,6 +34,9 @@ const TextToImage = () => {
 
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
+  const [startTime, setStartTime] = useState(null);
+  const [endTime, setEndTime] = useState(null);
+
   useEffect(() => {
     if (urlPrompt) updatePrompt(urlPrompt);
   }, [urlPrompt]);
@@ -94,6 +97,8 @@ const TextToImage = () => {
       });
       return;
     }
+
+    setStartTime(performance.now());
 
     var seed_to_use = seed;
     if (randomizeSeed) {
@@ -167,8 +172,27 @@ const TextToImage = () => {
       });
     } finally {
       updateLoading(false);
+
+      setEndTime(performance.now());
     }
   };
+
+  useEffect(() => {
+    if (endTime) {
+      console.log('Start time: ' + startTime);
+      console.log('End time: ' + endTime);
+      console.log('Duration: ' + (endTime - startTime));
+      
+      toaster.create({
+        title: "Benchmark results",
+        description: "Time: " + (endTime - startTime),
+        status: "info",
+        duration: 10000,
+        isClosable: true,
+      });
+    }
+  }, [endTime]);
+
 
   return (
     <div className="min-h-screen bg-gray-100 flex justify-center items-center p-4">
