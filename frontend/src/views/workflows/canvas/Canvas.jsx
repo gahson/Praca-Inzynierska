@@ -106,22 +106,7 @@ export default function Canvas() {
     return idx >= 0 ? dataUrl.substring(idx + 7) : dataUrl;
   };
 
-  const saveWorkflow = async (id) => {
-    if (!id) return;
-    try {
-      const nodesToSave = workflowNodes.filter((n) => (n.id !== "start" || n.image != null) && n.image);
-      for (const node of nodesToSave) {
-        const payload = {
-          image_base64: stripDataUrl(node.image),
-          metadata: { label: node.label, workflow: node.workflow, nodeId: node.id }
-        };
-        await fetch(`${API_BASE}/canvases/${id}/images`, { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(payload) });
-      }
-      console.log("Saved workflow to server", id);
-    } catch (e) {
-      console.error("saveWorkflow error", e);
-    }
-  };
+
 
   const selectWorkflow = async (id) => {
     setCurrentWorkflowId(id);
@@ -256,7 +241,6 @@ export default function Canvas() {
             onCreate={(name) => createWorkflow(name)}
             onRename={(id, name) => renameWorkflow(id, name)}
             onDelete={(id) => deleteWorkflow(id)}
-            onSave={(id) => saveWorkflow(id)}
           />
 
           <div className="flex-1 bg-white rounded-lg shadow p-6 flex flex-col h-full">

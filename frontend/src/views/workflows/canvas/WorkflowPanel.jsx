@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-export default function WorkflowPanel({ workflows, currentWorkflowId, onSelect, onCreate, onRename, onDelete, onSave }) {
+export default function WorkflowPanel({ workflows, currentWorkflowId, onSelect, onCreate, onRename, onDelete }) {
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState(null);
   const [editingName, setEditingName] = useState("");
@@ -55,8 +55,7 @@ export default function WorkflowPanel({ workflows, currentWorkflowId, onSelect, 
                 </div>
               </div>
 
-              <div className="mt-2 flex items-center gap-2">
-                <button className="text-xs bg-green-500 text-white px-2 py-0.5 rounded" onClick={() => onSave?.(wf.id)}>Save</button>
+              <div className="mt-2">
                 <span className="text-xs text-gray-500">id: {wf.id}</span>
               </div>
             </li>
