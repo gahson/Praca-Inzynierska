@@ -109,7 +109,7 @@ export default function Canvas() {
   const saveWorkflow = async (id) => {
     if (!id) return;
     try {
-      const nodesToSave = workflowNodes.filter((n) => n.id !== "start" && n.image);
+      const nodesToSave = workflowNodes.filter((n) => (n.id !== "start" || n.image != null) && n.image);
       for (const node of nodesToSave) {
         const payload = {
           image_base64: stripDataUrl(node.image),
@@ -287,6 +287,8 @@ export default function Canvas() {
                   </marker>
                 </defs>
                 {workflowNodes.map((node) => {
+                  if (!node.parent_id) return null; 
+
                   const parentNode = workflowNodes.find((n) => n.image_id === node.parent_id);
                   if (!parentNode) return null;
 

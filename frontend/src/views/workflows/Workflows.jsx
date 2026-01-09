@@ -106,7 +106,7 @@ const Workflows = () => {
           onClick={() => navigate("/views/workflows/canvas")}
           className="h-80 w-120 bg-white hover:bg-gray-100 flex flex-col items-start p-4 rounded-lg shadow-md cursor-pointer"
         >
-          <div className="bg-orange-200 flex items-center justify-center p-3 rounded-lg">
+          <div className="bg-red-200 flex items-center justify-center p-3 rounded-lg">
             <FaDrawPolygon  className="w-6 h-6" />
           </div>
           <h3 className="text-lg font-semibold">Canvas</h3>
