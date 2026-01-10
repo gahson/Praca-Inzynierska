@@ -21,7 +21,7 @@ const WORKFLOW_LABELS = {
 };
 
 const WORKFLOW_BUTTONS = [
-  { id: "txt2img", label: "Text→Image" },
+  //{ id: "txt2img", label: "Text→Image" },
   { id: "img2img", label: "Image→Image" },
   { id: "inpainting", label: "Inpaint" },
   { id: "controlnet", label: "ControlNet" },
@@ -155,13 +155,15 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
     >
-      <button
-        onClick={handleUploadClick}
-        className="absolute top-2 left-2 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded cursor-pointer"
-        aria-label="Add image to node"
-      >
-        Add
-      </button>
+      {node.id === "start" && (
+        <button
+          onClick={handleUploadClick}
+          className="absolute top-2 left-2 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded cursor-pointer"
+          aria-label="Add image to node"
+        >
+          Add
+        </button>
+      )}
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       <button
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
