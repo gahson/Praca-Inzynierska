@@ -3,18 +3,7 @@ import WorkflowNode from "./utilities/WorkflowNode";
 import WorkflowPanel from "./WorkflowPanel";
 
 export default function Canvas() {
-  const [workflowNodes, setWorkflowNodes] = useState([
-    {
-      id: "start",
-      type: "start",
-      label: "Start",
-      image: null,
-      workflow: "start",
-      parentId: null,
-      x: 20,
-      y: 20,
-    },
-  ]);
+  const [workflowNodes, setWorkflowNodes] = useState([]);
 
   const [workflows, setWorkflows] = useState([]);
   const [currentWorkflowId, setCurrentWorkflowId] = useState(null);
@@ -35,7 +24,9 @@ export default function Canvas() {
       try {
         const res = await fetch(`${API_BASE}/canvases/`, { headers: getAuthHeaders() });
         if (!res.ok) throw new Error("Failed to load canvases");
+
         const list = await res.json();
+
         setWorkflows(list);
         if (list && list.length > 0) {
           setCurrentWorkflowId(list[0].id);
@@ -43,8 +34,8 @@ export default function Canvas() {
         }
       } catch (e) {
         console.warn("Could not load canvases:", e);
-        setWorkflows([{ id: "default", name: "Default" }]);
-        setCurrentWorkflowId("default");
+        //setWorkflows([{ id: "default", name: "Default" }]);
+        //setCurrentWorkflowId("default");
       }
     })();
   }, []);
@@ -56,7 +47,7 @@ export default function Canvas() {
     };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
-  }, [currentWorkflowId]);
+  }, []);
 
   const addNode = (node) => setWorkflowNodes((s) => [...s, node]);
 
@@ -94,10 +85,11 @@ export default function Canvas() {
       if (!res.ok) throw new Error("Failed to delete canvas");
       setWorkflows((s) => s.filter((w) => w.id !== id));
       if (currentWorkflowId === id) {
-        const next = workflows.find((w) => w.id !== id) || { id: "default", name: "Default" };
-        setCurrentWorkflowId(next.id);
-        if (next.id) selectWorkflow(next.id);
-        else setWorkflowNodes([{ id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 }]);
+        const next = workflows.find((w) => w.id !== id) || {id: null, name: null}; // || { id: "default", name: "Default" };
+
+        selectWorkflow(next.id);
+        //setCurrentWorkflowId(next.id);
+        //else selectWorkflow(null);//setWorkflowNodes([{ id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 }]);
       }
       try {
         const cur = localStorage.getItem("currentCanvasId");
@@ -121,6 +113,12 @@ export default function Canvas() {
 
   const selectWorkflow = async (id) => {
     setCurrentWorkflowId(id);
+
+    if(id == null){
+      setWorkflowNodes([]);
+      return;
+    }
+
     try { localStorage.setItem("currentCanvasId", id); } catch (e) { }
     try {
       const res = await fetch(`${API_BASE}/canvases/${id}`, { headers: getAuthHeaders() });
@@ -170,7 +168,7 @@ export default function Canvas() {
       setWorkflowNodes(nodes);
     } catch (e) {
       console.error("selectWorkflow error", e);
-      setWorkflowNodes([{ id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 }]);
+      setWorkflowNodes([]);
     }
   };
 
