@@ -32,6 +32,8 @@ const TextToImage = () => {
   const urlSeed = searchParams.get("seed");
   const urlModel = searchParams.get("model");
 
+  const shouldRedirectToCanvas = searchParams.get('shouldRedirectToCanvas') || "false";
+
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
   useEffect(() => {
@@ -110,15 +112,9 @@ const TextToImage = () => {
       );
       updateImage(response.data.image);
 
-      const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
-
-      if (shouldRedirect === "true") {
+      if (shouldRedirectToCanvas === "true") {
         try {
           const parentImageId = localStorage.getItem("parentImageId");
-
-          // clear the flag
-          localStorage.removeItem("shouldRedirectToCanvas");
-
 
           saveToCanvas(
             response.data.image,
@@ -132,9 +128,14 @@ const TextToImage = () => {
             parentImageId
           );
 
-
+          const currentCanvasId =  localStorage.getItem('currentCanvasId');
+          
           setTimeout(() => {
-            navigate("/views/workflows/canvas");
+            //navigate("/views/workflows/canvas");
+            navigate(
+              `/views/workflows/canvas?${new URLSearchParams({
+                redirectToWorkflow: currentCanvasId,
+              }).toString()}`)
           }, 600);
 
         } catch (e) {
@@ -175,7 +176,10 @@ const TextToImage = () => {
       <div className="w-full max-w-[1800px] flex flex-col xl:flex-row gap-8 bg-white rounded-lg shadow p-5">
         {/* Panel */}
         <div className="flex-1 flex flex-col gap-4 h-[60vh] overflow-y-auto">
-          <h1 className="font-bold text-3xl mb-5">Text to image</h1>
+          {shouldRedirectToCanvas === "true" ?
+            <h1 className="font-bold text-3xl mb-5">Text to image (Canvas)</h1> :
+            <h1 className="font-bold text-3xl mb-5">Text to image</h1>
+          }
 
           <Prompts positivePrompt={prompt} setPositivePrompt={updatePrompt} negativePrompt={negativePrompt} setNegativePrompt={updateNegativePrompt} />
 

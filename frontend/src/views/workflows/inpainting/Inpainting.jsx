@@ -3,7 +3,7 @@ import axios from "axios";
 import { LuX } from "react-icons/lu";
 import { FiUpload } from 'react-icons/fi';
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import CanvasPreview from "./Canvas";
 import Prompts from "../../../components/Prompts";
@@ -15,6 +15,9 @@ import RedirectButtons from "../../../components/QuickRedirectButtons";
 import { saveToCanvas } from "../canvas/utilities/saveToCanvas";
 
 const Inpainting = () => {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
   const [image, updateImage] = useState();
   const [loadedImage, setLoadedImage] = useState(null);
   const [maskData, setMaskData] = useState(null);
@@ -28,10 +31,11 @@ const Inpainting = () => {
   const [imageDimensions, setImageDimensions] = useState({ width: 512, height: 512 });
   const [maskEditorOpen, setMaskEditorOpen] = useState(false);
 
+  const shouldRedirectToCanvas = searchParams.get('shouldRedirectToCanvas') || "false";
+
   const [showAdvancedParameters, setShowAdvancedParameters] = useState(false);
 
   const fileInputRef = useRef(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const stored = localStorage.getItem("selectedImage");
@@ -151,29 +155,33 @@ const Inpainting = () => {
         }
       );
       updateImage(response.data.image);
-      
-      const shouldRedirect = localStorage.getItem("shouldRedirectToCanvas");
-      
-      if (shouldRedirect === "true") {
+
+      if (shouldRedirectToCanvas === "true") {
         try {
           const parentImageId = localStorage.getItem("parentImageId");
 
-          localStorage.removeItem("shouldRedirectToCanvas");
-          
           saveToCanvas(
-            response.data.image, 
-            { 
-              prompt, 
-              negative_prompt: negativePrompt, 
-              workflow: "inpainting", 
-              guidance_scale: guidance, 
-              seed: seed_to_use 
-            }, 
+            response.data.image,
+            {
+              prompt,
+              negative_prompt: negativePrompt,
+              workflow: "inpainting",
+              guidance_scale: guidance,
+              seed: seed_to_use
+            },
             parentImageId
           );
 
-          
-          setTimeout(() => navigate("/views/workflows/canvas"), 600);
+
+          const currentCanvasId = localStorage.getItem('currentCanvasId');
+
+          setTimeout(() => {
+            //navigate("/views/workflows/canvas");
+            navigate(
+              `/views/workflows/canvas?${new URLSearchParams({
+                redirectToWorkflow: currentCanvasId,
+              }).toString()}`)
+          }, 600);
         } catch (e) {
           console.error("Inpainting canvas redirect error:", e);
         }
@@ -209,7 +217,12 @@ const Inpainting = () => {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col justify-center items-center p-4">
       <div className="w-full max-w-[1800px] bg-white rounded-lg shadow p-5">
-        <h1 className="font-bold text-3xl mb-5">Inpainting</h1>
+
+        {shouldRedirectToCanvas === "true" ?
+          <h1 className="font-bold text-3xl mb-5">Inpainting (Canvas)</h1> :
+          <h1 className="font-bold text-3xl mb-5">Inpainting</h1>
+        }
+
         <div className="flex flex-col xl:flex-row gap-8">
           <div className="flex-1 flex flex-col">
             <div className="w-full h-full border-2 border-dashed border-gray-400 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors">

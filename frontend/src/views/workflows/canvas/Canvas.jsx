@@ -1,8 +1,12 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
 import WorkflowNode from "./utilities/WorkflowNode";
 import WorkflowPanel from "./WorkflowPanel";
+import { useSearchParams } from "react-router-dom";
 
 export default function Canvas() {
+  const [searchParams] = useSearchParams();
+  const redirectToWorkflow = searchParams.get('redirectToWorkflow');
+
   const [workflowNodes, setWorkflowNodes] = useState([]);
 
   const [workflows, setWorkflows] = useState([]);
@@ -29,8 +33,13 @@ export default function Canvas() {
 
         setWorkflows(list);
         if (list && list.length > 0) {
-          setCurrentWorkflowId(list[0].id);
-          selectWorkflow(list[0].id);
+          //setCurrentWorkflowId(list[0].id);
+          if (redirectToWorkflow) {
+            //setCurrentWorkflowId(redirectToWorkflow);
+            selectWorkflow(redirectToWorkflow);
+          } else {
+            selectWorkflow(list[0].id);
+          }
         }
       } catch (e) {
         console.warn("Could not load canvases:", e);
@@ -85,7 +94,7 @@ export default function Canvas() {
       if (!res.ok) throw new Error("Failed to delete canvas");
       setWorkflows((s) => s.filter((w) => w.id !== id));
       if (currentWorkflowId === id) {
-        const next = workflows.find((w) => w.id !== id) || {id: null, name: null}; // || { id: "default", name: "Default" };
+        const next = workflows.find((w) => w.id !== id) || { id: null, name: null }; // || { id: "default", name: "Default" };
 
         selectWorkflow(next.id);
         //setCurrentWorkflowId(next.id);
@@ -114,7 +123,7 @@ export default function Canvas() {
   const selectWorkflow = async (id) => {
     setCurrentWorkflowId(id);
 
-    if(id == null){
+    if (id == null) {
       setWorkflowNodes([]);
       return;
     }
@@ -262,7 +271,7 @@ export default function Canvas() {
   };
 
   const currentImage = workflowNodes[workflowNodes.length - 1]?.image || null;
-  console.log(workflows)
+
   return (
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="w-full mx-auto h-[calc(100vh-4rem)]">

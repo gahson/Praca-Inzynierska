@@ -64,10 +64,6 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       if (curCanvas) {
         selectedImage.canvas_id = curCanvas;
         localStorage.setItem("currentCanvasId", curCanvas);
-
-        // --- KLUCZOWA ZMIANA: Ustawiamy flagę powrotu ---
-        localStorage.setItem("shouldRedirectToCanvas", "true");
-        console.log("DEBUG: Flaga 'shouldRedirectToCanvas' ustawiona na true");
       }
 
       localStorage.setItem("selectedImage", JSON.stringify(selectedImage));
@@ -80,7 +76,12 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
     }
 
     const route = mapWorkflowToRoute(workflowId);
-    navigate(`/views/workflows/${route}`);
+
+    //navigate((`/views/workflows/${route}`));
+    navigate(
+      `/views/workflows/${route}?${new URLSearchParams({
+        shouldRedirectToCanvas: "true",
+      }).toString()}`)
   };
 
   const fileInputRef = useRef(null);
