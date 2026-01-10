@@ -124,7 +124,7 @@ export default function Canvas() {
           image: img.image_base64?.startsWith("data:") ? img.image_base64 : `data:image/png;base64,${img.image_base64}`,
           workflow: img.metadata?.workflow || "workflow",
           parentId: i === 0 ? "start" : `node-${i - 1}`,
-          x: 20 + i * 240,
+          x: 20 + (i + 1) * 240,
           y: 20,
           image_id: img.image_id,
           parent_id: img.parent_id
