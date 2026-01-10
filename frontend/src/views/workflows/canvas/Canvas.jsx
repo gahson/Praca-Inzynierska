@@ -84,7 +84,7 @@ export default function Canvas() {
   const renameWorkflow = async (id, name) => {
     setWorkflows((s) => s.map((w) => (w.id === id ? { ...w, name } : w)));
     try {
-      await fetch(`${API_BASE}/canvases/${id}/`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
+      await fetch(`${API_BASE}/canvases/${id}`, { method: "PATCH", headers: getAuthHeaders(), body: JSON.stringify({ name }) });
     } catch (e) { }
   };
 
