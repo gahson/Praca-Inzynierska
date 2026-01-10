@@ -156,7 +156,7 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
     >
       <button
         onClick={handleUploadClick}
-        className="absolute top-2 left-2 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded"
+        className="absolute top-2 left-2 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded cursor-pointer"
         aria-label="Add image to node"
       >
         Add
@@ -164,8 +164,18 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       <button
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
-        className="absolute top-2 right-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded"
+        //className="absolute top-2 right-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded"
+        className="
+          absolute top-2 right-2 text-xs px-2 py-0.5 rounded
+          bg-red-100 text-red-600
+          cursor-pointer
+          disabled:bg-gray-200
+          disabled:text-gray-400
+          disabled:cursor-not-allowed
+          disabled:pointer-events-none
+        "
         aria-label="Delete node"
+        disabled={node.id === "start"}
       >
         Del
       </button>
@@ -196,7 +206,7 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
               key={w.id}
               onClick={(e) => { e.stopPropagation(); handleWorkflowClick(w.id); }}
               disabled={!node.image}
-              className={`text-xs font-semibold py-1 px-2 rounded whitespace-normal text-center ${node.image ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
+              className={`cursor-pointer text-xs font-semibold py-1 px-2 rounded whitespace-normal text-center ${node.image ? "bg-blue-500 text-white hover:bg-blue-600" : "bg-gray-200 text-gray-400 cursor-not-allowed"}`}
             >
               {w.label}
             </button>
