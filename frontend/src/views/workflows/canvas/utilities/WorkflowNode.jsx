@@ -123,31 +123,32 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
      Technically only called (by handleUploadClick) when uploading an image by clicking the 'add' button,
      so we can save the image to the canvas here.
   */
-  const handleFileChange = (e) => {
-    e.stopPropagation();
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      const data = reader.result;
+const handleFileChange = (e) => {
+  e.stopPropagation();
+  const file = e.target.files?.[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = async () => {
+    const data = reader.result;
 
-      saveToCanvas(
-        data,
-        {
-          prompt: null,
-          negative_prompt: null,
-          workflow: "uploaded-by-user",
-          guidance_scale: null,
-          seed: null
-        },
-        null //parentImageId
-      );
+    await saveToCanvas(
+      data,
+      {
+        prompt: null,
+        negative_prompt: null,
+        workflow: "uploaded-by-user",
+        guidance_scale: null,
+        seed: null
+      },
+      null // parentImageId
+    );
 
-      onImageGenerated?.(node.id, data);
-    };
-    reader.readAsDataURL(file);
-    e.target.value = null;
+    onImageGenerated?.(node.id, data, true);
   };
+  reader.readAsDataURL(file);
+  e.target.value = null;
+};
+
 
   return (
     <div

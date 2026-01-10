@@ -57,7 +57,6 @@ export default function Canvas() {
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
   const addNode = (node) => setWorkflowNodes((s) => [...s, node]);
 
   const createWorkflow = async (name) => {
@@ -135,7 +134,7 @@ export default function Canvas() {
       const data = await res.json();
 
       const allNodes = [{ id: "start", type: "start", label: "Start", image: null, workflow: "start", parentId: null, x: 20, y: 20 }, ...(data.images || [])];
-
+      console.log(allNodes);
       const nodes = allNodes.map((img, i) => {
 
         const maxCols = Math.floor((canvasContainerRef.current.getBoundingClientRect().width) / (240 + 10))
@@ -181,9 +180,17 @@ export default function Canvas() {
     }
   };
 
-  const handleImageGenerated = (nodeId, imageData) => {
-    setWorkflowNodes((s) => s.map((n) => (n.id === nodeId ? { ...n, image: imageData } : n)));
+  const handleImageGenerated = (nodeId, imageData, addedByUser) => {
+    if (addedByUser) {
+      //console.log(currentWorkflowId);
+      selectWorkflow(currentWorkflowId);
+    } else {
+      setWorkflowNodes((s) =>
+        s.map((n) => (n.id === nodeId ? { ...n, image: imageData } : n))
+      );
+    }
   };
+
 
   const updateNodePosition = (nodeId, x, y) => {
     setWorkflowNodes((s) => s.map((n) => (n.id === nodeId ? { ...n, x, y } : n)));
@@ -315,11 +322,10 @@ export default function Canvas() {
                   </marker>
                 </defs>
                 {workflowNodes.map((node) => {
-                  if (!node.parent_id) return null;
-
+                  if (node.id === "start") return null;
+                  console.log(node, node.image_id, node.parent_id);
                   const parentNode = workflowNodes.find((n) => n.image_id === node.parent_id);
                   if (!parentNode) return null;
-
                   const x1 = (parentNode.x ?? 20) + 224;
                   const y1 = (parentNode.y ?? 20) + 80;
                   const x2 = node.x ?? 20;
@@ -350,7 +356,7 @@ export default function Canvas() {
                   >
                     <WorkflowNode
                       node={node}
-                      onImageGenerated={(id, img) => handleImageGenerated(id, img)}
+                      onImageGenerated={(id, img) => handleImageGenerated(id, img, true)}
                       onModify={() => handleModify(node.id)}
                       onDelete={() => removeNode(node.id)}
                       onDrag={(x, y) => updateNodePosition(node.id, x, y)}

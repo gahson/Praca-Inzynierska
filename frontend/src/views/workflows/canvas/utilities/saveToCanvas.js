@@ -25,10 +25,10 @@ export const saveToCanvas = async (imageBase64, metadata = {}, parentId = null) 
       body: JSON.stringify(payload),
     });
 
-    try {
-      localStorage.removeItem("currentCanvasId");
-    } catch (e) {
-    }
+    // try {
+    //   localStorage.removeItem("currentCanvasId");
+    // } catch (e) {
+    // }
   } catch (err) {
     console.warn("Failed to save to canvas:", err);
   }
