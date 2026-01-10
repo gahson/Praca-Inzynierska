@@ -32,7 +32,7 @@ export default function WorkflowPanel({ workflows, currentWorkflowId, onSelect, 
         {workflows.length === 0 && <p className="text-sm text-gray-500">No workflows</p>}
         <ul className="space-y-2 mt-2">
           {workflows.map((wf) => (
-            <li key={wf.id} className={`p-2 rounded border ${wf.id === currentWorkflowId ? "border-blue-400 bg-blue-50" : "border-gray-100 bg-white"}`}>
+            <li key={wf.id} className={`p-2 rounded border ${wf.id === currentWorkflowId ? "border-blue-400 bg-blue-50" : "border-gray-100 bg-white"}`} onClick={(e) => (e.target.closest('button') ? null : onSelect?.(wf.id))}>
               <div className="flex items-center justify-between gap-2">
                 {editingId === wf.id ? (
                   <input value={editingName} onChange={(e) => setEditingName(e.target.value)} className="flex-1 border px-2 py-1 text-sm rounded" />
@@ -43,13 +43,13 @@ export default function WorkflowPanel({ workflows, currentWorkflowId, onSelect, 
                 <div className="flex items-center gap-1">
                   {editingId === wf.id ? (
                     <>
-                      <button className="text-xs text-green-600 px-2" onClick={() => { onRename?.(wf.id, editingName); setEditingId(null); }}>OK</button>
-                      <button className="text-xs text-gray-600 px-2" onClick={() => setEditingId(null)}>✕</button>
+                      <button className="text-xs text-green-600 px-2 cursor-pointer" onClick={() => { onRename?.(wf.id, editingName); setEditingId(null); }}>OK</button>
+                      <button className="text-xs text-gray-600 px-2 cursor-pointer" onClick={() => setEditingId(null)}>✕</button>
                     </>
                   ) : (
                     <>
-                      <button className="text-xs text-gray-600 px-2" onClick={() => { setEditingId(wf.id); setEditingName(wf.name); }}>Edit</button>
-                      <button className="text-xs text-red-600 px-2" onClick={() => onDelete?.(wf.id)}>Del</button>
+                      <button className="text-xs text-gray-600 px-2 cursor-pointer" onClick={() => { setEditingId(wf.id); setEditingName(wf.name); }}>Edit</button>
+                      <button className="text-xs text-red-600 px-2 cursor-pointer" onClick={() => onDelete?.(wf.id)}>Del</button>
                     </>
                   )}
                 </div>
