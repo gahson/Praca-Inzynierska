@@ -1,5 +1,6 @@
 import { useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { saveToCanvas } from "./saveToCanvas";
 
 const WORKFLOW_COLORS = {
   start: "bg-gray-500",
@@ -51,26 +52,26 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
 
   const handleWorkflowClick = (workflowId) => {
     if (!node.image) return;
-    
-    const imageBase64 = typeof node.image === "string" && node.image.startsWith("data:") 
-      ? node.image.split(",")[1] 
+
+    const imageBase64 = typeof node.image === "string" && node.image.startsWith("data:")
+      ? node.image.split(",")[1]
       : node.image;
-    
+
     const selectedImage = { image_base64: imageBase64 };
-    
+
     try {
       const curCanvas = localStorage.getItem("currentCanvasId");
       if (curCanvas) {
         selectedImage.canvas_id = curCanvas;
         localStorage.setItem("currentCanvasId", curCanvas);
-        
+
         // --- KLUCZOWA ZMIANA: Ustawiamy flagę powrotu ---
         localStorage.setItem("shouldRedirectToCanvas", "true");
         console.log("DEBUG: Flaga 'shouldRedirectToCanvas' ustawiona na true");
       }
-      
+
       localStorage.setItem("selectedImage", JSON.stringify(selectedImage));
-      
+
       if (node.image_id) {
         localStorage.setItem("parentImageId", node.image_id);
       }
@@ -117,6 +118,10 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
     fileInputRef.current?.click();
   };
 
+  /* 
+     Technically only called (by handleUploadClick) when uploading an image by clicking the 'add' button,
+     so we can save the image to the canvas here.
+  */
   const handleFileChange = (e) => {
     e.stopPropagation();
     const file = e.target.files?.[0];
@@ -124,6 +129,19 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
     const reader = new FileReader();
     reader.onload = () => {
       const data = reader.result;
+
+      saveToCanvas(
+        data,
+        {
+          prompt: null,
+          negative_prompt: null,
+          workflow: "uploaded-by-user",
+          guidance_scale: null,
+          seed: null
+        },
+        null //parentImageId
+      );
+
       onImageGenerated?.(node.id, data);
     };
     reader.readAsDataURL(file);
@@ -136,14 +154,14 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       onMouseDown={handlePointerDown}
       onTouchStart={handlePointerDown}
     >
-    <button
+      <button
         onClick={handleUploadClick}
         className="absolute top-2 left-2 text-xs bg-green-100 text-green-600 px-2 py-0.5 rounded"
         aria-label="Add image to node"
-    >
-    Add
-    </button>
-  <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
+      >
+        Add
+      </button>
+      <input ref={fileInputRef} type="file" accept="image/*" onChange={handleFileChange} className="hidden" />
       <button
         onClick={(e) => { e.stopPropagation(); onDelete?.(); }}
         className="absolute top-2 right-2 text-xs bg-red-100 text-red-600 px-2 py-0.5 rounded"
@@ -153,7 +171,7 @@ export default function WorkflowNode({ node, onImageGenerated, onModify, onDelet
       </button>
 
       <div className="space-y-2 mt-2">
-        
+
 
         <div className="w-full h-32 bg-gray-200 rounded-lg overflow-hidden flex items-center justify-center border border-gray-300">
           {node.image ? (
